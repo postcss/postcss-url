@@ -1,0 +1,46 @@
+{
+  "name": "postcss-url",
+  "version": "0.0.0",
+  "description": "PostCSS plugin to rebase or inline on url().",
+  "keywords": [
+    "css",
+    "postcss",
+    "postcss-plugins",
+    "url",
+    "rebase",
+    "inline",
+    "base64",
+    "assets"
+  ],
+  "author": "MoOx",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/postcss/postcss-url.git"
+  },
+  "files": [
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md",
+    "index.js"
+  ],
+  "dependencies": {
+    "js-base64": "^2.1.5",
+    "mime": "^1.2.11",
+    "reduce-function-call": "^1.0.1"
+  },
+  "devDependencies": {
+    "jscs": "^1.5.9",
+    "jshint": "^2.5.2",
+    "jshint-stylish": "^0.4.0",
+    "postcss": "^2.2.1",
+    "postcss-import": "^1.0.0",
+    "tap-colorize": "^1.2.0",
+    "tape": "^2.14.0"
+  },
+  "scripts": {
+    "jscs": "jscs *.js **/*.js",
+    "jshint": "jshint . --exclude node_modules --reporter node_modules/jshint-stylish/stylish.js",
+    "test": "npm run jscs && npm run jshint && tape test | tap-colorize"
+  }
+}
