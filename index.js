@@ -45,6 +45,9 @@ module.exports = function fixUrl(options) {
             }
             newPath = path.resolve(from, newPath)
             newPath = path.relative(to, newPath)
+			if (path.sep == "\\") {
+		        newPath = newPath.replace(/\\/g, '\/');
+	        }
           }
           else if (mode === "inline") {
             var file = path.resolve(from, dirname !== from ? dirname + path.sep + value : value)
