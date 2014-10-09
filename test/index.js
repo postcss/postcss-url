@@ -41,9 +41,25 @@ test("rebase", function(t) {
 test("inline", function(t) {
   var opts = {url: "inline"}
   compareFixtures(t, "cant-inline", "shouldn't inline url if not info available", opts)
-  compareFixtures(t, "inline-from", "should inline url from dirname(from)",  opts, {from: "test/fixtures/transform.css"})
 
-  compareFixtures(t, "inline-imported", "should inline url of imported files",  opts, {from: "test/fixtures/transform.css"}, require("postcss-import"))
+  t.ok(
+    postcss()
+      .use(url(opts))
+      .process(read("fixtures/inline-from"), {from: "test/fixtures/transform.css"})
+      .css
+      .match(/;base64/),
+    "should inline url from dirname(from)"
+  )
+
+  t.ok(
+    postcss()
+      .use(require("postcss-import")())
+      .use(url(opts))
+      .process(read("fixtures/inline-imported"), {from: "test/fixtures/transform.css"})
+      .css
+      .match(/;base64/),
+    "should inline url of imported files"
+  )
 
   t.end()
 })
