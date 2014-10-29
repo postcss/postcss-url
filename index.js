@@ -102,8 +102,9 @@ function processRebase(from, dirname, newPath, quote, to) {
  */
 function processInline(from, dirname, newPath, quote, value, options) {
   var maxSize = typeof(options.maxSize) == "undefined" ? 14 : options.maxSize
+  var basePath = options.basePath || from;
   maxSize *= 1024 * 8
-  var file = path.resolve(from,
+  var file = path.resolve(basePath,
     dirname !== from ? dirname + path.sep + value : value)
   if (!fs.existsSync(file)) {
     console.warn("Can't read file '" + file + "', ignoring")
