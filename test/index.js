@@ -51,8 +51,8 @@ test("inline", function(t) {
     "should inline url from dirname(from)"
   )
 
-  t.ok(
-    !postcss()
+  t.notOk(
+    postcss()
       .use(url({url: "inline", maxSize: 0}))
       .process(read("fixtures/inline-from"), {from: "test/fixtures/transform.css"})
       .css
