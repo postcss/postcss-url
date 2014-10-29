@@ -49,6 +49,10 @@ Allow you to inline assets using base64 syntax. Can use postcss `from` option to
 
 Specify the maximum file size to inline
 
+##### `basePath: "basePath for images to inline"`
+
+Specify the basePath from where to search images
+
 ---
 
 ## Contributing
