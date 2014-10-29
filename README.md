@@ -45,6 +45,14 @@ Allow you to fix `url()` according to postcss `to` and/or `from` options (rebase
 
 Allow you to inline assets using base64 syntax. Can use postcss `from` option to find ressources.
 
+##### `maxSize: "size in kbytes"`
+
+Specify the maximum file size to inline
+
+##### `basePath: "basePath for images to inline"`
+
+Specify the basePath from where to search images
+
 ---
 
 ## Contributing

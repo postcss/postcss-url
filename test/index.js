@@ -52,6 +52,15 @@ test("inline", function(t) {
   )
 
   t.ok(
+    !postcss()
+      .use(url({url: "inline", maxSize: 0}))
+      .process(read("fixtures/inline-from"), {from: "test/fixtures/transform.css"})
+      .css
+      .match(/;base64/),
+    "should not inline big files from dirname(from)"
+  )
+
+  t.ok(
     postcss()
       .use(require("postcss-import")())
       .use(url(opts))
