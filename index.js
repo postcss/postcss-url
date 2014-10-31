@@ -125,7 +125,7 @@ function processInline(from, dirname, newPath, quote, value, options) {
       console.warn("Unable to find asset mime-type for " + file)
     }
     else {
-      file = fs.readFileSync(file).toString()
+      file = fs.readFileSync(file)
       newPath = "data:" + mimeType + ";base64," + base64.encode(file)
     }
   }
