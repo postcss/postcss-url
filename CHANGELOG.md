@@ -1,3 +1,7 @@
+# 1.1.1 - 2014-10-30
+
+- Fix bug which leads to not correct base64 code
+
 # 1.1.0 - 2014-10-29
 
 - Add `maxSize` (size in kbytes) and `basePath` (base path for images to inline) options for _inline_ mode.
