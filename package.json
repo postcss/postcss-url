@@ -1,6 +1,6 @@
 {
   "name": "postcss-url",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "PostCSS plugin to rebase or inline on url().",
   "keywords": [
     "css",
