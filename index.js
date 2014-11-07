@@ -104,7 +104,7 @@ function processInline(from, dirname, newPath, quote, value, options) {
   var maxSize = typeof(options.maxSize) == "undefined" ? 14 : options.maxSize
   var basePath = options.basePath;
   var fullFilePath;
-  maxSize *= 1024 * 8
+  maxSize *= 1024;
   if (basePath) {
     fullFilePath = path.join(basePath, value)
   }
