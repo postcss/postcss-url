@@ -1,3 +1,7 @@
+# 1.1.2 - 2014-11-08
+
+- Fix MaxSize issue ([ref](https://github.com/postcss/postcss-url/issues/9))
+
 # 1.1.1 - 2014-10-30
 
 - Fix bug which leads to not correct base64 code
