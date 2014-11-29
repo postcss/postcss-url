@@ -1,0 +1,3 @@
+body {
+  background: url("one"), url('two'), url(three), url(four);
+}

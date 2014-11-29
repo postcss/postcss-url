@@ -72,3 +72,10 @@ test("inline", function(t) {
 
   t.end()
 })
+
+test("custom", function(t) {
+  var opts = {url: function(url) { return url.toUpperCase(); }}
+  compareFixtures(t, "custom", "should transform url through custom callback", opts)
+
+  t.end()
+})
