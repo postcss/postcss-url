@@ -45,6 +45,10 @@ Allow you to fix `url()` according to postcss `to` and/or `from` options (rebase
 
 Allow you to inline assets using base64 syntax. Can use postcss `from` option to find ressources.
 
+#### `url: Function`
+
+Custom transform function. Takes one argument (original url) and should return the transformed url.
+
 ##### `maxSize: "size in kbytes"`
 
 Specify the maximum file size to inline

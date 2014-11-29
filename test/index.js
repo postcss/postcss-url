@@ -73,6 +73,13 @@ test("inline", function(t) {
   t.end()
 })
 
+test("custom", function(t) {
+  var opts = {url: function(url) { return url.toUpperCase(); }}
+  compareFixtures(t, "custom", "should transform url through custom callback", opts)
+
+  t.end()
+})
+
 test("absolute-urls", function(t) {
   compareFixtures(t, "aboslute-relativeprotocol", "shouldn't break url if it's absolute (relative protocol, ex '//')");
   compareFixtures(t, "aboslute-httpprotocol", "shouldn't break url if it's absolute (http protocol, ex 'http://')");
@@ -81,4 +88,3 @@ test("absolute-urls", function(t) {
   compareFixtures(t, "aboslute-url.quoteless", "shouldn't break url if it's absolute (domain relative, but undetermiable without server, ex '/')")
   t.end();
 })
-

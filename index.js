@@ -38,7 +38,7 @@ module.exports = function fixUrl(options) {
  * @param {Object} decl
  * @param {String} from
  * @param {String} to
- * @param {String} mode
+ * @param {String|Function} mode
  * @param {Object} options
  */
 function processDecl(decl, from, to, mode, options) {
@@ -47,6 +47,10 @@ function processDecl(decl, from, to, mode, options) {
     // save quote style
     var quote = getQuote(value)
     value = unquote(value, quote)
+
+    if (typeof mode === "function") {
+      return processCustom(quote, value, mode);
+    }
 
     // ignore absolute url
     if (/^(?:(http(s?)\:\/)?(\/){1,2})/.test(value)) {
@@ -68,6 +72,20 @@ function processDecl(decl, from, to, mode, options) {
     }
   })
 }
+
+
+/**
+ * Transform url() based on a custom callback
+ *
+ * @param {String} quote
+ * @param {String} value
+ * @param {Function} cb
+ */
+function processCustom(quote, value, cb) {
+  var newValue = cb(value)
+  return createUrl(quote, newValue)
+}
+
 
 /**
  * Fix url() according to source (`from`) or destination (`to`)
