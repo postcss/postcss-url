@@ -49,8 +49,8 @@ function processDecl(decl, from, to, mode, options) {
     value = unquote(value, quote)
 
     // ignore absolute url
-    if (value.indexOf("/") === 0) {
-      return value
+    if (/^(?:(http(s?)\:\/)?(\/){1,2})/.test(value)) {
+      return createUrl(quote, value);
     }
 
     var newPath = value
