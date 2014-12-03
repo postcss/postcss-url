@@ -1,3 +1,6 @@
+# 1.1.3 - 2014-12-03
+- Fix absolute urls being mangled ([ref](https://github.com/postcss/postcss-url/issues/13))
+
 # 1.1.2 - 2014-11-08
 
 - Fix MaxSize issue ([ref](https://github.com/postcss/postcss-url/issues/9))
