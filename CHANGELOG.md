@@ -1,9 +1,10 @@
-# 1.1.3 - 2014-12-03
-- Fix absolute urls being mangled ([ref](https://github.com/postcss/postcss-url/issues/13))
+# 1.1.3 - 2014-12-04
+
+- Fix absolute urls being mangled ([#13](https://github.com/postcss/postcss-url/issues/13))
 
 # 1.1.2 - 2014-11-08
 
-- Fix MaxSize issue ([ref](https://github.com/postcss/postcss-url/issues/9))
+- Fix MaxSize issue ([#9](https://github.com/postcss/postcss-url/issues/9))
 
 # 1.1.1 - 2014-10-30
 
@@ -19,7 +20,7 @@
 
 # 1.0.1 - 2014-10-09
 
-- Fix paths for Windows ([fix #3](https://github.com/postcss/postcss-url/issue/3) via [#4](https://github.com/postcss/postcss-url/pull/4))
+- Fix paths for Windows ([#3](https://github.com/postcss/postcss-url/issue/3) via [#4](https://github.com/postcss/postcss-url/pull/4))
 
 # 1.0.0 - 2014-08-24
 
