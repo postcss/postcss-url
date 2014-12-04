@@ -38,6 +38,6 @@
   "scripts": {
     "jscs": "jscs *.js **/*.js",
     "jshint": "jshint . --exclude-path .gitignore",
-    "test": "npm run jscs && npm run jshint && npm run standalone && tape test"
+    "test": "npm run jscs && npm run jshint && tape test"
   }
 }
