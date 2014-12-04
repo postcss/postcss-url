@@ -1,3 +1,8 @@
+# 1.2.0 - 2014-12-04
+
+- `url` now accept a function to allow custom transformation of the url string
+- All absolute url protocols are now ignored (not just /https?/).
+
 # 1.1.3 - 2014-12-04
 
 - Fix absolute urls being mangled ([#13](https://github.com/postcss/postcss-url/issues/13))

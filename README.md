@@ -4,7 +4,8 @@
 
 ## Installation
 
-    $ npm install postcss-url
+```console
+$ npm install postcss-url
 
 ## Usage
 
@@ -45,15 +46,16 @@ Allow you to fix `url()` according to postcss `to` and/or `from` options (rebase
 
 Allow you to inline assets using base64 syntax. Can use postcss `from` option to find ressources.
 
-#### `url: Function`
+##### `url: {Function}`
 
-Custom transform function. Takes one argument (original url) and should return the transformed url.
+Custom transform function. Takes one argument (original url) and should return the transformed url.  
+You can use this option to adjust urls for CDN.
 
-##### `maxSize: "size in kbytes"`
+#### `maxSize: "size in kbytes"`
 
 Specify the maximum file size to inline
 
-##### `basePath: "basePath for images to inline"`
+#### `basePath: "basePath for images to inline"`
 
 Specify the basePath from where to search images
 
@@ -63,10 +65,12 @@ Specify the basePath from where to search images
 
 Work on a branch, install dev-dependencies, respect coding style & run tests before submitting a bug fix or a feature.
 
-    $ git clone https://github.com/postcss/postcss-url.git
-    $ git checkout -b patch-1
-    $ npm install
-    $ npm test
+```console
+$ git clone https://github.com/postcss/postcss-url.git
+$ git checkout -b patch-1
+$ npm install
+$ npm test
+```
 
 ## [Changelog](CHANGELOG.md)
 

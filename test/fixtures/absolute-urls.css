@@ -1,0 +1,19 @@
+body {
+  background: url("http://one");
+  background: url("https://one");
+  background: url("ftp://one");
+  background: url("unknown://one");
+  background: url("/one");
+
+  background: url('http://one');
+  background: url('https://one');
+  background: url('ftp://one');
+  background: url('unknown://one');
+  background: url('/one');
+
+  background: url(http://one);
+  background: url(https://one);
+  background: url(ftp://one);
+  background: url(unknown://one);
+  background: url(/one);
+}

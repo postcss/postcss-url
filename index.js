@@ -53,7 +53,7 @@ function processDecl(decl, from, to, mode, options) {
     }
 
     // ignore absolute url
-    if (/^(?:(http(s?)\:\/)?(\/){1,2})/.test(value)) {
+    if (/^(?:[a-z]+:\/)?\//.test(value)) {
       return createUrl(quote, value);
     }
 

@@ -81,10 +81,7 @@ test("custom", function(t) {
 })
 
 test("absolute-urls", function(t) {
-  compareFixtures(t, "aboslute-relativeprotocol", "shouldn't break url if it's absolute (relative protocol, ex '//')");
-  compareFixtures(t, "aboslute-httpprotocol", "shouldn't break url if it's absolute (http protocol, ex 'http://')");
-  compareFixtures(t, "aboslute-httpsprotocol", "shouldn't break url if it's absolute (https protocol, ex 'https://')");
-  compareFixtures(t, "aboslute-url", "shouldn't break url if it's absolute (domain relative, but undetermiable without server, ex '\"/\"')")
-  compareFixtures(t, "aboslute-url.quoteless", "shouldn't break url if it's absolute (domain relative, but undetermiable without server, ex '/')")
+  compareFixtures(t, "absolute-urls", "shouldn't not transform absolute urls");
+
   t.end();
 })
