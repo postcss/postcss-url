@@ -16,4 +16,6 @@ body {
   background: url(ftp://one);
   background: url(unknown://one);
   background: url(/one);
+
+  background: url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7);
 }

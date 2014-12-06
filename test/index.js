@@ -81,7 +81,7 @@ test("custom", function(t) {
 })
 
 test("absolute-urls", function(t) {
-  compareFixtures(t, "absolute-urls", "shouldn't not transform absolute urls");
+  compareFixtures(t, "absolute-urls", "shouldn't not transform absolute urls or uri");
 
   t.end();
 })

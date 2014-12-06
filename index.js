@@ -52,8 +52,8 @@ function processDecl(decl, from, to, mode, options) {
       return processCustom(quote, value, mode);
     }
 
-    // ignore absolute url
-    if (/^(?:[a-z]+:\/)?\//.test(value)) {
+    // ignore absolute url and uri
+    if (/^(?:[a-z]+:\/|data:.*)?\//.test(value)) {
       return createUrl(quote, value);
     }
 
