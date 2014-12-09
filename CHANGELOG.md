@@ -1,3 +1,7 @@
+# 1.2.1 - 2014-12-09
+
+- Data URIs are ignored correctly ([#15](https://github.com/postcss/postcss-url/pull/15))
+
 # 1.2.0 - 2014-12-04
 
 - `url` now accept a function to allow custom transformation of the url string
