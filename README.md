@@ -6,6 +6,7 @@
 
 ```console
 $ npm install postcss-url
+```
 
 ## Usage
 
