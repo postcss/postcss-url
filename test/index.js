@@ -73,6 +73,21 @@ test("inline", function(t) {
   t.end()
 })
 
+test("inline with fallback", function(t) {
+  var opts = {url: "inline", fallback: true}
+
+  var css = postcss()
+      .use(url(opts))
+      .process(read("fixtures/inline-from"), {from: "test/fixtures/transform.css"})
+      .css;
+
+  t.ok(css.match(/;base64/), "should contain a data url")
+  t.ok(css.match(/url\("pixel.gif"\)/), "should contain the initial url")
+  t.ok(css.indexOf(";base64") < css.indexOf("url(\"pixel.gif\")"), "should contain the initial url after the datauri")
+
+  t.end()
+})
+
 test("custom", function(t) {
   var opts = {url: function(url) { return url.toUpperCase(); }}
   compareFixtures(t, "custom", "should transform url through custom callback", opts)

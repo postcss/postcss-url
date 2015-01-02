@@ -42,7 +42,11 @@ module.exports = function fixUrl(options) {
  * @param {Object} options
  */
 function processDecl(decl, from, to, mode, options) {
+  if (decl.fallback) {
+    return;
+  }
   var dirname = path.dirname(decl.source.file)
+  var fallbackDecl = false;
   decl.value = reduceFunctionCall(decl.value, "url", function(value) {
     // save quote style
     var quote = getQuote(value)
@@ -54,7 +58,7 @@ function processDecl(decl, from, to, mode, options) {
 
     // ignore absolute urls or data uris
     if (/^(?:[a-z]+:\/|data:.*)?\//.test(value)) {
-      return createUrl(quote, value);
+      return createUrl(quote, value)
     }
 
     var newPath = value
@@ -64,6 +68,7 @@ function processDecl(decl, from, to, mode, options) {
       return processRebase(from, dirname, newPath, quote, to)
       break
     case "inline":
+      fallbackDecl = options.fallback ? decl.clone() : false
       return processInline(from, dirname, newPath, quote, value, options)
       break
     default:
@@ -71,6 +76,11 @@ function processDecl(decl, from, to, mode, options) {
       break
     }
   })
+
+  if (fallbackDecl) {
+    fallbackDecl.fallback = true;
+    decl.parent.append(fallbackDecl)
+  }
 }
 
 
