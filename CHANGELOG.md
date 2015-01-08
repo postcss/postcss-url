@@ -1,3 +1,8 @@
+# 1.2.2 - 2015-01-08
+
+- Use Node's native buffer.toString("base64")
+  The js-base64 library was producing incorrect base64 for certain files
+
 # 1.2.1 - 2014-12-09
 
 - Data URIs are ignored correctly ([#15](https://github.com/postcss/postcss-url/pull/15))
