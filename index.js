@@ -3,7 +3,6 @@
  */
 var fs = require("fs")
 var path = require("path")
-var base64 = require("js-base64").Base64
 var mime = require("mime")
 var reduceFunctionCall = require("reduce-function-call");
 
@@ -144,7 +143,7 @@ function processInline(from, dirname, newPath, quote, value, options) {
     }
     else {
       file = fs.readFileSync(file)
-      newPath = "data:" + mimeType + ";base64," + base64.encode(file)
+      newPath = "data:" + mimeType + ";base64," + file.toString("base64")
     }
   }
   return createUrl(quote, newPath)
