@@ -1,6 +1,8 @@
-# 1.2.2 - 2015-01-10
+# 1.2.3 - 2015-01-10
 
 - Use Node's native buffer.toString("base64"). The js-base64 library was producing incorrect base64 for certain files ([#17](https://github.com/postcss/postcss-url/pull/17))
+
+# 1.2.2 - unpublished
 
 # 1.2.1 - 2014-12-09
 
