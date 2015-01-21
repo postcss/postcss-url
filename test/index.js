@@ -60,6 +60,15 @@ test("inline", function(t) {
     "should not inline big files from dirname(from)"
   )
 
+  t.notOk(
+    postcss()
+      .use(url({url: "inline"}))
+      .process(read("fixtures/inline-svg"), {from: "test/fixtures/transform.css"})
+      .css
+      .match(/;base64/),
+    "SVGs shouldn't be encoded in base64"
+  )
+
   t.ok(
     postcss()
       .use(require("postcss-import")())

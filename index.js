@@ -4,6 +4,7 @@
 var fs = require("fs")
 var path = require("path")
 var mime = require("mime")
+var SvgEncoder = require("directory-encoder/lib/svg-uri-encoder.js")
 var reduceFunctionCall = require("reduce-function-call");
 
 /**
@@ -140,6 +141,10 @@ function processInline(from, dirname, newPath, quote, value, options) {
     }
     if (!mimeType) {
       console.warn("Unable to find asset mime-type for " + file)
+    }
+    else if (mimeType === "image/svg+xml") {
+      var svg = new SvgEncoder(file)
+      newPath = svg.encode()
     }
     else {
       file = fs.readFileSync(file)
