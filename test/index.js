@@ -42,6 +42,8 @@ test("inline", function(t) {
   var opts = {url: "inline"}
   compareFixtures(t, "cant-inline", "shouldn't inline url if not info available", opts)
 
+  compareFixtures(t, "cant-inline-hash", "shouldn't inline url if it has a hash in it", opts)
+
   t.ok(
     postcss()
       .use(url(opts))

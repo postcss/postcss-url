@@ -4,6 +4,7 @@
 var fs = require("fs")
 var path = require("path")
 var mime = require("mime")
+var url = require("url");
 var reduceFunctionCall = require("reduce-function-call");
 
 /**
@@ -32,7 +33,7 @@ module.exports = function fixUrl(options) {
 }
 
 /**
- * Processes one delcaration
+ * Processes one declaration
  *
  * @param {Object} decl
  * @param {String} from
@@ -53,6 +54,12 @@ function processDecl(decl, from, to, mode, options) {
 
     // ignore absolute urls or data uris
     if (/^(?:[a-z]+:\/|data:.*)?\//.test(value)) {
+      return createUrl(quote, value);
+    }
+
+    // ignore hashes
+    var link = url.parse(value);
+    if (link.hash) {
       return createUrl(quote, value);
     }
 
