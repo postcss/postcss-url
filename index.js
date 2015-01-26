@@ -43,7 +43,7 @@ module.exports = function fixUrl(options) {
  * @param {Object} options
  */
 function processDecl(decl, from, to, mode, options) {
-  var dirname = path.dirname(decl.source.file)
+  var dirname = decl.source && decl.source.input ? path.dirname(decl.source.input.file) : process.cwd()
   decl.value = reduceFunctionCall(decl.value, "url", function(value) {
     // save quote style
     var quote = getQuote(value)

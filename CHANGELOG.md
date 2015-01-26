@@ -1,3 +1,8 @@
+# 2.0.0 - 2015-01-26
+
+- Added: compatibility with postcss v4.x
+- Removed: compatibility with postcss v3.x
+
 # 1.3.1 - 2015-01-26
 
 - Fixed: dependency issue related to "directory-encoder" ([#22](https://github.com/postcss/postcss-url/pull/22))

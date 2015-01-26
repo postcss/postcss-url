@@ -24,16 +24,16 @@
     "index.js"
   ],
   "dependencies": {
+    "directory-encoder": "^0.6.1",
     "js-base64": "^2.1.5",
     "mime": "^1.2.11",
-    "reduce-function-call": "^1.0.1",
-    "directory-encoder": "^0.6.1"
+    "reduce-function-call": "^1.0.1"
   },
   "devDependencies": {
     "jscs": "^1.6.2",
     "jshint": "^2.5.6",
-    "postcss": "^3.0.0",
-    "postcss-import": "^2.0.0",
+    "postcss": "^4.0.2",
+    "postcss-import": "^5.0.0",
     "tape": "^3.0.0"
   },
   "scripts": {
