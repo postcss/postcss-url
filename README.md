@@ -49,8 +49,13 @@ Allow you to inline assets using base64 syntax. Can use postcss `from` option to
 
 ##### `url: {Function}`
 
-Custom transform function. Takes one argument (original url) and should return the transformed url.  
+Custom transform function. Takes one argument (original url) and should return the transformed url.
 You can use this option to adjust urls for CDN.
+
+#### `fallback` (default: `false`)
+
+It makes sure that a `url` rule will be added after an inlined one to support old browsers.
+It only make sense to use this only when `url: "inline"` 
 
 #### `maxSize: "size in kbytes"`
 
