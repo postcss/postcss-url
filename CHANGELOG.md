@@ -1,3 +1,7 @@
+# 1.3.1 - 2015-01-26
+
+- Fixed: dependency issue related to "directory-encoder" ([#22](https://github.com/postcss/postcss-url/pull/22))
+
 # 1.3.0 - 2015-01-26
 
 - Changed: SVGs are now in plain text (not base64 encoded) ([3c04f7a](3c04f7abb1c017dfef34d3ddb00a5b44d8af951f), [#18](https://github.com/postcss/postcss-url/issues/18))
