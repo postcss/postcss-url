@@ -9,8 +9,8 @@
 
 # 1.3.0 - 2015-01-26
 
-- Changed: SVGs are now in plain text (not base64 encoded) ([3c04f7a](3c04f7abb1c017dfef34d3ddb00a5b44d8af951f), [#18](https://github.com/postcss/postcss-url/issues/18))
-- Fixed: URLs with hashes (e.g. SVG fragments) are now ignored ([c3a9abc](c3a9abcbed33ede323e7dcd670v8b8fdb6168462f), [#20](https://github.com/postcss/postcss-url/pull/20))
+- Changed: SVGs are now in plain text (not base64 encoded) ([3c04f7a](https://github.com/postcss/postcss-url/commit/3c04f7abb1c017dfef34d3ddb00a5b44d8af951f), [#18](https://github.com/postcss/postcss-url/issues/18))
+- Fixed: URLs with hashes (e.g. SVG fragments) are now ignored ([c3a9abc](https://github.com/postcss/postcss-url/commit/c3a9abcbed33ede323e7dcd6708b8fdb6168462f), [#20](https://github.com/postcss/postcss-url/pull/20))
 
 # 1.2.3 - 2015-01-10
 
