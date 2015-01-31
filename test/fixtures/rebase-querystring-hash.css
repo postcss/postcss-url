@@ -1,0 +1,8 @@
+body {
+  background: url('./svg#stuff');
+}
+
+@font-face {
+  src: url('./font?blah');
+  src: url('./font?blah#dontcare');
+}

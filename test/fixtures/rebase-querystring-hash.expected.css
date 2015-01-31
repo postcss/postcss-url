@@ -1,0 +1,9 @@
+body {
+  background: url('test/fixtures/svg#stuff');
+}
+
+@font-face {
+  src: url('test/fixtures/font?blah');
+  src: url('test/fixtures/font?blah#dontcare');
+}
+

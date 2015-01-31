@@ -28,11 +28,11 @@ function compareFixtures(t, name, msg, opts, postcssOpts, plugin) {
 test("rebase", function(t) {
   var opts = {}
   compareFixtures(t, "cant-rebase", "shouldn't rebase url if not info available")
-  compareFixtures(t, "rebase-to-from", "should rebase url to dirname(from)", opts, {from: "test/fixtures/transform.css"})
-  compareFixtures(t, "rebase-to-to-without-from", "should rebase url to dirname(to)", opts, {to: "transform.css"})
-  compareFixtures(t, "rebase-to-to", "should rebase url to dirname(to) even if from given", opts, {from: "test/fixtures/transform.css", to: "transform.css"})
-  compareFixtures(t, "rebase-all-url-syntax", "should rebase url even if there is differentes types of quotes", opts, {from: "test/fixtures/transform.css", to: "transform.css"})
-
+  compareFixtures(t, "rebase-to-from", "should rebase url to dirname(from)", opts, {from: "test/fixtures/here"})
+  compareFixtures(t, "rebase-to-to-without-from", "should rebase url to dirname(to)", opts, {to: "there"})
+  compareFixtures(t, "rebase-to-to", "should rebase url to dirname(to) even if from given", opts, {from: "test/fixtures/here", to: "there"})
+  compareFixtures(t, "rebase-all-url-syntax", "should rebase url even if there is differentes types of quotes", opts, {from: "test/fixtures/here", to: "there"})
+  compareFixtures(t, "rebase-querystring-hash", "should rebase url that have query string or hash (or both)", opts, {from: "test/fixtures/here", to: "there"})
   compareFixtures(t, "rebase-imported", "should rebase url of imported files", opts, {from: "test/fixtures/transform.css"}, require("postcss-import"))
 
   t.end()
@@ -47,27 +47,24 @@ test("inline", function(t) {
   t.ok(
     postcss()
       .use(url(opts))
-      .process(read("fixtures/inline-from"), {from: "test/fixtures/transform.css"})
-      .css
-      .match(/;base64/),
+      .process(read("fixtures/inline-from"), {from: "test/fixtures/here"})
+      .css.match(/;base64/),
     "should inline url from dirname(from)"
   )
 
   t.notOk(
     postcss()
       .use(url({url: "inline", maxSize: 0}))
-      .process(read("fixtures/inline-from"), {from: "test/fixtures/transform.css"})
-      .css
-      .match(/;base64/),
+      .process(read("fixtures/inline-from"), {from: "test/fixtures/here"})
+      .css.match(/;base64/),
     "should not inline big files from dirname(from)"
   )
 
   t.notOk(
     postcss()
       .use(url({url: "inline"}))
-      .process(read("fixtures/inline-svg"), {from: "test/fixtures/transform.css"})
-      .css
-      .match(/;base64/),
+      .process(read("fixtures/inline-svg"), {from: "test/fixtures/here"})
+      .css.match(/;base64/),
     "SVGs shouldn't be encoded in base64"
   )
 
@@ -75,9 +72,8 @@ test("inline", function(t) {
     postcss()
       .use(require("postcss-import")())
       .use(url(opts))
-      .process(read("fixtures/inline-imported"), {from: "test/fixtures/transform.css"})
-      .css
-      .match(/;base64/),
+      .process(read("fixtures/inline-imported"), {from: "test/fixtures/here"})
+      .css.match(/;base64/),
     "should inline url of imported files"
   )
 
@@ -92,7 +88,7 @@ test("custom", function(t) {
 })
 
 test("absolute-urls", function(t) {
-  compareFixtures(t, "absolute-urls", "shouldn't not transform absolute urls or data uris");
+  compareFixtures(t, "absolute-urls", "shouldn't not transform absolute urls or data uris")
 
-  t.end();
+  t.end()
 })
