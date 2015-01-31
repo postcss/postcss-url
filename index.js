@@ -58,12 +58,6 @@ function processDecl(decl, from, to, mode, options) {
       return createUrl(quote, value);
     }
 
-    // ignore hashes
-    var link = url.parse(value);
-    if (link.hash) {
-      return createUrl(quote, value);
-    }
-
     var newPath = value
 
     switch (mode) {
@@ -130,6 +124,13 @@ function processInline(from, dirname, newPath, quote, value, options) {
   var basePath = options.basePath;
   var fullFilePath;
   maxSize *= 1024;
+
+  // ignore URLs with hashes/fragments, they can't be inlined
+  var link = url.parse(value);
+  if (link.hash) {
+    return createUrl(quote, value);
+  }
+
   if (basePath) {
     fullFilePath = path.join(basePath, value)
   }
