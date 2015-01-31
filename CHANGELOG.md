@@ -1,3 +1,7 @@
+# 2.0.1 - 2015-01-31
+
+- Fixed: url with hashes are ignored for inline mode only ([#23](https://github.com/postcss/postcss-url/pull/23))
+
 # 2.0.0 - 2015-01-26
 
 - Added: compatibility with postcss v4.x
