@@ -87,8 +87,8 @@ test("custom", function(t) {
   t.end()
 })
 
-test("absolute-urls", function(t) {
-  compareFixtures(t, "absolute-urls", "shouldn't not transform absolute urls or data uris")
+test("ignore absolute urls, data uris, or hashes", function(t) {
+  compareFixtures(t, "absolute-urls", "shouldn't not transform absolute urls, hashes or data uris")
 
   t.end()
 })

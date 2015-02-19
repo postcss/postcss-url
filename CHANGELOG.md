@@ -1,3 +1,7 @@
+# 2.0.2 - 2015-01-31
+
+- Fixed: url that are just hashes are ignored completely ([#25](https://github.com/postcss/postcss-url/issues/25))
+
 # 2.0.1 - 2015-01-31
 
 - Fixed: url with hashes are ignored for inline mode only ([#23](https://github.com/postcss/postcss-url/pull/23))

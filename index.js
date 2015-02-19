@@ -53,9 +53,13 @@ function processDecl(decl, from, to, mode, options) {
       return processCustom(quote, value, mode);
     }
 
-    // ignore absolute urls or data uris
-    if (/^(?:[a-z]+:\/|data:.*)?\//.test(value)) {
-      return createUrl(quote, value);
+    // ignore absolute urls, hasshes or data uris
+    if (value.indexOf("/") === 0 ||
+        value.indexOf("data:") === 0 ||
+        value.indexOf("#") === 0 ||
+        /^[a-z]+:\/\//.test(value)
+    ) {
+      return createUrl(quote, value)
     }
 
     var newPath = value
