@@ -1,3 +1,7 @@
+# 2.1.0 - 2015-03-12
+
+- Added: related postcss declaration object has been added as a 2nd parameter to the url callback for custom processing
+
 # 2.0.2 - 2015-01-31
 
 - Fixed: url that are just hashes are ignored completely ([#25](https://github.com/postcss/postcss-url/issues/25))

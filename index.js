@@ -4,9 +4,9 @@
 var fs = require("fs")
 var path = require("path")
 var mime = require("mime")
-var url = require("url");
+var url = require("url")
 var SvgEncoder = require("directory-encoder/lib/svg-uri-encoder.js")
-var reduceFunctionCall = require("reduce-function-call");
+var reduceFunctionCall = require("reduce-function-call")
 
 /**
  * Fix url() according to source (`from`) or destination (`to`)
@@ -50,7 +50,7 @@ function processDecl(decl, from, to, mode, options) {
     value = unquote(value, quote)
 
     if (typeof mode === "function") {
-      return processCustom(quote, value, mode);
+      return processCustom(quote, value, mode, decl)
     }
 
     // ignore absolute urls, hasshes or data uris
@@ -85,9 +85,10 @@ function processDecl(decl, from, to, mode, options) {
  * @param {String} quote
  * @param {String} value
  * @param {Function} cb
+ * @param {Object} decl
  */
-function processCustom(quote, value, cb) {
-  var newValue = cb(value)
+function processCustom(quote, value, cb, decl) {
+  var newValue = cb(value, decl)
   return createUrl(quote, newValue)
 }
 
@@ -108,9 +109,9 @@ function processRebase(from, dirname, newPath, quote, to) {
   newPath = path.resolve(from, newPath)
   newPath = path.relative(to, newPath)
   if (path.sep == "\\") {
-    newPath = newPath.replace(/\\/g, "\/");
+    newPath = newPath.replace(/\\/g, "\/")
   }
-  return createUrl(quote, newPath);
+  return createUrl(quote, newPath)
 }
 
 /**
@@ -130,9 +131,9 @@ function processInline(from, dirname, newPath, quote, value, options) {
   maxSize *= 1024;
 
   // ignore URLs with hashes/fragments, they can't be inlined
-  var link = url.parse(value);
+  var link = url.parse(value)
   if (link.hash) {
-    return createUrl(quote, value);
+    return createUrl(quote, value)
   }
 
   if (basePath) {
@@ -147,7 +148,7 @@ function processInline(from, dirname, newPath, quote, value, options) {
   }
   else {
     var mimeType = mime.lookup(file)
-    var stats = fs.statSync(file);
+    var stats = fs.statSync(file)
     if (stats.size >= maxSize) {
       return createUrl(quote, newPath)
     }

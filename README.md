@@ -49,7 +49,7 @@ Allow you to inline assets using base64 syntax. Can use postcss `from` option to
 
 ##### `url: {Function}`
 
-Custom transform function. Takes one argument (original url) and should return the transformed url.  
+Custom transform function. Takes two arguments (original url, related postcss declaration object) and should return the transformed url.  
 You can use this option to adjust urls for CDN.
 
 #### `maxSize: "size in kbytes"`
