@@ -1,3 +1,7 @@
+# 2.1.1 - 2015-03-31
+
+- Fixed: whitespace before and after url() value are now supported and preserved
+
 # 2.1.0 - 2015-03-12
 
 - Added: related postcss declaration object has been added as a 2nd parameter to the url callback for custom processing

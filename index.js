@@ -23,11 +23,7 @@ module.exports = function fixUrl(options) {
     var to = postcssOptions.to ? path.dirname(postcssOptions.to) : from
 
     styles.eachDecl(function(decl) {
-      if (!decl.value) {
-        return
-      }
-
-      if (decl.value.indexOf("url(") > -1) {
+      if (decl.value && decl.value.indexOf("url(") > -1) {
         processDecl(decl, from, to, mode, options)
       }
     })
@@ -35,48 +31,45 @@ module.exports = function fixUrl(options) {
 }
 
 /**
- * remove quote around a string
- *
- * @param  {String} string string to unquote
- * @param  {String} quote quote style
- * @return {String} unquoted string
- */
-function unquote(string, quote) {
-  if (quote) {
-    return string.substr(1, string.length - 2)
-  }
-
-  return string
-}
-
-
-/**
  * return quote type
  *
  * @param  {String} string quoted (or not) value
  * @return {String} quote if any, or empty string
  */
-function getQuote(string) {
+function getUrlMetaData(string) {
   var quote = ""
   var quotes = ["\"", "'"]
+  var trimedString = string.trim()
   quotes.forEach(function(q) {
-    if (string.charAt(0) === q && string.charAt(string.length - 1) === q) {
+    if (trimedString.charAt(0) === q && trimedString.charAt(trimedString.length - 1) === q) {
       quote = q
     }
   })
 
-  return quote
+  var urlMeta = {
+    before: string.slice(0, string.indexOf(quote)),
+    quote: quote,
+    value: quote ? trimedString.substr(1, trimedString.length - 2) : trimedString,
+    after: string.slice(string.lastIndexOf(quote) + 1),
+  }
+  return urlMeta
 }
 
 /**
  * Create an css url() from a path and a quote style
  *
- * @param {String} quote quote style
+ * @param {String} urlMeta url meta data
  * @param {String} newPath url path
  * @return {String} new url()
  */
-function createUrl(quote, newPath) {
-  return "url(" + quote + newPath + quote + ")"
+function createUrl(urlMeta, newPath) {
+  return "url(" +
+    urlMeta.before +
+    urlMeta.quote +
+    (newPath || urlMeta.value) +
+    urlMeta.quote +
+    urlMeta.after +
+  ")"
 }
 
 /**
@@ -92,30 +85,26 @@ function createUrl(quote, newPath) {
 function processDecl(decl, from, to, mode, options) {
   var dirname = decl.source && decl.source.input ? path.dirname(decl.source.input.file) : process.cwd()
   decl.value = reduceFunctionCall(decl.value, "url", function(value) {
-    // save quote style
-    var quote = getQuote(value)
-    value = unquote(value, quote)
+    var urlMeta = getUrlMetaData(value)
 
     if (typeof mode === "function") {
-      return processCustom(quote, value, mode, decl)
+      return processCustom(urlMeta, mode, decl)
     }
 
     // ignore absolute urls, hasshes or data uris
-    if (value.indexOf("/") === 0 ||
-        value.indexOf("data:") === 0 ||
-        value.indexOf("#") === 0 ||
-        /^[a-z]+:\/\//.test(value)
+    if (urlMeta.value.indexOf("/") === 0 ||
+        urlMeta.value.indexOf("data:") === 0 ||
+        urlMeta.value.indexOf("#") === 0 ||
+        /^[a-z]+:\/\//.test(urlMeta.value)
     ) {
-      return createUrl(quote, value)
+      return createUrl(urlMeta)
     }
-
-    var newPath = value
 
     switch (mode) {
     case "rebase":
-      return processRebase(from, dirname, newPath, quote, to)
+      return processRebase(from, dirname, urlMeta, to)
     case "inline":
-      return processInline(from, dirname, newPath, quote, value, options)
+      return processInline(from, dirname, urlMeta, options)
     default:
       throw new Error("Unknow mode for postcss-url: " + mode)
     }
@@ -125,15 +114,14 @@ function processDecl(decl, from, to, mode, options) {
 /**
  * Transform url() based on a custom callback
  *
- * @param {String} quote quote
- * @param {String} value value to process
+ * @param {String} urlMeta url meta datayy
  * @param {Function} cb callback to execute
  * @param {Object} decl postcss declaration
  * @return {void}
  */
-function processCustom(quote, value, cb, decl) {
-  var newValue = cb(value, decl)
-  return createUrl(quote, newValue)
+function processCustom(urlMeta, cb, decl) {
+  var newValue = cb(urlMeta.value, decl)
+  return createUrl(urlMeta, newValue)
 }
 
 
@@ -142,12 +130,12 @@ function processCustom(quote, value, cb, decl) {
  *
  * @param {String} from from
  * @param {String} dirname to dirname
- * @param {String} newPath to new path
- * @param {String} quote quote style
+ * @param {String} urlMeta url meta datayy
  * @param {String} to destination
  * @return {String} new url
  */
-function processRebase(from, dirname, newPath, quote, to) {
+function processRebase(from, dirname, urlMeta, to) {
+  var newPath = urlMeta.value
   if (dirname !== from) {
     newPath = path.relative(from, dirname + path.sep + newPath)
   }
@@ -156,7 +144,7 @@ function processRebase(from, dirname, newPath, quote, to) {
   if (path.sep === "\\") {
     newPath = newPath.replace(/\\/g, "\/")
   }
-  return createUrl(quote, newPath)
+  return createUrl(urlMeta, newPath)
 }
 
 /**
@@ -164,52 +152,54 @@ function processRebase(from, dirname, newPath, quote, to) {
  *
  * @param {String} from from
  * @param {String} dirname to dirname
- * @param {String} newPath to new path
- * @param {String} quote quote style
- * @param {String} value value to process
+ * @param {String} urlMeta url meta data
  * @param {Object} options plugin options
  * @return {String} new url
  */
-function processInline(from, dirname, newPath, quote, value, options) {
+function processInline(from, dirname, urlMeta, options) {
   var maxSize = options.maxSize === undefined ? 14 : options.maxSize
   var basePath = options.basePath
   var fullFilePath
   maxSize *= 1024
 
   // ignore URLs with hashes/fragments, they can't be inlined
-  var link = url.parse(value)
+  var link = url.parse(urlMeta.value)
   if (link.hash) {
-    return createUrl(quote, value)
+    return createUrl(urlMeta, urlMeta.value)
   }
 
   if (basePath) {
-    fullFilePath = path.join(basePath, value)
+    fullFilePath = path.join(basePath, urlMeta.value)
   }
   else {
-    fullFilePath = dirname !== from ? dirname + path.sep + value : value
+    fullFilePath = dirname !== from ? dirname + path.sep + urlMeta.value : urlMeta.value
   }
+
   var file = path.resolve(from, fullFilePath)
   if (!fs.existsSync(file)) {
     console.warn("Can't read file '" + file + "', ignoring")
+    return createUrl(urlMeta)
   }
-  else {
-    var mimeType = mime.lookup(file)
-    var stats = fs.statSync(file)
-    if (stats.size >= maxSize) {
-      return createUrl(quote, newPath)
-    }
-    if (!mimeType) {
-      console.warn("Unable to find asset mime-type for " + file)
-    }
-    else if (mimeType === "image/svg+xml") {
-      var svg = new SvgEncoder(file)
-      newPath = svg.encode()
-    }
-    else {
-      file = fs.readFileSync(file)
-      newPath = "data:" + mimeType + ";base64," + file.toString("base64")
-    }
+
+  var mimeType = mime.lookup(file)
+  var stats = fs.statSync(file)
+
+  if (stats.size >= maxSize) {
+    return createUrl(urlMeta)
   }
-  return createUrl(quote, newPath)
+
+  if (!mimeType) {
+    console.warn("Unable to find asset mime-type for " + file)
+    return createUrl(urlMeta)
+  }
+
+  if (mimeType === "image/svg+xml") {
+    var svg = new SvgEncoder(file)
+    return createUrl(urlMeta, svg.encode())
+  }
+
+  // else
+  file = fs.readFileSync(file)
+  return createUrl(urlMeta, "data:" + mimeType + ";base64," + file.toString("base64"))
 }
 
