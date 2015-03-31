@@ -11,7 +11,8 @@ var reduceFunctionCall = require("reduce-function-call")
 /**
  * Fix url() according to source (`from`) or destination (`to`)
  *
- * @param {Object} options
+ * @param {Object} options plugin options
+ * @return {void}
  */
 module.exports = function fixUrl(options) {
   options = options || {}
@@ -34,13 +35,59 @@ module.exports = function fixUrl(options) {
 }
 
 /**
+ * remove quote around a string
+ *
+ * @param  {String} string string to unquote
+ * @param  {String} quote quote style
+ * @return {String} unquoted string
+ */
+function unquote(string, quote) {
+  if (quote) {
+    return string.substr(1, string.length - 2)
+  }
+
+  return string
+}
+
+
+/**
+ * return quote type
+ *
+ * @param  {String} string quoted (or not) value
+ * @return {String} quote if any, or empty string
+ */
+function getQuote(string) {
+  var quote = ""
+  var quotes = ["\"", "'"]
+  quotes.forEach(function(q) {
+    if (string.charAt(0) === q && string.charAt(string.length - 1) === q) {
+      quote = q
+    }
+  })
+
+  return quote
+}
+
+/**
+ * Create an css url() from a path and a quote style
+ *
+ * @param {String} quote quote style
+ * @param {String} newPath url path
+ * @return {String} new url()
+ */
+function createUrl(quote, newPath) {
+  return "url(" + quote + newPath + quote + ")"
+}
+
+/**
  * Processes one declaration
  *
- * @param {Object} decl
- * @param {String} from
- * @param {String} to
- * @param {String|Function} mode
- * @param {Object} options
+ * @param {Object} decl postcss declaration
+ * @param {String} from source
+ * @param {String} to destination
+ * @param {String|Function} mode plugin mode
+ * @param {Object} options plugin options
+ * @return {void}
  */
 function processDecl(decl, from, to, mode, options) {
   var dirname = decl.source && decl.source.input ? path.dirname(decl.source.input.file) : process.cwd()
@@ -67,25 +114,22 @@ function processDecl(decl, from, to, mode, options) {
     switch (mode) {
     case "rebase":
       return processRebase(from, dirname, newPath, quote, to)
-      break
     case "inline":
       return processInline(from, dirname, newPath, quote, value, options)
-      break
     default:
       throw new Error("Unknow mode for postcss-url: " + mode)
-      break
     }
   })
 }
 
-
 /**
  * Transform url() based on a custom callback
  *
- * @param {String} quote
- * @param {String} value
- * @param {Function} cb
- * @param {Object} decl
+ * @param {String} quote quote
+ * @param {String} value value to process
+ * @param {Function} cb callback to execute
+ * @param {Object} decl postcss declaration
+ * @return {void}
  */
 function processCustom(quote, value, cb, decl) {
   var newValue = cb(value, decl)
@@ -96,11 +140,12 @@ function processCustom(quote, value, cb, decl) {
 /**
  * Fix url() according to source (`from`) or destination (`to`)
  *
- * @param {String} from
- * @param {String} dirname
- * @param {String} newPath
- * @param {String} quote
- * @param {String} to
+ * @param {String} from from
+ * @param {String} dirname to dirname
+ * @param {String} newPath to new path
+ * @param {String} quote quote style
+ * @param {String} to destination
+ * @return {String} new url
  */
 function processRebase(from, dirname, newPath, quote, to) {
   if (dirname !== from) {
@@ -108,7 +153,7 @@ function processRebase(from, dirname, newPath, quote, to) {
   }
   newPath = path.resolve(from, newPath)
   newPath = path.relative(to, newPath)
-  if (path.sep == "\\") {
+  if (path.sep === "\\") {
     newPath = newPath.replace(/\\/g, "\/")
   }
   return createUrl(quote, newPath)
@@ -117,18 +162,19 @@ function processRebase(from, dirname, newPath, quote, to) {
 /**
  * Inline image in url()
  *
- * @param {String} from
- * @param {String} dirname
- * @param {String} newPath
- * @param {String} quote
- * @param {String} value
- * @param {Object} options
+ * @param {String} from from
+ * @param {String} dirname to dirname
+ * @param {String} newPath to new path
+ * @param {String} quote quote style
+ * @param {String} value value to process
+ * @param {Object} options plugin options
+ * @return {String} new url
  */
 function processInline(from, dirname, newPath, quote, value, options) {
-  var maxSize = typeof(options.maxSize) == "undefined" ? 14 : options.maxSize
-  var basePath = options.basePath;
-  var fullFilePath;
-  maxSize *= 1024;
+  var maxSize = options.maxSize === undefined ? 14 : options.maxSize
+  var basePath = options.basePath
+  var fullFilePath
+  maxSize *= 1024
 
   // ignore URLs with hashes/fragments, they can't be inlined
   var link = url.parse(value)
@@ -167,39 +213,3 @@ function processInline(from, dirname, newPath, quote, value, options) {
   return createUrl(quote, newPath)
 }
 
-function createUrl(quote, newPath) {
-  return "url(" + quote + newPath + quote + ")"
-}
-
-/**
- * remove quote around a string
- *
- * @param  {String} string
- * @param  {String} quote
- * @return {String}        unquoted string
- */
-function unquote(string, quote) {
-  if (quote) {
-    return string.substr(1, string.length - 2)
-  }
-
-  return string
-}
-
-
-/**
- * return quote type
- *
- * @param  {String} string quoted (or not) value
- * @return {String}        quote if any, or empty string
- */
-function getQuote(string) {
-  var quote = ""
-  Array("\"", "'").forEach(function(q) {
-    if (string.charAt(0) === q && string.charAt(string.length - 1) === q) {
-      quote = q
-    }
-  })
-
-  return quote
-}
