@@ -19,8 +19,8 @@ module.exports = function fixUrl(options) {
   var mode = options.url !== undefined ? options.url : "rebase"
 
   return function(styles, postcssOptions) {
-    var from = postcssOptions.from ? path.dirname(postcssOptions.from) : "."
-    var to = postcssOptions.to ? path.dirname(postcssOptions.to) : from
+    var from = postcssOptions.opts.from ? path.dirname(postcssOptions.opts.from) : "."
+    var to = postcssOptions.opts.to ? path.dirname(postcssOptions.opts.to) : from
 
     styles.eachDecl(function(decl) {
       if (decl.value && decl.value.indexOf("url(") > -1) {

@@ -1,6 +1,6 @@
 {
   "name": "postcss-url",
-  "version": "2.1.1",
+  "version": "3.0.0",
   "description": "PostCSS plugin to rebase or inline on url().",
   "keywords": [
     "css",
@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "eslint": "^0.18.0",
-    "postcss": "^4.0.2",
+    "postcss": "^4.1.0",
     "postcss-import": "^5.0.0",
     "tape": "^3.0.0"
   },

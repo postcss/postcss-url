@@ -1,3 +1,7 @@
+# 3.0.0 - 2015-03-02
+
+- Changed: upgraded to postcss v4.1.x
+
 # 2.1.1 - 2015-03-31
 
 - Fixed: whitespace before and after url() value are now supported and preserved
