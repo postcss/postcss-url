@@ -101,3 +101,43 @@ test("ignore absolute urls, data uris, or hashes", function(t) {
 
   t.end()
 })
+
+test("copy", function(t) {
+  var opts = {
+    url: "copy",
+    assetsPath: "assets",
+  }
+  compareFixtures(t, "cant-copy", "shouldn't copy assets if not info available", opts)
+
+  var postcssOpts = {
+    from: "test/fixtures/src.css",
+    to: "test/fixtures/dest.css",
+  }
+
+  compareFixtures(t, "copy", "should copy asset from the source (`from`) to the assets destination " +
+    "(`to` + `assetsPath`) and rebase the url", opts, postcssOpts)
+
+  compareFixtures(t, "copy-parameters", "should copy asset from the source (`from`) to the assets destination " +
+    "(`to` + `assetsPath`) and rebase the url keeping parameters", opts, postcssOpts)
+
+  opts.useHash = true
+
+  t.ok(
+    postcss()
+      .use(url(opts))
+      .process(read("fixtures/copy-hash"), postcssOpts)
+      .css.match(/"assets\/[a-z0-9]{16}\.png"/),
+    "should copy asset from the source (`from`) to the assets destination " +
+    "(`to` + `assetsPath`) and rebase the url (using a hash name)"
+  )
+
+  t.ok(
+    postcss()
+      .use(url(opts))
+      .process(read("fixtures/copy-hash-parameters"), postcssOpts)
+      .css.match(/"assets\/[a-z0-9]{16}\.png\?\#iefix"/),
+      "should copy asset from the source (`from`) to the assets destination " +
+      "(`to` + `assetsPath`) and rebase the url (using a hash name) keeping parameters"
+  )
+  t.end()
+})

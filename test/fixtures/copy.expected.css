@@ -1,0 +1,11 @@
+body {
+  clip-path: url("assets/pixel.png")
+}
+
+div {
+  clip-path: url("assets/pixel.gif")
+}
+
+span {
+  clip-path: url("assets/pixel.svg")
+}

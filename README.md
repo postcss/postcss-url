@@ -1,6 +1,6 @@
 # postcss-url [![Build Status](https://travis-ci.org/postcss/postcss-url.png)](https://travis-ci.org/postcss/postcss-url)
 
-> [PostCSS](https://github.com/postcss/postcss) plugin to rebase or inline on url().
+> [PostCSS](https://github.com/postcss/postcss) plugin to rebase, inline or copy on url().
 
 ## Installation
 
@@ -22,11 +22,12 @@ var css = fs.readFileSync("input.css", "utf8")
 // process css
 var output = postcss()
   .use(url({
-    url: "rebase" // or "inline"
+    url: "rebase" // or "inline" or "copy"
   }))
   .process(css, {
     // "rebase" mode need at least one of those options
     // "inline" mode might need `from` option only
+    // "copy" mode need `from`, `to` and `assetsPath` option
     from: "src/stylesheet/index.css"
     to: "dist/index.css"
   })
@@ -47,6 +48,10 @@ Allow you to fix `url()` according to postcss `to` and/or `from` options (rebase
 
 Allow you to inline assets using base64 syntax. Can use postcss `from` option to find ressources.
 
+##### `url: "copy"`
+
+Allow you to copy and rebase assets according to postcss `to`, `assetsPath` and `from` options (`assetsPath` is relative to the option `to`).
+
 ##### `url: {Function}`
 
 Custom transform function. Takes two arguments (original url, related postcss declaration object) and should return the transformed url.  
@@ -59,6 +64,14 @@ Specify the maximum file size to inline
 #### `basePath: "basePath for images to inline"`
 
 Specify the basePath from where to search images
+
+#### `assetsPath: "the destination where postcss-url is going to copy the assets"`
+
+It's a required option to work with `copy` method
+
+#### `useHash: "If is set in true the copy method is going to rename the files to a hash name"`
+
+By default is set in false but you can change that
 
 ---
 
