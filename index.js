@@ -234,41 +234,32 @@ function processCopy(from, dirname, urlMeta, to, options) {
   var name = path.basename(filePath)
   var useHash = options.useHash || false
 
-  // check if the source file exist
-  try {
-    fs.accessSync(filePath)
-  } catch (err) {
-    console.warn("Can't read file '" + filePath + "', ignoring")
-    return createUrl(urlMeta)
-  }
-
-  // create the destination directory if it not exist
-  mkdirp.sync(assetsPath)
-
   try {
     var contents = fs.readFileSync(filePath)
+    // create the destination directory if it not exist
+    mkdirp.sync(assetsPath)
+
+    if (useHash) {
+      name = crypto.createHash("sha1")
+        .update(contents)
+        .digest("hex")
+        .substr(0, 16)
+      nameUrl = name + path.extname(filePathUrl)
+      name += path.extname(filePath)
+    }
+
+    assetsPath = path.join(assetsPath, name)
+
+    // if the file don't exist in the destination, create it.
+    try {
+      fs.accessSync(assetsPath)
+    } catch (err) {
+      fs.writeFileSync(assetsPath, contents)
+    }
+
+    return createUrl(urlMeta, path.join(options.assetsPath, nameUrl))
   } catch (err) {
-    console.warn(err)
-    return createUrl(urlMeta)
+    console.warn("Can't read file '" + filePath + "', ignoring")
   }
-
-  if (useHash) {
-    name = crypto.createHash("sha1")
-      .update(contents)
-      .digest("hex")
-      .substr(0, 16)
-    nameUrl = name + path.extname(filePathUrl)
-    name += path.extname(filePath)
-  }
-
-  assetsPath = path.join(assetsPath, name)
-
-  // if the file don't exist in the destination, create it.
-  try {
-    fs.accessSync(assetsPath)
-  } catch (err) {
-    fs.writeFileSync(assetsPath, contents)
-  }
-
-  return createUrl(urlMeta, path.join(options.assetsPath, nameUrl))
+  return createUrl(urlMeta)
 }
