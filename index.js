@@ -226,7 +226,7 @@ function processCopy(from, dirname, urlMeta, to, options) {
     throw new Error("Unknow option assetsPath")
   }
 
-  var filePathUrl = path.resolve(from, urlMeta.value)
+  var filePathUrl = path.resolve(dirname, urlMeta.value)
   var nameUrl = path.basename(filePathUrl)
   var assetsPath = path.resolve(path.join(to, options.assetsPath))
     // remove hash or parameters in the url. e.g., url('glyphicons-halflings-regular.eot?#iefix')
