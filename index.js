@@ -222,42 +222,53 @@ function processInline(from, dirname, urlMeta, options) {
  * @return {String} new url
  */
 function processCopy(from, dirname, urlMeta, to, options) {
-  if (!(options) || !(options.assetsPath)) {
-    throw new Error("Unknow option assetsPath")
+  if ( from === to ) {
+    console.warn("Option `to` of postscss is required, ignoring")
+    return createUrl(urlMeta)
   }
+  var relativeAssetsPath = (options && options.assetsPath) ? options.assetsPath : ""
+  var absoluteAssetsPath
 
   var filePathUrl = path.resolve(dirname, urlMeta.value)
   var nameUrl = path.basename(filePathUrl)
-  var assetsPath = path.resolve(path.join(to, options.assetsPath))
-    // remove hash or parameters in the url. e.g., url('glyphicons-halflings-regular.eot?#iefix')
+
+  // remove hash or parameters in the url. e.g., url('glyphicons-halflings-regular.eot?#iefix')
   var filePath = url.parse(filePathUrl, true).pathname
   var name = path.basename(filePath)
   var useHash = options.useHash || false
 
   try {
     var contents = fs.readFileSync(filePath)
-    // create the destination directory if it not exist
-    mkdirp.sync(assetsPath)
-
     if (useHash) {
+
+      absoluteAssetsPath = path.resolve(to, relativeAssetsPath)
+
+      // create the destination directory if it not exist
+      mkdirp.sync(absoluteAssetsPath)
+
       name = crypto.createHash("sha1")
         .update(contents)
         .digest("hex")
         .substr(0, 16)
       nameUrl = name + path.extname(filePathUrl)
       name += path.extname(filePath)
+    } else {
+      relativeAssetsPath = path.join(relativeAssetsPath, path.dirname(urlMeta.value))
+      absoluteAssetsPath = path.resolve(to, relativeAssetsPath)
+      // create the destination directory if it not exist
+      mkdirp.sync(absoluteAssetsPath)
     }
 
-    assetsPath = path.join(assetsPath, name)
+    absoluteAssetsPath = path.join(absoluteAssetsPath, name)
 
     // if the file don't exist in the destination, create it.
     try {
-      fs.accessSync(assetsPath)
+      fs.accessSync(absoluteAssetsPath)
     } catch (err) {
-      fs.writeFileSync(assetsPath, contents)
+      fs.writeFileSync(absoluteAssetsPath, contents)
     }
 
-    return createUrl(urlMeta, path.join(options.assetsPath, nameUrl))
+    return createUrl(urlMeta, path.join(relativeAssetsPath, nameUrl))
   } catch (err) {
     console.warn("Can't read file '" + filePath + "', ignoring")
   }

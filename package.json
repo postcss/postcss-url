@@ -34,6 +34,7 @@
     "mkdirp": "^0.5.0",
     "postcss": "^4.1.0",
     "postcss-import": "^5.0.0",
+    "tap-spec": "^3.0.0",
     "tape": "^3.0.0"
   },
   "scripts": {

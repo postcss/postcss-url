@@ -27,7 +27,7 @@ var output = postcss()
   .process(css, {
     // "rebase" mode need at least one of those options
     // "inline" mode might need `from` option only
-    // "copy" mode need `from`, `to` and `assetsPath` option
+    // "copy" mode need `from` and `to` option to work
     from: "src/stylesheet/index.css"
     to: "dist/index.css"
   })
@@ -67,9 +67,9 @@ Specify the basePath from where to search images
 
 #### `assetsPath: "the destination where postcss-url is going to copy the assets"`
 
-It's a required option to work with `copy` method
+If you specify an assetsPath the assets files would be copy in that destination
 
-#### `useHash: "If is set in true the copy method is going to rename the files to a hash name"`
+#### `useHash: "If is set in true the copy method is going to rename the path of the files by a hash name"`
 
 By default is set in false but you can change that
 

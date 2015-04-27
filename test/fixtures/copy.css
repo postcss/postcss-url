@@ -5,7 +5,3 @@ body {
 div {
   clip-path: url("pixel.gif")
 }
-
-span {
-  clip-path: url("pixel.svg")
-}
