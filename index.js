@@ -253,8 +253,12 @@ function processCopy(from, dirname, urlMeta, to, options) {
       nameUrl = name + path.extname(filePathUrl)
       name += path.extname(filePath)
     } else {
-      relativeAssetsPath = path.join(relativeAssetsPath, path.dirname(urlMeta.value))
+      if ( !path.isAbsolute(from) ) {
+        from = path.resolve(from)
+      }
+      relativeAssetsPath = path.join(relativeAssetsPath, dirname.replace(new RegExp(from + "[\/]\?"), ""), path.dirname(urlMeta.value))
       absoluteAssetsPath = path.resolve(to, relativeAssetsPath)
+
       // create the destination directory if it not exist
       mkdirp.sync(absoluteAssetsPath)
     }
