@@ -9,6 +9,7 @@ var SvgEncoder = require("directory-encoder/lib/svg-uri-encoder.js")
 var reduceFunctionCall = require("reduce-function-call")
 var mkdirp = require("mkdirp")
 var crypto = require("crypto")
+var pathIsAbsolute = require("path-is-absolute")
 
 /**
  * Fix url() according to source (`from`) or destination (`to`)
@@ -253,7 +254,7 @@ function processCopy(from, dirname, urlMeta, to, options) {
       nameUrl = name + path.extname(filePathUrl)
       name += path.extname(filePath)
     } else {
-      if ( !path.isAbsolute(from) ) {
+      if ( !pathIsAbsolute.posix(from) ) {
         from = path.resolve(from)
       }
       relativeAssetsPath = path.join(relativeAssetsPath, dirname.replace(new RegExp(from + "[\/]\?"), ""), path.dirname(urlMeta.value))

@@ -27,6 +27,7 @@
     "directory-encoder": "^0.6.1",
     "js-base64": "^2.1.5",
     "mime": "^1.2.11",
+    "path-is-absolute": "^1.0.0",
     "reduce-function-call": "^1.0.1"
   },
   "devDependencies": {
