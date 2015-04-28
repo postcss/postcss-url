@@ -274,7 +274,7 @@ function processCopy(from, dirname, urlMeta, to, options) {
 
     return createUrl(urlMeta, path.join(relativeAssetsPath, nameUrl))
   } catch (err) {
-    console.warn("Can't read file '" + filePath + "', ignoring")
+    console.warn(err.message)
   }
   return createUrl(urlMeta)
 }
