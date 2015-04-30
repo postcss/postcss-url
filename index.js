@@ -238,44 +238,46 @@ function processCopy(from, dirname, urlMeta, to, options) {
   var name = path.basename(filePath)
   var useHash = options.useHash || false
 
+  //check if the file exist in the source
   try {
     var contents = fs.readFileSync(filePath)
-    if (useHash) {
-
-      absoluteAssetsPath = path.resolve(to, relativeAssetsPath)
-
-      // create the destination directory if it not exist
-      mkdirp.sync(absoluteAssetsPath)
-
-      name = crypto.createHash("sha1")
-        .update(contents)
-        .digest("hex")
-        .substr(0, 16)
-      nameUrl = name + path.extname(filePathUrl)
-      name += path.extname(filePath)
-    } else {
-      if ( !pathIsAbsolute.posix(from) ) {
-        from = path.resolve(from)
-      }
-      relativeAssetsPath = path.join(relativeAssetsPath, dirname.replace(new RegExp(from + "[\/]\?"), ""), path.dirname(urlMeta.value))
-      absoluteAssetsPath = path.resolve(to, relativeAssetsPath)
-
-      // create the destination directory if it not exist
-      mkdirp.sync(absoluteAssetsPath)
-    }
-
-    absoluteAssetsPath = path.join(absoluteAssetsPath, name)
-
-    // if the file don't exist in the destination, create it.
-    try {
-      fs.accessSync(absoluteAssetsPath)
-    } catch (err) {
-      fs.writeFileSync(absoluteAssetsPath, contents)
-    }
-
-    return createUrl(urlMeta, path.join(relativeAssetsPath, nameUrl))
   } catch (err) {
-    console.warn(err.message)
+    console.warn("Can't read file '" + filePath + "', ignoring")
+    return createUrl(urlMeta)
   }
-  return createUrl(urlMeta)
+
+  if (useHash) {
+
+    absoluteAssetsPath = path.resolve(to, relativeAssetsPath)
+
+    // create the destination directory if it not exist
+    mkdirp.sync(absoluteAssetsPath)
+
+    name = crypto.createHash("sha1")
+      .update(contents)
+      .digest("hex")
+      .substr(0, 16)
+    nameUrl = name + path.extname(filePathUrl)
+    name += path.extname(filePath)
+  } else {
+    if ( !pathIsAbsolute.posix(from) ) {
+      from = path.resolve(from)
+    }
+    relativeAssetsPath = path.join(relativeAssetsPath, dirname.replace(new RegExp(from + "[\/]\?"), ""), path.dirname(urlMeta.value))
+    absoluteAssetsPath = path.resolve(to, relativeAssetsPath)
+
+    // create the destination directory if it not exist
+    mkdirp.sync(absoluteAssetsPath)
+  }
+
+  absoluteAssetsPath = path.join(absoluteAssetsPath, name)
+
+  // if the file don't exist in the destination, create it.
+  try {
+    fs.accessSync(absoluteAssetsPath)
+  } catch (err) {
+    fs.writeFileSync(absoluteAssetsPath, contents)
+  }
+
+  return createUrl(urlMeta, path.join(relativeAssetsPath, nameUrl))
 }
