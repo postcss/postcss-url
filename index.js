@@ -7,6 +7,9 @@ var mime = require("mime")
 var url = require("url")
 var SvgEncoder = require("directory-encoder/lib/svg-uri-encoder.js")
 var reduceFunctionCall = require("reduce-function-call")
+var mkdirp = require("mkdirp")
+var crypto = require("crypto")
+var pathIsAbsolute = require("path-is-absolute")
 
 /**
  * Fix url() according to source (`from`) or destination (`to`)
@@ -105,6 +108,8 @@ function processDecl(decl, from, to, mode, options) {
       return processRebase(from, dirname, urlMeta, to)
     case "inline":
       return processInline(from, dirname, urlMeta, options)
+    case "copy":
+      return processCopy(from, dirname, urlMeta, to, options)
     default:
       throw new Error("Unknow mode for postcss-url: " + mode)
     }
@@ -203,3 +208,76 @@ function processInline(from, dirname, urlMeta, options) {
   return createUrl(urlMeta, "data:" + mimeType + ";base64," + file.toString("base64"))
 }
 
+/**
+ * Copy images from readed from url() to an specific assets destination (`assetsPath`)
+ * and fix url() according to that path.
+ * You can rename the assets by a hash or keep the real filename.
+ *
+ * Option assetsPath is require and is relative to the css destination (`to`)
+ *
+ * @param {String} from from
+ * @param {String} dirname to dirname
+ * @param {String} urlMeta url meta data
+ * @param {String} to destination
+ * @param {Object} options plugin options
+ * @return {String} new url
+ */
+function processCopy(from, dirname, urlMeta, to, options) {
+  if ( from === to ) {
+    console.warn("Option `to` of postscss is required, ignoring")
+    return createUrl(urlMeta)
+  }
+  var relativeAssetsPath = (options && options.assetsPath) ? options.assetsPath : ""
+  var absoluteAssetsPath
+
+  var filePathUrl = path.resolve(dirname, urlMeta.value)
+  var nameUrl = path.basename(filePathUrl)
+
+  // remove hash or parameters in the url. e.g., url('glyphicons-halflings-regular.eot?#iefix')
+  var filePath = url.parse(filePathUrl, true).pathname
+  var name = path.basename(filePath)
+  var useHash = options.useHash || false
+
+  //check if the file exist in the source
+  try {
+    var contents = fs.readFileSync(filePath)
+  } catch (err) {
+    console.warn("Can't read file '" + filePath + "', ignoring")
+    return createUrl(urlMeta)
+  }
+
+  if (useHash) {
+
+    absoluteAssetsPath = path.resolve(to, relativeAssetsPath)
+
+    // create the destination directory if it not exist
+    mkdirp.sync(absoluteAssetsPath)
+
+    name = crypto.createHash("sha1")
+      .update(contents)
+      .digest("hex")
+      .substr(0, 16)
+    nameUrl = name + path.extname(filePathUrl)
+    name += path.extname(filePath)
+  } else {
+    if ( !pathIsAbsolute.posix(from) ) {
+      from = path.resolve(from)
+    }
+    relativeAssetsPath = path.join(relativeAssetsPath, dirname.replace(new RegExp(from + "[\/]\?"), ""), path.dirname(urlMeta.value))
+    absoluteAssetsPath = path.resolve(to, relativeAssetsPath)
+
+    // create the destination directory if it not exist
+    mkdirp.sync(absoluteAssetsPath)
+  }
+
+  absoluteAssetsPath = path.join(absoluteAssetsPath, name)
+
+  // if the file don't exist in the destination, create it.
+  try {
+    fs.accessSync(absoluteAssetsPath)
+  } catch (err) {
+    fs.writeFileSync(absoluteAssetsPath, contents)
+  }
+
+  return createUrl(urlMeta, path.join(relativeAssetsPath, nameUrl))
+}

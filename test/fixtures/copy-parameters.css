@@ -1,0 +1,11 @@
+body {
+  clip-path: url("imported/pixel.png?#iefix")
+}
+
+div {
+  clip-path: url("pixel.gif#el")
+}
+
+span {
+  clip-path: url("pixel.svg#el")
+}
