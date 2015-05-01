@@ -1,3 +1,7 @@
+# 3.1.0 - 2015-05-01
+
+- Added: New copy value for `url` option
+
 # 3.0.0 - 2015-03-02
 
 - Changed: upgraded to postcss v4.1.x
