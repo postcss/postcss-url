@@ -1,6 +1,10 @@
+# 3.2.0 - 2015-05-01
+
+- Added: New `fallback` option to use if max size is exceeded or url contains a hash ([#30](https://github.com/postcss/postcss-url/pull/30))
+
 # 3.1.0 - 2015-05-01
 
-- Added: New copy value for `url` option
+- Added: New copy value for `url` option ([#29](https://github.com/postcss/postcss-url/pull/29))
 
 # 3.0.0 - 2015-03-02
 
@@ -8,7 +12,7 @@
 
 # 2.1.1 - 2015-03-31
 
-- Fixed: whitespace before and after url() value are now supported and preserved
+- Fixed: whitespace before and after url() value are now supported and preserved ([#27](https://github.com/postcss/postcss-url/pull/27))
 
 # 2.1.0 - 2015-03-12
 
