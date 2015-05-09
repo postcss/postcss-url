@@ -195,3 +195,20 @@ test("copy-with-assetsPath", function(t) {
 
   testCopy(t, opts, postcssOpts)
 })
+
+test("copy-when-inline-fallback", function(t) {
+  var opts = {
+    url: "inline",
+    maxSize: 0,
+    fallback: "copy",
+  }
+
+  compareFixtures(t, "cant-copy", "shouldn't copy assets if not info available", opts)
+
+  var postcssOpts = {
+    from: "test/fixtures/index.css",
+    to: "test/fixtures/build/index.css",
+  }
+
+  testCopy(t, opts, postcssOpts)
+})
