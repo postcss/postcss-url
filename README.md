@@ -61,6 +61,10 @@ You can use this option to adjust urls for CDN.
 
 Specify the maximum file size to inline
 
+#### `fallback: "copy or custom {Function}"`
+
+The url fallback method to use if max size is exceeded or url contains a hash. Custom transform functions are supported.
+
 #### `basePath: "basePath for images to inline"`
 
 Specify the basePath from where to search images

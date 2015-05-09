@@ -107,7 +107,7 @@ function processDecl(decl, from, to, mode, options) {
     case "rebase":
       return processRebase(from, dirname, urlMeta, to)
     case "inline":
-      return processInline(from, dirname, urlMeta, options)
+      return processInline(from, dirname, urlMeta, to, options, decl)
     case "copy":
       return processCopy(from, dirname, urlMeta, to, options)
     default:
@@ -158,19 +158,34 @@ function processRebase(from, dirname, urlMeta, to) {
  * @param {String} from from
  * @param {String} dirname to dirname
  * @param {String} urlMeta url meta data
+ * @param {String} to destination
  * @param {Object} options plugin options
+ * @param {Object} decl postcss declaration
  * @return {String} new url
  */
-function processInline(from, dirname, urlMeta, options) {
+function processInline(from, dirname, urlMeta, to, options, decl) {
   var maxSize = options.maxSize === undefined ? 14 : options.maxSize
+  var fallback = options.fallback
   var basePath = options.basePath
   var fullFilePath
   maxSize *= 1024
 
+  function processFallback() {
+    if (typeof fallback === "function") {
+      return processCustom(urlMeta, fallback, decl)
+    }
+    switch (fallback) {
+    case "copy":
+      return processCopy(from, dirname, urlMeta, to, options)
+    default:
+      return createUrl(urlMeta)
+    }
+  }
+
   // ignore URLs with hashes/fragments, they can't be inlined
   var link = url.parse(urlMeta.value)
   if (link.hash) {
-    return createUrl(urlMeta, urlMeta.value)
+    return processFallback()
   }
 
   if (basePath) {
@@ -190,7 +205,7 @@ function processInline(from, dirname, urlMeta, options) {
   var stats = fs.statSync(file)
 
   if (stats.size >= maxSize) {
-    return createUrl(urlMeta)
+    return processFallback()
   }
 
   if (!mimeType) {
