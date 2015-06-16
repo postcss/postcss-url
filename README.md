@@ -54,7 +54,15 @@ Allow you to copy and rebase assets according to postcss `to`, `assetsPath` and 
 
 ##### `url: {Function}`
 
-Custom transform function. Takes two arguments (original url, related postcss declaration object) and should return the transformed url.  
+Custom transform function. Takes following arguments:
+* `URL` – original url
+* `decl` - related postcss declaration object
+* `from` - from postcss option
+* `dirname` – dirname of processing file
+* `to` – from postcss option
+* `options` – plugin options
+
+And should return the transformed url.  
 You can use this option to adjust urls for CDN.
 
 #### `maxSize: "size in kbytes"`

@@ -91,7 +91,7 @@ function processDecl(decl, from, to, mode, options) {
     var urlMeta = getUrlMetaData(value)
 
     if (typeof mode === "function") {
-      return processCustom(urlMeta, mode, decl)
+      return processCustom(mode, from, dirname, urlMeta, to, options, decl)
     }
 
     // ignore absolute urls, hasshes or data uris
@@ -119,13 +119,17 @@ function processDecl(decl, from, to, mode, options) {
 /**
  * Transform url() based on a custom callback
  *
- * @param {String} urlMeta url meta datayy
- * @param {Function} cb callback to execute
+ * @param {Function} cb callback function
+ * @param {String} from from
+ * @param {String} dirname to dirname
+ * @param {String} urlMeta url meta data
+ * @param {String} to destination
+ * @param {Object} options plugin options
  * @param {Object} decl postcss declaration
  * @return {void}
  */
-function processCustom(urlMeta, cb, decl) {
-  var newValue = cb(urlMeta.value, decl)
+function processCustom(cb, from, dirname, urlMeta, to, options, decl) {
+  var newValue = cb(urlMeta.value, decl, from, dirname, to, options)
   return createUrl(urlMeta, newValue)
 }
 
