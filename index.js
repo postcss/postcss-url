@@ -91,7 +91,7 @@ function processDecl(decl, from, to, mode, options) {
     var urlMeta = getUrlMetaData(value)
 
     if (typeof mode === "function") {
-      return processCustom(urlMeta, mode, decl)
+	    return processCustom(mode, from, dirname, urlMeta, to, options, decl)
     }
 
     // ignore absolute urls, hasshes or data uris
@@ -124,9 +124,9 @@ function processDecl(decl, from, to, mode, options) {
  * @param {Object} decl postcss declaration
  * @return {void}
  */
-function processCustom(urlMeta, cb, decl) {
-  var newValue = cb(urlMeta.value, decl)
-  return createUrl(urlMeta, newValue)
+function processCustom(cb, from, dirname, urlMeta, to, options, decl) {
+	var newValue = cb(from, dirname, urlMeta, to, options, decl)
+	return createUrl(urlMeta, newValue)
 }
 
 
