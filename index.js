@@ -129,7 +129,7 @@ function processDecl(decl, from, to, mode, options) {
  * @return {void}
  */
 function processCustom(cb, from, dirname, urlMeta, to, options, decl) {
-  var newValue = cb(from, dirname, urlMeta, to, options, decl)
+  var newValue = cb(urlMeta.value, decl, from, dirname, to, options)
   return createUrl(urlMeta, newValue)
 }
 

@@ -83,12 +83,13 @@ test("inline", function(t) {
 test("custom", function(t) {
   var declOk = false
   var opts = {
-    url: function(from, dirname, urlMeta, to, options, decl) {
+    url: function(URL, decl, from, dirname, to, options) {
       if (!declOk) {
-        t.ok(decl, "should offer postcss decl as last parameter")
+        t.ok(decl, "should offer postcss decl as second parameter")
+        t.ok(options, "should offer postcss decl as last parameter")
         declOk = true
       }
-      return urlMeta.value.toUpperCase()
+      return URL.toUpperCase()
     },
   }
   compareFixtures(t, "custom", "should transform url through custom callback", opts)
