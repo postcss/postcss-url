@@ -3,6 +3,8 @@
  */
 var fs = require("fs")
 var path = require("path")
+
+var postcss = require("postcss")
 var mime = require("mime")
 var url = require("url")
 var SvgEncoder = require("directory-encoder/lib/svg-uri-encoder.js")
@@ -17,7 +19,7 @@ var pathIsAbsolute = require("path-is-absolute")
  * @param {Object} options plugin options
  * @return {void}
  */
-module.exports = function fixUrl(options) {
+module.exports = postcss.plugin("postcss-url", function fixUrl(options) {
   options = options || {}
   var mode = options.url !== undefined ? options.url : "rebase"
 
@@ -31,7 +33,7 @@ module.exports = function fixUrl(options) {
       }
     })
   }
-}
+})
 
 /**
  * return quote type

@@ -1,3 +1,10 @@
+# 3.3.0 - 2015-06-16
+
+- Added: postcss ^4.1.x dependency
+([#31](https://github.com/postcss/postcss-url/pull/31))
+- Added: new options to url callback
+([#32](https://github.com/postcss/postcss-url/pull/32))
+
 # 3.2.0 - 2015-05-01
 
 - Added: New `fallback` option to use if max size is exceeded or url contains a hash ([#30](https://github.com/postcss/postcss-url/pull/30))
