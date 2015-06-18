@@ -38,7 +38,9 @@ Checkout [tests](test) for examples.
 
 ### Options
 
-#### `url` (default: `"rebase"`)
+#### `url`
+
+_(default: `"rebase"`)_
 
 ##### `url: "rebase"`
 
@@ -61,29 +63,36 @@ Custom transform function. Takes following arguments:
 * `dirname` – dirname of processing file
 * `to` – from postcss option
 * `options` – plugin options
+* `result` – postcss result object
 
 And should return the transformed url.  
 You can use this option to adjust urls for CDN.
 
-#### `maxSize: "size in kbytes"`
+#### `maxSize`
 
-Specify the maximum file size to inline
+Specify the maximum file size to inline (in kbytes)
 
-#### `fallback: "copy or custom {Function}"`
+#### `fallback`
 
-The url fallback method to use if max size is exceeded or url contains a hash. Custom transform functions are supported.
+The url fallback method to use if max size is exceeded or url contains a hash.
+Custom transform functions are supported.
 
-#### `basePath: "basePath for images to inline"`
+#### `basePath`
 
-Specify the basePath from where to search images
+Specify the base path from where to search images
 
-#### `assetsPath: "the destination where postcss-url is going to copy the assets"`
+#### `assetsPath`
 
-If you specify an assetsPath the assets files would be copy in that destination
+_(default: `false`)_
 
-#### `useHash: "If is set in true the copy method is going to rename the path of the files by a hash name"`
+If you specify an `assetsPath`, the assets files would be copy in that
+destination
 
-By default is set in false but you can change that
+#### `useHash`
+
+_(default: `false`)_
+
+If is set in true the copy method is going to rename the path of the files by a hash name
 
 ---
 

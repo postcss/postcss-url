@@ -19,21 +19,28 @@ var pathIsAbsolute = require("path-is-absolute")
  * @param {Object} options plugin options
  * @return {void}
  */
-module.exports = postcss.plugin("postcss-url", function fixUrl(options) {
-  options = options || {}
-  var mode = options.url !== undefined ? options.url : "rebase"
+module.exports = postcss.plugin(
+  "postcss-url",
+  function fixUrl(options) {
+    options = options || {}
+    var mode = options.url !== undefined ? options.url : "rebase"
 
-  return function(styles, postcssOptions) {
-    var from = postcssOptions.opts.from ? path.dirname(postcssOptions.opts.from) : "."
-    var to = postcssOptions.opts.to ? path.dirname(postcssOptions.opts.to) : from
+    return function(styles, result) {
+      var from = result.opts.from
+        ? path.dirname(result.opts.from)
+        : "."
+      var to = result.opts.to
+        ? path.dirname(result.opts.to)
+        : from
 
-    styles.eachDecl(function(decl) {
-      if (decl.value && decl.value.indexOf("url(") > -1) {
-        processDecl(decl, from, to, mode, options)
-      }
-    })
+      styles.eachDecl(function(decl) {
+        if (decl.value && decl.value.indexOf("url(") > -1) {
+          processDecl(result, decl, from, to, mode, options)
+        }
+      })
+    }
   }
-})
+)
 
 /**
  * return quote type
@@ -46,7 +53,10 @@ function getUrlMetaData(string) {
   var quotes = ["\"", "'"]
   var trimedString = string.trim()
   quotes.forEach(function(q) {
-    if (trimedString.charAt(0) === q && trimedString.charAt(trimedString.length - 1) === q) {
+    if (
+      trimedString.charAt(0) === q &&
+      trimedString.charAt(trimedString.length - 1) === q
+    ) {
       quote = q
     }
   })
@@ -54,7 +64,9 @@ function getUrlMetaData(string) {
   var urlMeta = {
     before: string.slice(0, string.indexOf(quote)),
     quote: quote,
-    value: quote ? trimedString.substr(1, trimedString.length - 2) : trimedString,
+    value: quote
+      ? trimedString.substr(1, trimedString.length - 2)
+      : trimedString,
     after: string.slice(string.lastIndexOf(quote) + 1),
   }
   return urlMeta
@@ -87,13 +99,24 @@ function createUrl(urlMeta, newPath) {
  * @param {Object} options plugin options
  * @return {void}
  */
-function processDecl(decl, from, to, mode, options) {
-  var dirname = decl.source && decl.source.input ? path.dirname(decl.source.input.file) : process.cwd()
+function processDecl(result, decl, from, to, mode, options) {
+  var dirname = decl.source && decl.source.input
+    ? path.dirname(decl.source.input.file)
+    : process.cwd()
   decl.value = reduceFunctionCall(decl.value, "url", function(value) {
     var urlMeta = getUrlMetaData(value)
 
     if (typeof mode === "function") {
-      return processCustom(mode, from, dirname, urlMeta, to, options, decl)
+      return processCustom(
+        result,
+        mode,
+        from,
+        dirname,
+        urlMeta,
+        to,
+        options,
+        decl
+      )
     }
 
     // ignore absolute urls, hasshes or data uris
@@ -107,11 +130,11 @@ function processDecl(decl, from, to, mode, options) {
 
     switch (mode) {
     case "rebase":
-      return processRebase(from, dirname, urlMeta, to)
+      return processRebase(result, from, dirname, urlMeta, to)
     case "inline":
-      return processInline(from, dirname, urlMeta, to, options, decl)
+      return processInline(result, from, dirname, urlMeta, to, options, decl)
     case "copy":
-      return processCopy(from, dirname, urlMeta, to, options)
+      return processCopy(result, from, dirname, urlMeta, to, options, decl)
     default:
       throw new Error("Unknow mode for postcss-url: " + mode)
     }
@@ -130,11 +153,10 @@ function processDecl(decl, from, to, mode, options) {
  * @param {Object} decl postcss declaration
  * @return {void}
  */
-function processCustom(cb, from, dirname, urlMeta, to, options, decl) {
-  var newValue = cb(urlMeta.value, decl, from, dirname, to, options)
+function processCustom(result, cb, from, dirname, urlMeta, to, options, decl) {
+  var newValue = cb(urlMeta.value, decl, from, dirname, to, options, result)
   return createUrl(urlMeta, newValue)
 }
-
 
 /**
  * Fix url() according to source (`from`) or destination (`to`)
@@ -145,7 +167,7 @@ function processCustom(cb, from, dirname, urlMeta, to, options, decl) {
  * @param {String} to destination
  * @return {String} new url
  */
-function processRebase(from, dirname, urlMeta, to) {
+function processRebase(result, from, dirname, urlMeta, to) {
   var newPath = urlMeta.value
   if (dirname !== from) {
     newPath = path.relative(from, dirname + path.sep + newPath)
@@ -169,20 +191,30 @@ function processRebase(from, dirname, urlMeta, to) {
  * @param {Object} decl postcss declaration
  * @return {String} new url
  */
-function processInline(from, dirname, urlMeta, to, options, decl) {
+function processInline(result, from, dirname, urlMeta, to, options, decl) {
   var maxSize = options.maxSize === undefined ? 14 : options.maxSize
   var fallback = options.fallback
   var basePath = options.basePath
   var fullFilePath
+
   maxSize *= 1024
 
   function processFallback() {
     if (typeof fallback === "function") {
-      return processCustom(fallback, from, dirname, urlMeta, to, options, decl)
+      return processCustom(
+        result,
+        fallback,
+        from,
+        dirname,
+        urlMeta,
+        to,
+        options,
+        decl
+      )
     }
     switch (fallback) {
     case "copy":
-      return processCopy(from, dirname, urlMeta, to, options)
+      return processCopy(result, from, dirname, urlMeta, to, options, decl)
     default:
       return createUrl(urlMeta)
     }
@@ -198,12 +230,14 @@ function processInline(from, dirname, urlMeta, to, options, decl) {
     fullFilePath = path.join(basePath, urlMeta.value)
   }
   else {
-    fullFilePath = dirname !== from ? dirname + path.sep + urlMeta.value : urlMeta.value
+    fullFilePath = dirname !== from
+      ? dirname + path.sep + urlMeta.value
+      : urlMeta.value
   }
 
   var file = path.resolve(from, fullFilePath)
   if (!fs.existsSync(file)) {
-    console.warn("Can't read file '" + file + "', ignoring")
+    result.warn("Can't read file '" + file + "', ignoring", {node: decl})
     return createUrl(urlMeta)
   }
 
@@ -215,7 +249,7 @@ function processInline(from, dirname, urlMeta, to, options, decl) {
   }
 
   if (!mimeType) {
-    console.warn("Unable to find asset mime-type for " + file)
+    result.warn("Unable to find asset mime-type for " + file, {node: decl})
     return createUrl(urlMeta)
   }
 
@@ -226,12 +260,15 @@ function processInline(from, dirname, urlMeta, to, options, decl) {
 
   // else
   file = fs.readFileSync(file)
-  return createUrl(urlMeta, "data:" + mimeType + ";base64," + file.toString("base64"))
+  return createUrl(
+    urlMeta,
+    "data:" + mimeType + ";base64," + file.toString("base64")
+  )
 }
 
 /**
- * Copy images from readed from url() to an specific assets destination (`assetsPath`)
- * and fix url() according to that path.
+ * Copy images from readed from url() to an specific assets destination
+ * (`assetsPath`) and fix url() according to that path.
  * You can rename the assets by a hash or keep the real filename.
  *
  * Option assetsPath is require and is relative to the css destination (`to`)
@@ -243,27 +280,31 @@ function processInline(from, dirname, urlMeta, to, options, decl) {
  * @param {Object} options plugin options
  * @return {String} new url
  */
-function processCopy(from, dirname, urlMeta, to, options) {
-  if ( from === to ) {
-    console.warn("Option `to` of postscss is required, ignoring")
+function processCopy(result, from, dirname, urlMeta, to, options, decl) {
+  if (from === to) {
+    result.warn("Option `to` of postscss is required, ignoring", {node: decl})
     return createUrl(urlMeta)
   }
-  var relativeAssetsPath = (options && options.assetsPath) ? options.assetsPath : ""
+  var relativeAssetsPath = (options && options.assetsPath)
+    ? options.assetsPath
+    : ""
   var absoluteAssetsPath
 
   var filePathUrl = path.resolve(dirname, urlMeta.value)
   var nameUrl = path.basename(filePathUrl)
 
-  // remove hash or parameters in the url. e.g., url('glyphicons-halflings-regular.eot?#iefix')
+  // remove hash or parameters in the url.
+  // e.g., url('glyphicons-halflings-regular.eot?#iefix')
   var filePath = url.parse(filePathUrl, true).pathname
   var name = path.basename(filePath)
   var useHash = options.useHash || false
 
-  //check if the file exist in the source
+  // check if the file exist in the source
   try {
     var contents = fs.readFileSync(filePath)
-  } catch (err) {
-    console.warn("Can't read file '" + filePath + "', ignoring")
+  }
+  catch (err) {
+    result.warn("Can't read file '" + filePath + "', ignoring", {node: decl})
     return createUrl(urlMeta)
   }
 
@@ -280,11 +321,16 @@ function processCopy(from, dirname, urlMeta, to, options) {
       .substr(0, 16)
     nameUrl = name + path.extname(filePathUrl)
     name += path.extname(filePath)
-  } else {
-    if ( !pathIsAbsolute.posix(from) ) {
+  }
+  else {
+    if (!pathIsAbsolute.posix(from)) {
       from = path.resolve(from)
     }
-    relativeAssetsPath = path.join(relativeAssetsPath, dirname.replace(new RegExp(from + "[\/]\?"), ""), path.dirname(urlMeta.value))
+    relativeAssetsPath = path.join(
+      relativeAssetsPath,
+      dirname.replace(new RegExp(from + "[\/]\?"), ""),
+      path.dirname(urlMeta.value)
+    )
     absoluteAssetsPath = path.resolve(to, relativeAssetsPath)
 
     // create the destination directory if it not exist
@@ -296,7 +342,8 @@ function processCopy(from, dirname, urlMeta, to, options) {
   // if the file don't exist in the destination, create it.
   try {
     fs.accessSync(absoluteAssetsPath)
-  } catch (err) {
+  }
+  catch (err) {
     fs.writeFileSync(absoluteAssetsPath, contents)
   }
 

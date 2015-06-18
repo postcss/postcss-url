@@ -1,3 +1,12 @@
+# 4.0.0 - 2015-06-18
+
+- Fixed: fallback callback is working again
+([#33](https://github.com/postcss/postcss-url/pull/33))
+- Changed: Messages are now passed via postcss messages api
+(no more console.warn)
+- Added: callbacks might have now postcss result object as last param.
+Handy to send some messages.
+
 # 3.3.0 - 2015-06-16
 
 - Added: postcss ^4.1.x dependency
@@ -7,11 +16,13 @@
 
 # 3.2.0 - 2015-05-01
 
-- Added: New `fallback` option to use if max size is exceeded or url contains a hash ([#30](https://github.com/postcss/postcss-url/pull/30))
+- Added: New `fallback` option to use if max size is exceeded or url contains a hash
+([#30](https://github.com/postcss/postcss-url/pull/30))
 
 # 3.1.0 - 2015-05-01
 
-- Added: New copy value for `url` option ([#29](https://github.com/postcss/postcss-url/pull/29))
+- Added: New copy value for `url` option
+([#29](https://github.com/postcss/postcss-url/pull/29))
 
 # 3.0.0 - 2015-03-02
 
@@ -19,7 +30,8 @@
 
 # 2.1.1 - 2015-03-31
 
-- Fixed: whitespace before and after url() value are now supported and preserved ([#27](https://github.com/postcss/postcss-url/pull/27))
+- Fixed: whitespace before and after url() value are now supported and preserved
+([#27](https://github.com/postcss/postcss-url/pull/27))
 
 # 2.1.0 - 2015-03-12
 
@@ -27,11 +39,13 @@
 
 # 2.0.2 - 2015-01-31
 
-- Fixed: url that are just hashes are ignored completely ([#25](https://github.com/postcss/postcss-url/issues/25))
+- Fixed: url that are just hashes are ignored completely
+([#25](https://github.com/postcss/postcss-url/issues/25))
 
 # 2.0.1 - 2015-01-31
 
-- Fixed: url with hashes are ignored for inline mode only ([#23](https://github.com/postcss/postcss-url/pull/23))
+- Fixed: url with hashes are ignored for inline mode only
+([#23](https://github.com/postcss/postcss-url/pull/23))
 
 # 2.0.0 - 2015-01-26
 
@@ -40,7 +54,8 @@
 
 # 1.3.1 - 2015-01-26
 
-- Fixed: dependency issue related to "directory-encoder" ([#22](https://github.com/postcss/postcss-url/pull/22))
+- Fixed: dependency issue related to "directory-encoder"
+([#22](https://github.com/postcss/postcss-url/pull/22))
 
 # 1.3.0 - 2015-01-26
 
@@ -49,13 +64,15 @@
 
 # 1.2.3 - 2015-01-10
 
-- Use Node's native buffer.toString("base64"). The js-base64 library was producing incorrect base64 for certain files ([#17](https://github.com/postcss/postcss-url/pull/17))
+- Use Node's native buffer.toString("base64"). The js-base64 library was producing incorrect base64 for certain files
+([#17](https://github.com/postcss/postcss-url/pull/17))
 
 # 1.2.2 - unpublished
 
 # 1.2.1 - 2014-12-09
 
-- Data URIs are ignored correctly ([#15](https://github.com/postcss/postcss-url/pull/15))
+- Data URIs are ignored correctly
+([#15](https://github.com/postcss/postcss-url/pull/15))
 
 # 1.2.0 - 2014-12-04
 
@@ -64,11 +81,13 @@
 
 # 1.1.3 - 2014-12-04
 
-- Fix absolute urls being mangled ([#13](https://github.com/postcss/postcss-url/issues/13))
+- Fix absolute urls being mangled
+([#13](https://github.com/postcss/postcss-url/issues/13))
 
 # 1.1.2 - 2014-11-08
 
-- Fix MaxSize issue ([#9](https://github.com/postcss/postcss-url/issues/9))
+- Fix MaxSize issue
+([#9](https://github.com/postcss/postcss-url/issues/9))
 
 # 1.1.1 - 2014-10-30
 
@@ -84,7 +103,8 @@
 
 # 1.0.1 - 2014-10-09
 
-- Fix paths for Windows ([#3](https://github.com/postcss/postcss-url/issue/3) via [#4](https://github.com/postcss/postcss-url/pull/4))
+- Fix paths for Windows
+([#3](https://github.com/postcss/postcss-url/issue/3) via [#4](https://github.com/postcss/postcss-url/pull/4))
 
 # 1.0.0 - 2014-08-24
 
