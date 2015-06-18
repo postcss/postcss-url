@@ -213,3 +213,17 @@ test("copy-when-inline-fallback", function(t) {
 
   testCopy(t, opts, postcssOpts)
 })
+
+test("function-when-inline-fallback", function(t) {
+  var opts = {
+    url: "inline",
+    maxSize: 0,
+    fallback: function () {
+      return "one"
+    },
+  }
+
+  compareFixtures(t, "inline-fallback-function", "should respect the fallback function", opts, { from: "test/fixtures/index.css" })
+
+  t.end()
+})

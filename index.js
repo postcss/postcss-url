@@ -178,7 +178,7 @@ function processInline(from, dirname, urlMeta, to, options, decl) {
 
   function processFallback() {
     if (typeof fallback === "function") {
-      return processCustom(urlMeta, fallback, decl)
+      return processCustom(fallback, from, dirname, urlMeta, to, options, decl)
     }
     switch (fallback) {
     case "copy":
