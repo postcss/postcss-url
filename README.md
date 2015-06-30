@@ -48,7 +48,7 @@ Allow you to fix `url()` according to postcss `to` and/or `from` options (rebase
 
 ##### `url: "inline"`
 
-Allow you to inline assets using base64 syntax. Can use postcss `from` option to find ressources.
+Allow you to inline assets using base64 encoding. Can use postcss `from` option to find ressources.
 
 ##### `url: "copy"`
 
@@ -79,20 +79,20 @@ Custom transform functions are supported.
 
 #### `basePath`
 
-Specify the base path from where to search images
+Specify the base path where to search images from
 
 #### `assetsPath`
 
 _(default: `false`)_
 
-If you specify an `assetsPath`, the assets files would be copy in that
+If you specify an `assetsPath`, the assets files will be copied in that
 destination
 
 #### `useHash`
 
 _(default: `false`)_
 
-If is set in true the copy method is going to rename the path of the files by a hash name
+If set to `true` the copy method is going to rename the path of the files by a hash name
 
 ---
 
