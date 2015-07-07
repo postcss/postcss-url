@@ -392,9 +392,7 @@ function definePrePath(from, to) {
         (preFromPath[i] !== preToPath[i])) {
       finishSearch = true
     }
-    else {
-      prePath.push(preFromPath[i])
-    }
+    prePath.push(preFromPath[i])
     i++
   }
 

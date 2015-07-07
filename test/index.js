@@ -287,7 +287,7 @@ function testCopyKeepPath(t, opts, postcssOpts) {
 
   var css = postcss()
     .use(url(opts))
-    .process(read("fixtures/page/one/copy"), postcssOpts)
+    .process(read("fixtures/src/page/index/copy"), postcssOpts)
     .css
 
   t.ok(
@@ -301,7 +301,7 @@ function testCopyKeepPath(t, opts, postcssOpts) {
 
   css = postcss()
     .use(url(opts))
-    .process(read("fixtures/page/one/copy-parameters"), postcssOpts)
+    .process(read("fixtures/src/page/index/copy-parameters"), postcssOpts)
     .css
 
   t.ok(
@@ -318,7 +318,7 @@ function testCopyKeepPath(t, opts, postcssOpts) {
   t.ok(
     postcss()
       .use(url(opts))
-      .process(read("fixtures/page/one/copy-hash"), postcssOpts)
+      .process(read("fixtures/src/page/index/copy-hash"), postcssOpts)
       .css.match(patterns.copyHashPage),
     "should copy asset from the source (`from`) to the assets destination " +
     "(`to` + `assetsPath`) and rebase the url (using a hash name)"
@@ -327,7 +327,10 @@ function testCopyKeepPath(t, opts, postcssOpts) {
   t.ok(
     postcss()
       .use(url(opts))
-      .process(read("fixtures/page/one/copy-hash-parameters"), postcssOpts)
+      .process(
+        read("fixtures/src/page/index/copy-hash-parameters"),
+        postcssOpts
+      )
       .css.match(patterns.copyHashParamsPage),
     "should copy asset from the source (`from`) to the assets destination " +
       "(`to` + `assetsPath`) and rebase the url (using a hash name) keeping " +
@@ -382,7 +385,7 @@ test("copy-without-assetsPath-keep-old-path", function(t) {
     "shouldn't copy assets if not info available", opts)
 
   var postcssOpts = {
-    from: "test/fixtures/page/one/index.css",
+    from: "test/fixtures/src/page/index/index.css",
     to: "test/fixtures/build/index.css",
   }
 
@@ -400,7 +403,7 @@ test("copy-with-assetsPath-keep-old-path", function(t) {
     "shouldn't copy assets if not info available", opts)
 
   var postcssOpts = {
-    from: "test/fixtures/page/one/index.css",
+    from: "test/fixtures/src/page/index/index.css",
     to: "test/fixtures/build/index.css",
   }
 
