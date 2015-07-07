@@ -11,7 +11,6 @@ var SvgEncoder = require("directory-encoder/lib/svg-uri-encoder.js")
 var reduceFunctionCall = require("reduce-function-call")
 var mkdirp = require("mkdirp")
 var crypto = require("crypto")
-var pathIsAbsolute = require("path-is-absolute")
 
 /**
  * Fix url() according to source (`from`) or destination (`to`)
@@ -267,11 +266,9 @@ function processInline(result, from, dirname, urlMeta, to, options, decl) {
 }
 
 /**
- * Copy images from readed from url() to an specific assets destination
+ * Copy images read from url() to an specific assets destination
  * (`assetsPath`) and fix url() according to that path.
- * You can rename the assets by a hash or keep the real filename.
- *
- * Option assetsPath is require and is relative to the css destination (`to`)
+ * You can rename the assets by a hash or keep the real pathname.
  *
  * @param {String} from from
  * @param {String} dirname to dirname
@@ -285,67 +282,128 @@ function processCopy(result, from, dirname, urlMeta, to, options, decl) {
     result.warn("Option `to` of postscss is required, ignoring", {node: decl})
     return createUrl(urlMeta)
   }
-  var relativeAssetsPath = (options && options.assetsPath)
+
+  // i get the old base path of the asset
+  var oldAbsolutePath = urlMeta.value
+  if (dirname !== from) {
+    oldAbsolutePath = path.relative(
+      from,
+      dirname + path.sep + oldAbsolutePath
+    )
+  }
+  oldAbsolutePath = path.resolve(from, oldAbsolutePath)
+  from = path.resolve(from)
+  to = path.resolve(to)
+
+  // parse url to get some information like the #hash of the url
+  var parseUrl = url.parse(oldAbsolutePath, true)
+  parseUrl.name = path.basename(parseUrl.pathname)
+  parseUrl.extension = path.extname(parseUrl.pathname)
+
+  // the absolute path without the #hash param
+  oldAbsolutePath = parseUrl.pathname
+
+  var assetsPath = (options && options.assetsPath)
     ? options.assetsPath
     : ""
-  var absoluteAssetsPath
 
-  var filePathUrl = path.resolve(dirname, urlMeta.value)
-  var nameUrl = path.basename(filePathUrl)
-
-  // remove hash or parameters in the url.
-  // e.g., url('glyphicons-halflings-regular.eot?#iefix')
-  var filePath = url.parse(filePathUrl, true).pathname
-  var name = path.basename(filePath)
-  var useHash = options.useHash || false
+  // define the basic information of the new path (relative and absolute)
+  var prePathFrom = definePrePath(from, to)
+  var newAbsolutePath = ""
+  var newRelativePath = ""
 
   // check if the file exist in the source
   try {
-    var contents = fs.readFileSync(filePath)
+    var contents = fs.readFileSync(parseUrl.pathname)
   }
   catch (err) {
-    result.warn("Can't read file '" + filePath + "', ignoring", {node: decl})
+    result.warn("Can't read file '" +
+      parseUrl.pathname + "', ignoring",
+      {node: decl})
     return createUrl(urlMeta)
   }
 
-  if (useHash) {
-
-    absoluteAssetsPath = path.resolve(to, relativeAssetsPath)
-
-    // create the destination directory if it not exist
-    mkdirp.sync(absoluteAssetsPath)
-
-    name = crypto.createHash("sha1")
+  if (options.useHash) {
+    // i create a hash based on the content of the file
+    parseUrl.name = crypto.createHash("sha1")
       .update(contents)
       .digest("hex")
       .substr(0, 16)
-    nameUrl = name + path.extname(filePathUrl)
-    name += path.extname(filePath)
+
+    parseUrl.name += parseUrl.extension
+    newAbsolutePath = path.join(to, assetsPath, parseUrl.name)
   }
   else {
-    if (!pathIsAbsolute.posix(from)) {
-      from = path.resolve(from)
-    }
-    relativeAssetsPath = path.join(
-      relativeAssetsPath,
-      dirname.replace(new RegExp(from + "[\/]\?"), ""),
-      path.dirname(urlMeta.value)
-    )
-    absoluteAssetsPath = path.resolve(to, relativeAssetsPath)
-
-    // create the destination directory if it not exist
-    mkdirp.sync(absoluteAssetsPath)
+    newAbsolutePath = oldAbsolutePath
+      .replace(prePathFrom, path.join(to, assetsPath))
   }
 
-  absoluteAssetsPath = path.join(absoluteAssetsPath, name)
+  // create the destination directory if it not exist
+  mkdirp.sync(path.dirname(newAbsolutePath))
+
+  newRelativePath = path
+    .relative(from.replace(prePathFrom, to), newAbsolutePath)
 
   // if the file don't exist in the destination, create it.
   try {
-    fs.accessSync(absoluteAssetsPath)
+    fs.accessSync(newAbsolutePath)
   }
   catch (err) {
-    fs.writeFileSync(absoluteAssetsPath, contents)
+    fs.writeFileSync(newAbsolutePath, contents)
   }
 
-  return createUrl(urlMeta, path.join(relativeAssetsPath, nameUrl))
+  // add the hash or search attribute took from the url.
+  // e.g., url('glyphicons-halflings-regular.eot?#iefix')
+  var finalUrlName = parseUrl.name +
+    (parseUrl.search ? parseUrl.search : "") +
+    (parseUrl.hash ? parseUrl.hash : "")
+
+  finalUrlName = path.join(
+    path.dirname(newRelativePath),
+    finalUrlName
+  )
+
+  return createUrl(urlMeta, finalUrlName)
+}
+
+/**
+ * Define the shared path between `from` and `to`
+ * e.g
+ * 	from: 'project/app/src/pageOne/images'
+ * 	to: 'project/app/dist'
+ * Soo the pre path shared is:
+ *  project/app (with one level more)
+ * Soo the final path structure must be:
+ *  project/app/dist/pageOne/images
+ * @param  {String} from
+ * @param  {String} to
+ * @return {String} prePath
+ */
+function definePrePath(from, to) {
+  var preFromPath = from.split(path.sep)
+
+  var preToPath = to.split(path.sep)
+  var prePath = []
+  var finishSearch = false
+  var i = 0
+
+  while ((i < preFromPath.length) && !(finishSearch)) {
+    if ((preToPath[i] === undefined) ||
+        (preFromPath[i] !== preToPath[i])) {
+      finishSearch = true
+    }
+    else {
+      prePath.push(preFromPath[i])
+    }
+    i++
+  }
+
+  if (prePath.length > 0) {
+    prePath = prePath.join(path.sep)
+  }
+  else {
+    prePath = ""
+  }
+
+  return prePath
 }
