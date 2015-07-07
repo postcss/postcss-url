@@ -28,7 +28,6 @@
     "js-base64": "^2.1.5",
     "mime": "^1.2.11",
     "mkdirp": "^0.5.0",
-    "path-is-absolute": "^1.0.0",
     "postcss": "^4.1.11",
     "reduce-function-call": "^1.0.1"
   },
