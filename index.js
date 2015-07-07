@@ -389,7 +389,7 @@ function definePrePath(from, to) {
 
   while ((i < preFromPath.length) && !(finishSearch)) {
     if ((preToPath[i] === undefined) ||
-        (preToPath[i] !== preToPath[i])) {
+        (preFromPath[i] !== preToPath[i])) {
       finishSearch = true
     }
     else {
