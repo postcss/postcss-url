@@ -313,15 +313,14 @@ function processCopy(result, from, dirname, urlMeta, to, options, decl) {
   var newRelativePath = ""
 
   // check if the file exist in the source
-  try {
-    var contents = fs.readFileSync(parseUrl.pathname)
-  }
-  catch (err) {
+  if (!fs.existsSync(parseUrl.pathname)) {
     result.warn("Can't read file '" +
       parseUrl.pathname + "', ignoring",
       {node: decl})
     return createUrl(urlMeta)
   }
+
+  var contents = fs.readFileSync(parseUrl.pathname)
 
   if (options.useHash) {
     // i create a hash based on the content of the file
@@ -345,10 +344,7 @@ function processCopy(result, from, dirname, urlMeta, to, options, decl) {
     .relative(from.replace(prePathFrom, to), newAbsolutePath)
 
   // if the file don't exist in the destination, create it.
-  try {
-    fs.accessSync(newAbsolutePath)
-  }
-  catch (err) {
+  if (!(fs.existsSync(newAbsolutePath))) {
     fs.writeFileSync(newAbsolutePath, contents)
   }
 
