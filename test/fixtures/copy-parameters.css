@@ -1,5 +1,5 @@
 body {
-  clip-path: url("imported/pixel.png?#iefix")
+  clip-path: url("imported/pixel.png?foo=bar")
 }
 
 div {

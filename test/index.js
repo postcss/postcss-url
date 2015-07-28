@@ -169,7 +169,7 @@ function testCopy(t, opts, postcssOpts) {
     copyPixelGif:
       new RegExp("\"" + assetsPath + "pixel\\.gif\""),
     copyParamsPixelPng:
-      new RegExp("\"" + assetsPath + "imported\/pixel\\.png\\?\#iefix\""),
+      new RegExp("\"" + assetsPath + "imported\/pixel\\.png\\?foo=bar\""),
     copyParamsPixelGif:
       new RegExp("\"" + assetsPath + "pixel\\.gif\\#el\""),
     copyHashPixel:
@@ -270,6 +270,7 @@ test("copy-when-inline-fallback", function(t) {
     url: "inline",
     maxSize: 0,
     fallback: "copy",
+    assetsPath: "assets",
   }
 
   compareFixtures(

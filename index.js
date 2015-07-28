@@ -227,12 +227,12 @@ function processInline(result, from, dirname, urlMeta, to, options, decl) {
   }
 
   if (basePath) {
-    fullFilePath = path.join(basePath, urlMeta.value)
+    fullFilePath = path.join(basePath, link.pathname)
   }
   else {
     fullFilePath = dirname !== from
-      ? dirname + path.sep + urlMeta.value
-      : urlMeta.value
+      ? dirname + path.sep + link.pathname
+      : link.pathname
   }
 
   var file = path.resolve(from, fullFilePath)
@@ -282,7 +282,7 @@ function processInline(result, from, dirname, urlMeta, to, options, decl) {
  */
 function processCopy(result, from, dirname, urlMeta, to, options, decl) {
   if (from === to) {
-    result.warn("Option `to` of postscss is required, ignoring", {node: decl})
+    result.warn("Option `to` of postcss is required, ignoring", {node: decl})
     return createUrl(urlMeta)
   }
   var relativeAssetsPath = (options && options.assetsPath)
