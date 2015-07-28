@@ -175,7 +175,7 @@ function testCopy(t, opts, postcssOpts) {
     copyHashPixel:
       new RegExp("\"" + assetsPath + "[a-z0-9]{16}\\.png\""),
     copyHashParamsPixel:
-      new RegExp("\"" + assetsPath + "[a-z0-9]{16}\\.png\\?\\#iefix\""),
+      new RegExp("\"" + assetsPath + "[a-z0-9]{16}\\.png\\?v=1\\.1\\#iefix\""),
   }
 
   var css = postcss()
