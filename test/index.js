@@ -168,7 +168,9 @@ function testCopy(t, opts, postcssOpts) {
       new RegExp("\"" + assetsPath + "imported\/pixel\.png\""),
     copyPixelGif:
       new RegExp("\"" + assetsPath + "pixel\\.gif\""),
-    copyParamsPixelPng:
+    copyParamsPixelPngHash:
+      new RegExp("\"" + assetsPath + "imported\/pixel\\.png\\?\#iefix\""),
+    copyParamsPixelPngParam:
       new RegExp("\"" + assetsPath + "imported\/pixel\\.png\\?foo=bar\""),
     copyParamsPixelGif:
       new RegExp("\"" + assetsPath + "pixel\\.gif\\#el\""),
@@ -199,7 +201,8 @@ function testCopy(t, opts, postcssOpts) {
 
   t.ok(
     (
-      css.match(patterns.copyParamsPixelPng) &&
+      css.match(patterns.copyParamsPixelPngHash) &&
+      css.match(patterns.copyParamsPixelPngParam) &&
       css.match(patterns.copyParamsPixelGif)
     ),
     "should copy asset from the source (`from`) to the assets destination " +
