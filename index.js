@@ -348,16 +348,16 @@ function processCopy(result, from, dirname, urlMeta, to, options, decl) {
     fs.writeFileSync(newAbsolutePath, contents)
   }
 
+  var finalUrlName = parseUrl.name
+
   // add the hash or search attribute took from the url.
   // e.g., url('glyphicons-halflings-regular.eot?#iefix')
-  var finalUrlName = parseUrl.name +
-    (parseUrl.search ? parseUrl.search : "") +
-    (parseUrl.hash ? parseUrl.hash : "")
-
   finalUrlName = path.join(
     path.dirname(newRelativePath),
     finalUrlName
-  )
+  ) +
+  (parseUrl.search ? parseUrl.search : "") +
+  (parseUrl.hash ? parseUrl.hash : "")
 
   return createUrl(urlMeta, finalUrlName)
 }

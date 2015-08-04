@@ -181,7 +181,7 @@ function testCopy(t, opts, postcssOpts) {
       "\"" + assetsPath + "pixel.gif\""
     ),
     copyParamsPixelPng: makeRegex(
-      "\"" + assetsPath + "imported/pixel.png?#iefix\""
+      "\"" + assetsPath + "imported/pixel.png?#iefix&v=4.4.0\""
     ),
     copyParamsPixelGif: makeRegex(
       "\"" + assetsPath + "pixel.gif#el\""
@@ -190,7 +190,7 @@ function testCopy(t, opts, postcssOpts) {
       "\"" + assetsPath + "[a-z0-9]{16}.png\""
     ),
     copyHashParamsPixel: makeRegex(
-      "\"" + assetsPath + "[a-z0-9]{16}.png?#iefix\""
+      "\"" + assetsPath + "[a-z0-9]{16}.png?#iefix&v=4.4.0\""
     ),
   }
 
@@ -252,7 +252,7 @@ function testCopyKeepPath(t, opts, postcssOpts) {
     patterns.copyPixelPng = makeRegex("\"../../imported/pixel.png\"")
     patterns.copyPagePng = makeRegex("\"../images/page.png\"")
     patterns.copyParamsPixelPng = makeRegex(
-      "\"../../imported/pixel.png?#iefix\""
+      "\"../../imported/pixel.png?#iefix&v=4.4.0\""
     )
     patterns.copyParamsPagePng = makeRegex(
       "\"../images/page.png#el\""
@@ -261,7 +261,7 @@ function testCopyKeepPath(t, opts, postcssOpts) {
       "\"../../[a-z0-9]{16}.png\""
     )
     patterns.copyHashParamsPage = makeRegex(
-      "\"../../[a-z0-9]{16}.png?#iefix\""
+      "\"../../[a-z0-9]{16}.png?#iefix&v=4.4.0\""
     )
   }
   else {
@@ -272,7 +272,7 @@ function testCopyKeepPath(t, opts, postcssOpts) {
       "\"../../assets/page/images/page.png\""
     )
     patterns.copyParamsPixelPng = makeRegex(
-      "\"../../assets/imported/pixel.png?#iefix\""
+      "\"../../assets/imported/pixel.png?#iefix&v=4.4.0\""
     )
     patterns.copyParamsPagePng = makeRegex(
       "\"../../assets/page/images/page.png#el\""
@@ -281,7 +281,7 @@ function testCopyKeepPath(t, opts, postcssOpts) {
       "\"../../assets/[a-z0-9]{16}.png\""
     )
     patterns.copyHashParamsPage = makeRegex(
-      "\"../../assets/[a-z0-9]{16}.png?#iefix\""
+      "\"../../assets/[a-z0-9]{16}.png?#iefix&v=4.4.0\""
     )
   }
 
