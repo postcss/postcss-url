@@ -158,24 +158,40 @@ test("ignore absolute urls, data uris, or hashes", function(t) {
   t.end()
 })
 
+function makeRegex(str) {
+  return new RegExp(
+    str
+      .replace(/\//g, "\\\/")
+      .replace(/\./g, "\\.")
+      .replace(/\?/g, "\\?")
+  )
+}
+
 function testCopy(t, opts, postcssOpts) {
   var assetsPath = ""
   if (opts.assetsPath) {
-    assetsPath = opts.assetsPath + "\/"
+    assetsPath = opts.assetsPath + "/"
   }
+
   var patterns = {
-    copyPixelPng:
-      new RegExp("\"" + assetsPath + "imported\/pixel\.png\""),
-    copyPixelGif:
-      new RegExp("\"" + assetsPath + "pixel\\.gif\""),
-    copyParamsPixelPng:
-      new RegExp("\"" + assetsPath + "imported\/pixel\\.png\\?\#iefix\""),
-    copyParamsPixelGif:
-      new RegExp("\"" + assetsPath + "pixel\\.gif\\#el\""),
-    copyHashPixel:
-      new RegExp("\"" + assetsPath + "[a-z0-9]{16}\\.png\""),
-    copyHashParamsPixel:
-      new RegExp("\"" + assetsPath + "[a-z0-9]{16}\\.png\\?\\#iefix\""),
+    copyPixelPng: makeRegex(
+      "\"" + assetsPath + "imported/pixel.png\""
+    ),
+    copyPixelGif: makeRegex(
+      "\"" + assetsPath + "pixel.gif\""
+    ),
+    copyParamsPixelPng: makeRegex(
+      "\"" + assetsPath + "imported/pixel.png?#iefix&v=4.4.0\""
+    ),
+    copyParamsPixelGif: makeRegex(
+      "\"" + assetsPath + "pixel.gif#el\""
+    ),
+    copyHashPixel: makeRegex(
+      "\"" + assetsPath + "[a-z0-9]{16}.png\""
+    ),
+    copyHashParamsPixel: makeRegex(
+      "\"" + assetsPath + "[a-z0-9]{16}.png?#iefix&v=4.4.0\""
+    ),
   }
 
   var css = postcss()
@@ -230,6 +246,100 @@ function testCopy(t, opts, postcssOpts) {
   t.end()
 }
 
+function testCopyKeepPath(t, opts, postcssOpts) {
+  var patterns = {}
+  if (!(opts.assetsPath)) {
+    patterns.copyPixelPng = makeRegex("\"../../imported/pixel.png\"")
+    patterns.copyPagePng = makeRegex("\"../images/page.png\"")
+    patterns.copyParamsPixelPng = makeRegex(
+      "\"../../imported/pixel.png?#iefix&v=4.4.0\""
+    )
+    patterns.copyParamsPagePng = makeRegex(
+      "\"../images/page.png#el\""
+    )
+    patterns.copyHashPage = makeRegex(
+      "\"../../[a-z0-9]{16}.png\""
+    )
+    patterns.copyHashParamsPage = makeRegex(
+      "\"../../[a-z0-9]{16}.png?#iefix&v=4.4.0\""
+    )
+  }
+  else {
+    patterns.copyPixelPng = makeRegex(
+      "\"../../assets/imported/pixel.png\""
+    )
+    patterns.copyPagePng = makeRegex(
+      "\"../../assets/page/images/page.png\""
+    )
+    patterns.copyParamsPixelPng = makeRegex(
+      "\"../../assets/imported/pixel.png?#iefix&v=4.4.0\""
+    )
+    patterns.copyParamsPagePng = makeRegex(
+      "\"../../assets/page/images/page.png#el\""
+    )
+    patterns.copyHashPage = makeRegex(
+      "\"../../assets/[a-z0-9]{16}.png\""
+    )
+    patterns.copyHashParamsPage = makeRegex(
+      "\"../../assets/[a-z0-9]{16}.png?#iefix&v=4.4.0\""
+    )
+  }
+
+  var css = postcss()
+    .use(url(opts))
+    .process(read("fixtures/src/page/index/copy"), postcssOpts)
+    .css
+
+  t.ok(
+    (
+      css.match(patterns.copyPixelPng) &&
+      css.match(patterns.copyPagePng)
+    ),
+    "should copy asset from the source (`from`) to the assets destination " +
+    "(`to` + `assetsPath`) and rebase the url"
+  )
+
+  css = postcss()
+    .use(url(opts))
+    .process(read("fixtures/src/page/index/copy-parameters"), postcssOpts)
+    .css
+
+  t.ok(
+    (
+      css.match(patterns.copyParamsPixelPng) &&
+      css.match(patterns.copyParamsPagePng)
+    ),
+    "should copy asset from the source (`from`) to the assets destination " +
+    "(`to` + `assetsPath`) and rebase the url keeping parameters"
+  )
+
+  opts.useHash = true
+
+  t.ok(
+    postcss()
+      .use(url(opts))
+      .process(read("fixtures/src/page/index/copy-hash"), postcssOpts)
+      .css.match(patterns.copyHashPage),
+    "should copy asset from the source (`from`) to the assets destination " +
+    "(`to` + `assetsPath`) and rebase the url (using a hash name)"
+  )
+
+  t.ok(
+    postcss()
+      .use(url(opts))
+      .process(
+        read("fixtures/src/page/index/copy-hash-parameters"),
+        postcssOpts
+      )
+      .css.match(patterns.copyHashParamsPage),
+    "should copy asset from the source (`from`) to the assets destination " +
+      "(`to` + `assetsPath`) and rebase the url (using a hash name) keeping " +
+      "parameters"
+  )
+
+  t.end()
+}
+
 test("copy-without-assetsPath", function(t) {
   var opts = {
     url: "copy",
@@ -263,6 +373,41 @@ test("copy-with-assetsPath", function(t) {
   }
 
   testCopy(t, opts, postcssOpts)
+})
+
+test("copy-without-assetsPath-keep-old-path", function(t) {
+  var opts = {
+    url: "copy",
+  }
+  compareFixtures(
+    t,
+    "cant-copy",
+    "shouldn't copy assets if not info available", opts)
+
+  var postcssOpts = {
+    from: "test/fixtures/src/page/index/index.css",
+    to: "test/fixtures/build/index.css",
+  }
+
+  testCopyKeepPath(t, opts, postcssOpts)
+})
+
+test("copy-with-assetsPath-keep-old-path", function(t) {
+  var opts = {
+    url: "copy",
+    assetsPath: "assets",
+  }
+  compareFixtures(
+    t,
+    "cant-copy",
+    "shouldn't copy assets if not info available", opts)
+
+  var postcssOpts = {
+    from: "test/fixtures/src/page/index/index.css",
+    to: "test/fixtures/build/index.css",
+  }
+
+  testCopyKeepPath(t, opts, postcssOpts)
 })
 
 test("copy-when-inline-fallback", function(t) {
