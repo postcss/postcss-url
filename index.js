@@ -227,12 +227,12 @@ function processInline(result, from, dirname, urlMeta, to, options, decl) {
   }
 
   if (basePath) {
-    fullFilePath = path.join(basePath, urlMeta.value)
+    fullFilePath = path.join(basePath, link.pathname)
   }
   else {
     fullFilePath = dirname !== from
-      ? dirname + path.sep + urlMeta.value
-      : urlMeta.value
+      ? dirname + path.sep + link.pathname
+      : link.pathname
   }
 
   var file = path.resolve(from, fullFilePath)
@@ -241,12 +241,13 @@ function processInline(result, from, dirname, urlMeta, to, options, decl) {
     return createUrl(urlMeta)
   }
 
-  var mimeType = mime.lookup(file)
   var stats = fs.statSync(file)
 
   if (stats.size >= maxSize) {
     return processFallback()
   }
+
+  var mimeType = mime.lookup(file)
 
   if (!mimeType) {
     result.warn("Unable to find asset mime-type for " + file, {node: decl})
@@ -282,7 +283,7 @@ function processInline(result, from, dirname, urlMeta, to, options, decl) {
  */
 function processCopy(result, from, dirname, urlMeta, to, options, decl) {
   if (from === to) {
-    result.warn("Option `to` of postscss is required, ignoring", {node: decl})
+    result.warn("Option `to` of postcss is required, ignoring", {node: decl})
     return createUrl(urlMeta)
   }
   var relativeAssetsPath = (options && options.assetsPath)
@@ -295,7 +296,8 @@ function processCopy(result, from, dirname, urlMeta, to, options, decl) {
 
   // remove hash or parameters in the url.
   // e.g., url('glyphicons-halflings-regular.eot?#iefix')
-  var filePath = url.parse(filePathUrl, true).pathname
+  var fileLink = url.parse(filePathUrl, true)
+  var filePath = fileLink.pathname
   var name = path.basename(filePath)
   var useHash = options.useHash || false
 
@@ -319,8 +321,8 @@ function processCopy(result, from, dirname, urlMeta, to, options, decl) {
       .update(contents)
       .digest("hex")
       .substr(0, 16)
-    nameUrl = name + path.extname(filePathUrl)
     name += path.extname(filePath)
+    nameUrl = name + (fileLink.search || "") + (fileLink.hash || "")
   }
   else {
     if (!pathIsAbsolute.posix(from)) {

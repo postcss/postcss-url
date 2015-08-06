@@ -2,6 +2,10 @@ body {
   clip-path: url("imported/pixel.png?#iefix")
 }
 
+header {
+  clip-path: url("imported/pixel.png?foo=bar")
+}
+
 div {
   clip-path: url("pixel.gif#el")
 }

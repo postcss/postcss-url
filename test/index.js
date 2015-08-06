@@ -168,14 +168,16 @@ function testCopy(t, opts, postcssOpts) {
       new RegExp("\"" + assetsPath + "imported\/pixel\.png\""),
     copyPixelGif:
       new RegExp("\"" + assetsPath + "pixel\\.gif\""),
-    copyParamsPixelPng:
+    copyParamsPixelPngHash:
       new RegExp("\"" + assetsPath + "imported\/pixel\\.png\\?\#iefix\""),
+    copyParamsPixelPngParam:
+      new RegExp("\"" + assetsPath + "imported\/pixel\\.png\\?foo=bar\""),
     copyParamsPixelGif:
       new RegExp("\"" + assetsPath + "pixel\\.gif\\#el\""),
     copyHashPixel:
       new RegExp("\"" + assetsPath + "[a-z0-9]{16}\\.png\""),
     copyHashParamsPixel:
-      new RegExp("\"" + assetsPath + "[a-z0-9]{16}\\.png\\?\\#iefix\""),
+      new RegExp("\"" + assetsPath + "[a-z0-9]{16}\\.png\\?v=1\\.1\\#iefix\""),
   }
 
   var css = postcss()
@@ -199,7 +201,8 @@ function testCopy(t, opts, postcssOpts) {
 
   t.ok(
     (
-      css.match(patterns.copyParamsPixelPng) &&
+      css.match(patterns.copyParamsPixelPngHash) &&
+      css.match(patterns.copyParamsPixelPngParam) &&
       css.match(patterns.copyParamsPixelGif)
     ),
     "should copy asset from the source (`from`) to the assets destination " +
@@ -270,6 +273,7 @@ test("copy-when-inline-fallback", function(t) {
     url: "inline",
     maxSize: 0,
     fallback: "copy",
+    assetsPath: "assets",
   }
 
   compareFixtures(
