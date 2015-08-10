@@ -9,9 +9,7 @@ function read(name) {
   return fs.readFileSync("test/" + name + ".css", "utf8").trim()
 }
 
-function compareFixtures(
-  t,
-  name, msg, opts, postcssOpts, plugin) {
+function compareFixtures(t, name, msg, opts, postcssOpts, plugin) {
   opts = opts || {}
   var pcss = postcss()
   if (plugin) {
