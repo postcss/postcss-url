@@ -24,7 +24,7 @@
     "index.js"
   ],
   "dependencies": {
-    "directory-encoder": "^0.6.1",
+    "directory-encoder": "^0.7.2",
     "js-base64": "^2.1.5",
     "mime": "^1.2.11",
     "mkdirp": "^0.5.0",
@@ -33,9 +33,9 @@
     "reduce-function-call": "^1.0.1"
   },
   "devDependencies": {
-    "eslint": "^0.23.0",
-    "postcss-import": "^5.0.0",
-    "tape": "^3.0.0"
+    "eslint": "^1.1.0",
+    "postcss-import": "^6.2.0",
+    "tape": "^4.0.3"
   },
   "scripts": {
     "test": "eslint . && tape test"
