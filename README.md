@@ -28,7 +28,7 @@ var output = postcss()
     // "rebase" mode need at least one of those options
     // "inline" mode might need `from` option only
     // "copy" mode need `from` and `to` option to work
-    from: "src/stylesheet/index.css"
+    from: "src/stylesheet/index.css",
     to: "dist/index.css"
   })
   .css
