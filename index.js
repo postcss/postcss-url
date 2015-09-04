@@ -33,7 +33,7 @@ module.exports = postcss.plugin(
         ? path.dirname(result.opts.to)
         : from
 
-      styles.eachDecl(function(decl) {
+      styles.walkDecls(function(decl) {
         if (decl.value && decl.value.indexOf("url(") > -1) {
           processDecl(result, decl, from, to, mode, options)
         }
