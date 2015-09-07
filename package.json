@@ -1,11 +1,11 @@
 {
   "name": "postcss-url",
-  "version": "4.0.1",
+  "version": "5.0.0",
   "description": "PostCSS plugin to rebase or inline on url().",
   "keywords": [
     "css",
     "postcss",
-    "postcss-plugins",
+    "postcss-plugin",
     "url",
     "rebase",
     "inline",
@@ -19,8 +19,6 @@
     "url": "https://github.com/postcss/postcss-url.git"
   },
   "files": [
-    "CHANGELOG.md",
-    "LICENSE",
     "index.js"
   ],
   "dependencies": {

@@ -1,3 +1,10 @@
+# 5.0.0 - 2015-09-07
+
+- Removed: compatibility with postcss v4.x
+([#45](https://github.com/postcss/postcss-url/pull/45))
+- Added: compatibility with postcss v5.x
+([#76](https://github.com/postcss/postcss-url/pull/45))
+
 # 4.0.1 - 2015-08-06
 
 - Fixed: copy/rename of hash and query string for filenames
