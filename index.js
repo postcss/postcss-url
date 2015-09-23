@@ -296,8 +296,8 @@ function processCopy(result, from, dirname, urlMeta, to, options, decl) {
 
   // remove hash or parameters in the url.
   // e.g., url('glyphicons-halflings-regular.eot?#iefix')
-  var fileLink = url.parse(filePathUrl, true)
-  var filePath = fileLink.pathname
+  var fileLink = url.parse(urlMeta.value)
+  var filePath = path.resolve(dirname, fileLink.pathname)
   var name = path.basename(filePath)
   var useHash = options.useHash || false
 
