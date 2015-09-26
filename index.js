@@ -350,5 +350,9 @@ function processCopy(result, from, dirname, urlMeta, to, options, decl) {
     fs.writeFileSync(absoluteAssetsPath, contents)
   }
 
-  return createUrl(urlMeta, path.join(relativeAssetsPath, nameUrl))
+  var assetPath = path.join(relativeAssetsPath, nameUrl)
+  if (path.sep === "\\") {
+    assetPath = assetPath.replace(/\\/g, "\/")
+  }  
+  return createUrl(urlMeta, assetPath)
 }
