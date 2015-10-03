@@ -1,4 +1,7 @@
-# postcss-url [![Build Status](https://travis-ci.org/postcss/postcss-url.png)](https://travis-ci.org/postcss/postcss-url)
+# postcss-url
+
+[![Travis Build Status](https://img.shields.io/travis/postcss/postcss-url/master.svg?label=unix%20build)](https://travis-ci.org/postcss/postcss-url)
+[![AppVeyor Build Status](https://img.shields.io/appveyor/ci/MoOx/postcss-url/master.svg?label=windows%20build)](https://ci.appveyor.com/project/MoOx/postcss-url)
 
 > [PostCSS](https://github.com/postcss/postcss) plugin to rebase, inline or copy on url().
 
