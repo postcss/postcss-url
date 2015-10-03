@@ -1,3 +1,8 @@
+# 5.0.1 - 2015-10-04
+
+- Fixed: windows compatibility
+([#52](https://github.com/postcss/postcss-url/pull/52))
+
 # 5.0.0 - 2015-09-07
 
 - Removed: compatibility with postcss v4.x
