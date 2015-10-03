@@ -296,8 +296,8 @@ function processCopy(result, from, dirname, urlMeta, to, options, decl) {
 
   // remove hash or parameters in the url.
   // e.g., url('glyphicons-halflings-regular.eot?#iefix')
-  var fileLink = url.parse(filePathUrl, true)
-  var filePath = fileLink.pathname
+  var fileLink = url.parse(urlMeta.value)
+  var filePath = path.resolve(dirname, fileLink.pathname)
   var name = path.basename(filePath)
   var useHash = options.useHash || false
 
@@ -330,7 +330,8 @@ function processCopy(result, from, dirname, urlMeta, to, options, decl) {
     }
     relativeAssetsPath = path.join(
       relativeAssetsPath,
-      dirname.replace(new RegExp(from + "[\/]\?"), ""),
+      dirname.replace(new RegExp(from.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+                                 + "[\/]\?"), ""),
       path.dirname(urlMeta.value)
     )
     absoluteAssetsPath = path.resolve(to, relativeAssetsPath)
@@ -349,5 +350,9 @@ function processCopy(result, from, dirname, urlMeta, to, options, decl) {
     fs.writeFileSync(absoluteAssetsPath, contents)
   }
 
-  return createUrl(urlMeta, path.join(relativeAssetsPath, nameUrl))
+  var assetPath = path.join(relativeAssetsPath, nameUrl)
+  if (path.sep === "\\") {
+    assetPath = assetPath.replace(/\\/g, "\/")
+  }  
+  return createUrl(urlMeta, assetPath)
 }
