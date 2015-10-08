@@ -35,11 +35,9 @@ module.exports = postcss.plugin(
         ? path.dirname(result.opts.to)
         : from
 
-      styles.walkDecls(function(decl) {
-        if (decl.value && decl.value.indexOf("url(") > -1) {
-          processDecl(result, decl, from, to, callback, options, isCustom)
-        }
-      })
+      var cb = getDeclProcessor(result, from, to, callback, options, isCustom)
+
+      styles.walkDecls(cb)
     }
   }
 )
@@ -120,21 +118,25 @@ function createUrl(urlMeta, newPath) {
 }
 
 /**
- * Processes one declaration
- *
- * @param {Object} decl postcss declaration
- * @param {String} from source
- * @param {String} to destination
- * @param {PostcssUrl~UrlProcessor} callback plugin mode
- * @param {Object} options plugin options
- * @param {Boolean} [isCustom]
- * @return {void}
+ * @callback PostcssUrl~DeclProcessor
+ * @param {Object} decl declaration
  */
-function processDecl(result, decl, from, to, callback, options, isCustom) {
-  var dirname = decl.source && decl.source.input
-    ? path.dirname(decl.source.input.file)
-    : process.cwd()
-  decl.value = reduceFunctionCall(decl.value, "url", function(value) {
+
+/**
+ * @param {Object} result
+ * @param {String} from from
+ * @param {String} to destination
+ * @param {PostcssUrl~UrlProcessor} callback
+ * @param {Object} options
+ * @param {Boolean} [isCustom]
+ * @returns {PostcssUrl~DeclProcessor}
+ */
+function getDeclProcessor(result, from, to, callback, options, isCustom) {
+  var valueCallback = function(decl, value) {
+    var dirname = decl.source && decl.source.input
+      ? path.dirname(decl.source.input.file)
+      : process.cwd()
+
     var urlMeta = getUrlMetaData(value)
 
     if (! isCustom && isUrlShouldBeIgnored(urlMeta.value)) {
@@ -142,7 +144,15 @@ function processDecl(result, decl, from, to, callback, options, isCustom) {
     }
 
     return callback(result, from, dirname, urlMeta, to, options, decl)
-  })
+  }
+
+  return function(decl) {
+    if (decl.value && decl.value.indexOf("url(") > -1) {
+      decl.value = reduceFunctionCall(decl.value, "url", function(value) {
+        return valueCallback(decl, value)
+      })
+    }
+  }
 }
 
 /**
@@ -173,11 +183,7 @@ function getCustomProcessor(cb) {
 /**
  * Fix url() according to source (`from`) or destination (`to`)
  *
- * @param {String} from from
- * @param {String} dirname to dirname
- * @param {String} urlMeta url meta datayy
- * @param {String} to destination
- * @return {String} new url
+ * @type {PostcssUrl~UrlProcessor}
  */
 function processRebase(result, from, dirname, urlMeta, to) {
   var newPath = urlMeta.value
@@ -195,13 +201,7 @@ function processRebase(result, from, dirname, urlMeta, to) {
 /**
  * Inline image in url()
  *
- * @param {String} from from
- * @param {String} dirname to dirname
- * @param {String} urlMeta url meta data
- * @param {String} to destination
- * @param {Object} options plugin options
- * @param {Object} decl postcss declaration
- * @return {String} new url
+ * @type {PostcssUrl~UrlProcessor}
  */
 function processInline(result, from, dirname, urlMeta, to, options, decl) {
   var maxSize = options.maxSize === undefined ? 14 : options.maxSize
@@ -278,12 +278,7 @@ function processInline(result, from, dirname, urlMeta, to, options, decl) {
  *
  * Option assetsPath is require and is relative to the css destination (`to`)
  *
- * @param {String} from from
- * @param {String} dirname to dirname
- * @param {String} urlMeta url meta data
- * @param {String} to destination
- * @param {Object} options plugin options
- * @return {String} new url
+ * @type {PostcssUrl~UrlProcessor}
  */
 function processCopy(result, from, dirname, urlMeta, to, options, decl) {
   if (from === to) {
