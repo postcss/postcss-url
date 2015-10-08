@@ -25,7 +25,7 @@ module.exports = postcss.plugin(
     options = options || {}
     var mode = options.url !== undefined ? options.url : "rebase"
     var isCustom = typeof mode === "function"
-    var callback = isCustom ? mode : getUrlProcessor(mode)
+    var callback = isCustom ? getCustomProcessor(mode) : getUrlProcessor(mode)
 
     return function(styles, result) {
       var from = result.opts.from
@@ -137,21 +137,7 @@ function processDecl(result, decl, from, to, callback, options, isCustom) {
   decl.value = reduceFunctionCall(decl.value, "url", function(value) {
     var urlMeta = getUrlMetaData(value)
 
-    if (isCustom) {
-      return processCustom(
-        result,
-        callback,
-        from,
-        dirname,
-        urlMeta,
-        to,
-        options,
-        decl
-      )
-    }
-
-    // ignore absolute urls, hasshes or data uris
-    if (isUrlShouldBeIgnored(urlMeta.value)) {
+    if (! isCustom && isUrlShouldBeIgnored(urlMeta.value)) {
       return createUrl(urlMeta)
     }
 
@@ -175,17 +161,13 @@ function isUrlShouldBeIgnored(url) {
  * Transform url() based on a custom callback
  *
  * @param {Function} cb callback function
- * @param {String} from from
- * @param {String} dirname to dirname
- * @param {String} urlMeta url meta data
- * @param {String} to destination
- * @param {Object} options plugin options
- * @param {Object} decl postcss declaration
- * @return {void}
+ * @return {PostcssUrl~UrlProcessor}
  */
-function processCustom(result, cb, from, dirname, urlMeta, to, options, decl) {
-  var newValue = cb(urlMeta.value, decl, from, dirname, to, options, result)
-  return createUrl(urlMeta, newValue)
+function getCustomProcessor(cb) {
+  return function(result, from, dirname, urlMeta, to, options, decl) {
+    var newValue = cb(urlMeta.value, decl, from, dirname, to, options, result)
+    return createUrl(urlMeta, newValue)
+  }
 }
 
 /**
@@ -231,16 +213,8 @@ function processInline(result, from, dirname, urlMeta, to, options, decl) {
 
   function processFallback() {
     if (typeof fallback === "function") {
-      return processCustom(
-        result,
-        fallback,
-        from,
-        dirname,
-        urlMeta,
-        to,
-        options,
-        decl
-      )
+      return getCustomProcessor(fallback)
+        (result, from, dirname, urlMeta, to, options, decl)
     }
     switch (fallback) {
     case "copy":
