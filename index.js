@@ -50,7 +50,7 @@ module.exports = postcss.plugin(
  * @param {String} to destination
  * @param {Object} options plugin options
  * @param {Object} decl postcss declaration
- * @return {String} new url
+ * @return {String|undefined} new url or undefined if url is old
  */
 
 /**
@@ -138,12 +138,13 @@ function getDeclProcessor(result, from, to, callback, options, isCustom) {
       : process.cwd()
 
     var urlMeta = getUrlMetaData(value)
+    var newValue
 
-    if (! isCustom && isUrlShouldBeIgnored(urlMeta.value)) {
-      return createUrl(urlMeta)
+    if (isCustom || ! isUrlShouldBeIgnored(urlMeta.value)) {
+      newValue = callback(result, from, dirname, urlMeta, to, options, decl)
     }
 
-    return callback(result, from, dirname, urlMeta, to, options, decl)
+    return createUrl(urlMeta, newValue)
   }
 
   return function(decl) {
@@ -175,8 +176,7 @@ function isUrlShouldBeIgnored(url) {
  */
 function getCustomProcessor(cb) {
   return function(result, from, dirname, urlMeta, to, options, decl) {
-    var newValue = cb(urlMeta.value, decl, from, dirname, to, options, result)
-    return createUrl(urlMeta, newValue)
+    return cb(urlMeta.value, decl, from, dirname, to, options, result)
   }
 }
 
@@ -195,7 +195,7 @@ function processRebase(result, from, dirname, urlMeta, to) {
   if (path.sep === "\\") {
     newPath = newPath.replace(/\\/g, "\/")
   }
-  return createUrl(urlMeta, newPath)
+  return newPath
 }
 
 /**
@@ -220,7 +220,7 @@ function processInline(result, from, dirname, urlMeta, to, options, decl) {
     case "copy":
       return processCopy(result, from, dirname, urlMeta, to, options, decl)
     default:
-      return createUrl(urlMeta)
+      return
     }
   }
 
@@ -242,7 +242,7 @@ function processInline(result, from, dirname, urlMeta, to, options, decl) {
   var file = path.resolve(from, fullFilePath)
   if (!fs.existsSync(file)) {
     result.warn("Can't read file '" + file + "', ignoring", {node: decl})
-    return createUrl(urlMeta)
+    return
   }
 
   var stats = fs.statSync(file)
@@ -255,20 +255,17 @@ function processInline(result, from, dirname, urlMeta, to, options, decl) {
 
   if (!mimeType) {
     result.warn("Unable to find asset mime-type for " + file, {node: decl})
-    return createUrl(urlMeta)
+    return
   }
 
   if (mimeType === "image/svg+xml") {
     var svg = new SvgEncoder(file)
-    return createUrl(urlMeta, svg.encode())
+    return svg.encode()
   }
 
   // else
   file = fs.readFileSync(file)
-  return createUrl(
-    urlMeta,
-    "data:" + mimeType + ";base64," + file.toString("base64")
-  )
+  return "data:" + mimeType + ";base64," + file.toString("base64")
 }
 
 /**
@@ -283,7 +280,7 @@ function processInline(result, from, dirname, urlMeta, to, options, decl) {
 function processCopy(result, from, dirname, urlMeta, to, options, decl) {
   if (from === to) {
     result.warn("Option `to` of postcss is required, ignoring", {node: decl})
-    return createUrl(urlMeta)
+    return
   }
   var relativeAssetsPath = (options && options.assetsPath)
     ? options.assetsPath
@@ -306,7 +303,7 @@ function processCopy(result, from, dirname, urlMeta, to, options, decl) {
   }
   catch (err) {
     result.warn("Can't read file '" + filePath + "', ignoring", {node: decl})
-    return createUrl(urlMeta)
+    return
   }
 
   if (useHash) {
@@ -353,5 +350,5 @@ function processCopy(result, from, dirname, urlMeta, to, options, decl) {
   if (path.sep === "\\") {
     assetPath = assetPath.replace(/\\/g, "\/")
   }  
-  return createUrl(urlMeta, assetPath)
+  return assetPath
 }
