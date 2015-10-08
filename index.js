@@ -120,11 +120,7 @@ function processDecl(result, decl, from, to, mode, options) {
     }
 
     // ignore absolute urls, hasshes or data uris
-    if (urlMeta.value.indexOf("/") === 0 ||
-        urlMeta.value.indexOf("data:") === 0 ||
-        urlMeta.value.indexOf("#") === 0 ||
-        /^[a-z]+:\/\//.test(urlMeta.value)
-    ) {
+    if (isUrlShouldBeIgnored(urlMeta.value)) {
       return createUrl(urlMeta)
     }
 
@@ -139,6 +135,18 @@ function processDecl(result, decl, from, to, mode, options) {
       throw new Error("Unknow mode for postcss-url: " + mode)
     }
   })
+}
+
+/**
+ * Check if url is absolute, hash or data-uri
+ * @param {String} url
+ * @returns {boolean}
+ */
+function isUrlShouldBeIgnored(url) {
+  return url[0] === "/" ||
+    url[0] === "#" ||
+    url.indexOf("data:") === 0 ||
+    /^[a-z]+:\/\//.test(url)
 }
 
 /**
