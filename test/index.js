@@ -73,6 +73,13 @@ test("rebase", function(t) {
     opts,
     {from: "test/fixtures/transform.css"}, require("postcss-import")
   )
+  compareFixtures(
+    t,
+    "alpha-image-loader",
+    "should rebase in filter",
+    opts,
+    {from: "test/fixtures/here", to: "there"}
+  )
 
   t.end()
 })
