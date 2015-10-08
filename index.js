@@ -46,7 +46,7 @@ module.exports = postcss.plugin(
  * @callback PostcssUrl~UrlProcessor
  * @param {String} from from
  * @param {String} dirname to dirname
- * @param {String} urlMeta url meta data
+ * @param {String} oldUrl url
  * @param {String} to destination
  * @param {Object} options plugin options
  * @param {Object} decl postcss declaration
@@ -131,7 +131,7 @@ function createUrl(urlMeta, newPath) {
  * @param {Boolean} [isCustom]
  * @returns {PostcssUrl~DeclProcessor}
  */
-function getDeclProcessor(result, from, to, callback, options, isCustom) {
+function getDeclProcessor(result, from, to, cb, options, isCustom) {
   var valueCallback = function(decl, value) {
     var dirname = decl.source && decl.source.input
       ? path.dirname(decl.source.input.file)
@@ -141,7 +141,7 @@ function getDeclProcessor(result, from, to, callback, options, isCustom) {
     var newValue
 
     if (isCustom || ! isUrlShouldBeIgnored(urlMeta.value)) {
-      newValue = callback(result, from, dirname, urlMeta, to, options, decl)
+      newValue = cb(result, from, dirname, urlMeta.value, to, options, decl)
     }
 
     return createUrl(urlMeta, newValue)
@@ -175,8 +175,8 @@ function isUrlShouldBeIgnored(url) {
  * @return {PostcssUrl~UrlProcessor}
  */
 function getCustomProcessor(cb) {
-  return function(result, from, dirname, urlMeta, to, options, decl) {
-    return cb(urlMeta.value, decl, from, dirname, to, options, result)
+  return function(result, from, dirname, oldUrl, to, options, decl) {
+    return cb(oldUrl, decl, from, dirname, to, options, result)
   }
 }
 
@@ -185,8 +185,8 @@ function getCustomProcessor(cb) {
  *
  * @type {PostcssUrl~UrlProcessor}
  */
-function processRebase(result, from, dirname, urlMeta, to) {
-  var newPath = urlMeta.value
+function processRebase(result, from, dirname, oldUrl, to) {
+  var newPath = oldUrl
   if (dirname !== from) {
     newPath = path.relative(from, dirname + path.sep + newPath)
   }
@@ -203,7 +203,7 @@ function processRebase(result, from, dirname, urlMeta, to) {
  *
  * @type {PostcssUrl~UrlProcessor}
  */
-function processInline(result, from, dirname, urlMeta, to, options, decl) {
+function processInline(result, from, dirname, oldUrl, to, options, decl) {
   var maxSize = options.maxSize === undefined ? 14 : options.maxSize
   var fallback = options.fallback
   var basePath = options.basePath
@@ -214,18 +214,18 @@ function processInline(result, from, dirname, urlMeta, to, options, decl) {
   function processFallback() {
     if (typeof fallback === "function") {
       return getCustomProcessor(fallback)
-        (result, from, dirname, urlMeta, to, options, decl)
+        (result, from, dirname, oldUrl, to, options, decl)
     }
     switch (fallback) {
     case "copy":
-      return processCopy(result, from, dirname, urlMeta, to, options, decl)
+      return processCopy(result, from, dirname, oldUrl, to, options, decl)
     default:
       return
     }
   }
 
   // ignore URLs with hashes/fragments, they can't be inlined
-  var link = url.parse(urlMeta.value)
+  var link = url.parse(oldUrl)
   if (link.hash) {
     return processFallback()
   }
@@ -277,7 +277,7 @@ function processInline(result, from, dirname, urlMeta, to, options, decl) {
  *
  * @type {PostcssUrl~UrlProcessor}
  */
-function processCopy(result, from, dirname, urlMeta, to, options, decl) {
+function processCopy(result, from, dirname, oldUrl, to, options, decl) {
   if (from === to) {
     result.warn("Option `to` of postcss is required, ignoring", {node: decl})
     return
@@ -287,12 +287,12 @@ function processCopy(result, from, dirname, urlMeta, to, options, decl) {
     : ""
   var absoluteAssetsPath
 
-  var filePathUrl = path.resolve(dirname, urlMeta.value)
+  var filePathUrl = path.resolve(dirname, oldUrl)
   var nameUrl = path.basename(filePathUrl)
 
   // remove hash or parameters in the url.
   // e.g., url('glyphicons-halflings-regular.eot?#iefix')
-  var fileLink = url.parse(urlMeta.value)
+  var fileLink = url.parse(oldUrl)
   var filePath = path.resolve(dirname, fileLink.pathname)
   var name = path.basename(filePath)
   var useHash = options.useHash || false
@@ -328,7 +328,7 @@ function processCopy(result, from, dirname, urlMeta, to, options, decl) {
       relativeAssetsPath,
       dirname.replace(new RegExp(from.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
                                  + "[\/]\?"), ""),
-      path.dirname(urlMeta.value)
+      path.dirname(oldUrl)
     )
     absoluteAssetsPath = path.resolve(to, relativeAssetsPath)
 
