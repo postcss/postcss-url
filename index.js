@@ -24,6 +24,8 @@ module.exports = postcss.plugin(
   function fixUrl(options) {
     options = options || {}
     var mode = options.url !== undefined ? options.url : "rebase"
+    var isCustom = typeof mode === "function"
+    var callback = isCustom ? mode : getUrlProcessor(mode)
 
     return function(styles, result) {
       var from = result.opts.from
@@ -35,12 +37,40 @@ module.exports = postcss.plugin(
 
       styles.walkDecls(function(decl) {
         if (decl.value && decl.value.indexOf("url(") > -1) {
-          processDecl(result, decl, from, to, mode, options)
+          processDecl(result, decl, from, to, callback, options, isCustom)
         }
       })
     }
   }
 )
+
+/**
+ * @callback PostcssUrl~UrlProcessor
+ * @param {String} from from
+ * @param {String} dirname to dirname
+ * @param {String} urlMeta url meta data
+ * @param {String} to destination
+ * @param {Object} options plugin options
+ * @param {Object} decl postcss declaration
+ * @return {String} new url
+ */
+
+/**
+ * @param {String} mode
+ * @returns {PostcssUrl~UrlProcessor}
+ */
+function getUrlProcessor(mode) {
+  switch (mode) {
+  case "rebase":
+    return processRebase
+  case "inline":
+    return processInline
+  case "copy":
+    return processCopy
+  default:
+    throw new Error("Unknow mode for postcss-url: " + mode)
+  }
+}
 
 /**
  * return quote type
@@ -95,21 +125,22 @@ function createUrl(urlMeta, newPath) {
  * @param {Object} decl postcss declaration
  * @param {String} from source
  * @param {String} to destination
- * @param {String|Function} mode plugin mode
+ * @param {PostcssUrl~UrlProcessor} callback plugin mode
  * @param {Object} options plugin options
+ * @param {Boolean} [isCustom]
  * @return {void}
  */
-function processDecl(result, decl, from, to, mode, options) {
+function processDecl(result, decl, from, to, callback, options, isCustom) {
   var dirname = decl.source && decl.source.input
     ? path.dirname(decl.source.input.file)
     : process.cwd()
   decl.value = reduceFunctionCall(decl.value, "url", function(value) {
     var urlMeta = getUrlMetaData(value)
 
-    if (typeof mode === "function") {
+    if (isCustom) {
       return processCustom(
         result,
-        mode,
+        callback,
         from,
         dirname,
         urlMeta,
@@ -124,16 +155,7 @@ function processDecl(result, decl, from, to, mode, options) {
       return createUrl(urlMeta)
     }
 
-    switch (mode) {
-    case "rebase":
-      return processRebase(result, from, dirname, urlMeta, to)
-    case "inline":
-      return processInline(result, from, dirname, urlMeta, to, options, decl)
-    case "copy":
-      return processCopy(result, from, dirname, urlMeta, to, options, decl)
-    default:
-      throw new Error("Unknow mode for postcss-url: " + mode)
-    }
+    return callback(result, from, dirname, urlMeta, to, options, decl)
   })
 }
 
