@@ -11,6 +11,17 @@ var SvgEncoder = require("directory-encoder/lib/svg-uri-encoder.js")
 var mkdirp = require("mkdirp")
 var crypto = require("crypto")
 var pathIsAbsolute = require("path-is-absolute")
+/**
+ * @typedef UrlRegExp
+ * @name UrlRegExp
+ * @desc A regex for match url with parentheses:
+ *   (before url)(the url)(after url).
+ *    (the url) will be replace with new url, and before and after will remain
+ * @type RegExp
+ */
+/**
+ * @type {UrlRegExp[]}
+ */
 var UrlsPatterns = [
   /(url\(\s*['"]?)([^"')]+)(["']?\s*\))/g,
   /(AlphaImageLoader\(\s*src=['"]?)([^"')]+)(["'])/g,
