@@ -13,6 +13,7 @@ var crypto = require("crypto")
 var pathIsAbsolute = require("path-is-absolute")
 var UrlsPatterns = [
   /(url\(\s*['"]?)([^"')]+)(["']?\s*\))/g,
+  /(AlphaImageLoader\(\s*src=['"]?)([^"')]+)(["'])/g,
 ]
 
 /**
