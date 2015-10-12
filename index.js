@@ -8,10 +8,24 @@ var postcss = require("postcss")
 var mime = require("mime")
 var url = require("url")
 var SvgEncoder = require("directory-encoder/lib/svg-uri-encoder.js")
-var reduceFunctionCall = require("reduce-function-call")
 var mkdirp = require("mkdirp")
 var crypto = require("crypto")
 var pathIsAbsolute = require("path-is-absolute")
+/**
+ * @typedef UrlRegExp
+ * @name UrlRegExp
+ * @desc A regex for match url with parentheses:
+ *   (before url)(the url)(after url).
+ *    (the url) will be replace with new url, and before and after will remain
+ * @type RegExp
+ */
+/**
+ * @type {UrlRegExp[]}
+ */
+var UrlsPatterns = [
+  /(url\(\s*['"]?)([^"')]+)(["']?\s*\))/g,
+  /(AlphaImageLoader\(\s*src=['"]?)([^"')]+)(["'])/g,
+]
 
 /**
  * Fix url() according to source (`from`) or destination (`to`)
@@ -71,53 +85,6 @@ function getUrlProcessor(mode) {
 }
 
 /**
- * return quote type
- *
- * @param  {String} string quoted (or not) value
- * @return {String} quote if any, or empty string
- */
-function getUrlMetaData(string) {
-  var quote = ""
-  var quotes = ["\"", "'"]
-  var trimedString = string.trim()
-  quotes.forEach(function(q) {
-    if (
-      trimedString.charAt(0) === q &&
-      trimedString.charAt(trimedString.length - 1) === q
-    ) {
-      quote = q
-    }
-  })
-
-  var urlMeta = {
-    before: string.slice(0, string.indexOf(quote)),
-    quote: quote,
-    value: quote
-      ? trimedString.substr(1, trimedString.length - 2)
-      : trimedString,
-    after: string.slice(string.lastIndexOf(quote) + 1),
-  }
-  return urlMeta
-}
-
-/**
- * Create an css url() from a path and a quote style
- *
- * @param {String} urlMeta url meta data
- * @param {String} newPath url path
- * @return {String} new url()
- */
-function createUrl(urlMeta, newPath) {
-  return "url(" +
-    urlMeta.before +
-    urlMeta.quote +
-    (newPath || urlMeta.value) +
-    urlMeta.quote +
-    urlMeta.after +
-  ")"
-}
-
-/**
  * @callback PostcssUrl~DeclProcessor
  * @param {Object} decl declaration
  */
@@ -132,27 +99,31 @@ function createUrl(urlMeta, newPath) {
  * @returns {PostcssUrl~DeclProcessor}
  */
 function getDeclProcessor(result, from, to, cb, options, isCustom) {
-  var valueCallback = function(decl, value) {
+  var valueCallback = function(decl, oldUrl) {
     var dirname = decl.source && decl.source.input
       ? path.dirname(decl.source.input.file)
       : process.cwd()
 
-    var urlMeta = getUrlMetaData(value)
-    var newValue
+    var newUrl
 
-    if (isCustom || ! isUrlShouldBeIgnored(urlMeta.value)) {
-      newValue = cb(result, from, dirname, urlMeta.value, to, options, decl)
+    if (isCustom || ! isUrlShouldBeIgnored(oldUrl)) {
+      newUrl = cb(result, from, dirname, oldUrl, to, options, decl)
     }
 
-    return createUrl(urlMeta, newValue)
+    return newUrl || oldUrl
   }
 
   return function(decl) {
-    if (decl.value && decl.value.indexOf("url(") > -1) {
-      decl.value = reduceFunctionCall(decl.value, "url", function(value) {
-        return valueCallback(decl, value)
-      })
-    }
+    UrlsPatterns.some(function(pattern) {
+      if (pattern.test(decl.value)) {
+        decl.value = decl.value
+          .replace(pattern, function(_, beforeUrl, oldUrl, afterUrl) {
+            return beforeUrl + valueCallback(decl, oldUrl) + afterUrl
+          })
+
+        return true
+      }
+    })
   }
 }
 
