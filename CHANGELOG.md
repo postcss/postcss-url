@@ -1,3 +1,9 @@
+# 5.0.2 - 2015-10-12
+
+- Fixed: now rebase url in old Internet Explorer filter
+`progid:DXImageTransform.Microsoft.AlphaImageLoader()`
+([#55](https://github.com/postcss/postcss-url/pull/55))
+
 # 5.0.1 - 2015-10-04
 
 - Fixed: windows compatibility
