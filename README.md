@@ -68,10 +68,11 @@ Custom transform function. Takes following arguments:
 * `options` – plugin options
 * `result` – postcss result object
 
-And should return the transformed url.  
+And should return the transformed url.
 You can use this option to adjust urls for CDN.
 
 #### `maxSize`
+_(default: `14`)_
 
 Specify the maximum file size to inline (in kbytes)
 
