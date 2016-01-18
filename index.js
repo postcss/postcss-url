@@ -97,7 +97,7 @@ function getUrlProcessor(mode) {
  */
 function matchesFilter(filename, pattern) {
   if (typeof pattern === "string") {
-    pattern = minimatch.makeRe(pattern)
+    pattern = minimatch.filter(pattern)
   }
 
   if (pattern instanceof RegExp) {
