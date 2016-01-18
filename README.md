@@ -76,6 +76,10 @@ _(default: `14`)_
 
 Specify the maximum file size to inline (in kbytes)
 
+#### `filter`
+
+A regular expression e.g. `/\.svg$/`, a [minimatch string](https://github.com/isaacs/minimatch) e.g. `'**/*.svg'` or a custom filter function to determine wether a file should be inlined.
+
 #### `fallback`
 
 The url fallback method to use if max size is exceeded or url contains a hash.

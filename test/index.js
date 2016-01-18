@@ -129,6 +129,58 @@ test("inline", function(t) {
     "should inline url of imported files"
   )
 
+  t.ok(
+    postcss()
+      .use(url({url: "inline", filter: "**/*.svg"}))
+      .process(read("fixtures/inline-by-type"), {from: "test/fixtures/here"})
+      .css.match(/data\:image\/svg\+xml/),
+    "should inline files matching the minimatch pattern"
+  )
+
+  t.notOk(
+    postcss()
+      .use(url({url: "inline", filter: "**/*.svg"}))
+      .process(read("fixtures/inline-by-type"), {from: "test/fixtures/here"})
+      .css.match(/data:image\/gif/),
+    "shouldn't inline files not matching the minimatch pattern"
+  )
+
+  t.ok(
+    postcss()
+      .use(url({url: "inline", filter: /\.svg$/}))
+      .process(read("fixtures/inline-by-type"), {from: "test/fixtures/here"})
+      .css.match(/data\:image\/svg\+xml/),
+    "should inline files matching the regular expression"
+  )
+
+  t.notOk(
+    postcss()
+      .use(url({url: "inline", filter: /\.svg$/}))
+      .process(read("fixtures/inline-by-type"), {from: "test/fixtures/here"})
+      .css.match(/data:image\/gif/),
+    "shouldn't inline files not matching the regular expression"
+  )
+
+  var customFilterFunction = function(filename) {
+    return /\.svg$/.test(filename)
+  }
+
+  t.ok(
+    postcss()
+      .use(url({url: "inline", filter: customFilterFunction}))
+      .process(read("fixtures/inline-by-type"), {from: "test/fixtures/here"})
+      .css.match(/data\:image\/svg\+xml/),
+    "should inline files matching the regular expression"
+  )
+
+  t.notOk(
+    postcss()
+      .use(url({url: "inline", filter: customFilterFunction}))
+      .process(read("fixtures/inline-by-type"), {from: "test/fixtures/here"})
+      .css.match(/data:image\/gif/),
+    "shouldn't inline files not matching the regular expression"
+  )
+
   t.end()
 })
 

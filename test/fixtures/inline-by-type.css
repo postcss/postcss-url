@@ -1,0 +1,7 @@
+body {
+  background: url("pixel.svg")
+}
+
+body:before {
+  background: url("pixel.gif")
+}

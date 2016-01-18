@@ -11,6 +11,7 @@ var SvgEncoder = require("directory-encoder/lib/svg-uri-encoder.js")
 var mkdirp = require("mkdirp")
 var crypto = require("crypto")
 var pathIsAbsolute = require("path-is-absolute")
+var minimatch = require("minimatch")
 /**
  * @typedef UrlRegExp
  * @name UrlRegExp
@@ -82,6 +83,32 @@ function getUrlProcessor(mode) {
   default:
     throw new Error("Unknow mode for postcss-url: " + mode)
   }
+}
+
+/**
+ * Returns wether the given filename matches the given pattern
+ * Allways returns true if the given pattern is empty
+ *
+ * @param {String} filename the processed filename
+ * @param {String|RegExp|Function} pattern A minimatch string,
+ *   regular expression or function to test the filename
+ *
+ * @return {Boolean}
+ */
+function matchesFilter(filename, pattern) {
+  if (typeof pattern === "string") {
+    pattern = minimatch.makeRe(pattern)
+  }
+
+  if (pattern instanceof RegExp) {
+    return pattern.test(filename)
+  }
+
+  if (pattern instanceof Function) {
+    return pattern(filename)
+  }
+
+  return true
 }
 
 /**
@@ -178,6 +205,7 @@ function processInline(result, from, dirname, oldUrl, to, options, decl) {
   var maxSize = options.maxSize === undefined ? 14 : options.maxSize
   var fallback = options.fallback
   var basePath = options.basePath
+  var filter = options.filter
   var fullFilePath
 
   maxSize *= 1024
@@ -219,6 +247,10 @@ function processInline(result, from, dirname, oldUrl, to, options, decl) {
   var stats = fs.statSync(file)
 
   if (stats.size >= maxSize) {
+    return processFallback()
+  }
+
+  if (!matchesFilter(file, filter)) {
     return processFallback()
   }
 
@@ -320,6 +352,7 @@ function processCopy(result, from, dirname, oldUrl, to, options, decl) {
   var assetPath = path.join(relativeAssetsPath, nameUrl)
   if (path.sep === "\\") {
     assetPath = assetPath.replace(/\\/g, "\/")
-  }  
+  }
   return assetPath
 }
+
