@@ -3,10 +3,13 @@
 environment:
   matrix:
     - nodejs_version: 4
+    - nodejs_version: 5
 
 version: "{build}"
 build: off
 deploy: off
+matrix:
+  fast_finish: true
 
 install:
   - ps: Install-Product node $env:nodejs_version
@@ -15,5 +18,4 @@ install:
 test_script:
   - node --version
   - npm --version
-  - ps: "npm test # PowerShell"
-  - cmd: "npm test"
+  - npm test
