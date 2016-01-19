@@ -133,7 +133,7 @@ function getDeclProcessor(result, from, to, cb, options, isCustom) {
 
     var newUrl
 
-    if (isCustom || ! isUrlShouldBeIgnored(oldUrl)) {
+    if (isCustom || !isUrlShouldBeIgnored(oldUrl)) {
       newUrl = cb(result, from, dirname, oldUrl, to, options, decl)
     }
 
@@ -240,7 +240,7 @@ function processInline(result, from, dirname, oldUrl, to, options, decl) {
 
   var file = path.resolve(from, fullFilePath)
   if (!fs.existsSync(file)) {
-    result.warn("Can't read file '" + file + "', ignoring", {node: decl})
+    result.warn("Can't read file '" + file + "', ignoring", { node: decl })
     return
   }
 
@@ -257,7 +257,7 @@ function processInline(result, from, dirname, oldUrl, to, options, decl) {
   var mimeType = mime.lookup(file)
 
   if (!mimeType) {
-    result.warn("Unable to find asset mime-type for " + file, {node: decl})
+    result.warn("Unable to find asset mime-type for " + file, { node: decl })
     return
   }
 
@@ -282,7 +282,7 @@ function processInline(result, from, dirname, oldUrl, to, options, decl) {
  */
 function processCopy(result, from, dirname, oldUrl, to, options, decl) {
   if (from === to) {
-    result.warn("Option `to` of postcss is required, ignoring", {node: decl})
+    result.warn("Option `to` of postcss is required, ignoring", { node: decl })
     return
   }
   var relativeAssetsPath = (options && options.assetsPath)
@@ -305,7 +305,7 @@ function processCopy(result, from, dirname, oldUrl, to, options, decl) {
     var contents = fs.readFileSync(filePath)
   }
   catch (err) {
-    result.warn("Can't read file '" + filePath + "', ignoring", {node: decl})
+    result.warn("Can't read file '" + filePath + "', ignoring", { node: decl })
     return
   }
 

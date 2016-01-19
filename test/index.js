@@ -36,56 +36,56 @@ test("rebase", function(t) {
     "rebase-to-from",
     "should rebase url to dirname(from)",
     opts,
-    {from: "test/fixtures/here"}
+    { from: "test/fixtures/here" }
   )
   compareFixtures(
     t,
     "rebase-to-to-without-from",
     "should rebase url to dirname(to)",
     opts,
-    {to: "there"}
+    { to: "there" }
   )
   compareFixtures(
     t,
     "rebase-to-to",
     "should rebase url to dirname(to) even if from given",
     opts,
-    {from: "test/fixtures/here", to: "there"}
+    { from: "test/fixtures/here", to: "there" }
   )
   compareFixtures(
     t,
     "rebase-all-url-syntax",
     "should rebase url even if there is differentes types of quotes",
     opts,
-    {from: "test/fixtures/here", to: "there"}
+    { from: "test/fixtures/here", to: "there" }
   )
   compareFixtures(
     t,
     "rebase-querystring-hash",
     "should rebase url that have query string or hash (or both)",
     opts,
-    {from: "test/fixtures/here", to: "there"}
+    { from: "test/fixtures/here", to: "there" }
   )
   compareFixtures(
     t,
     "rebase-imported",
     "should rebase url of imported files",
     opts,
-    {from: "test/fixtures/transform.css"}, require("postcss-import")
+    { from: "test/fixtures/transform.css" }, require("postcss-import")
   )
   compareFixtures(
     t,
     "alpha-image-loader",
     "should rebase in filter",
     opts,
-    {from: "test/fixtures/here", to: "there"}
+    { from: "test/fixtures/here", to: "there" }
   )
 
   t.end()
 })
 
 test("inline", function(t) {
-  var opts = {url: "inline"}
+  var opts = { url: "inline" }
   compareFixtures(
     t,
     "cant-inline",
@@ -99,23 +99,23 @@ test("inline", function(t) {
   t.ok(
     postcss()
       .use(url(opts))
-      .process(read("fixtures/inline-from"), {from: "test/fixtures/here"})
+      .process(read("fixtures/inline-from"), { from: "test/fixtures/here" })
       .css.match(/;base64/),
     "should inline url from dirname(from)"
   )
 
   t.notOk(
     postcss()
-      .use(url({url: "inline", maxSize: 0}))
-      .process(read("fixtures/inline-from"), {from: "test/fixtures/here"})
+      .use(url({ url: "inline", maxSize: 0 }))
+      .process(read("fixtures/inline-from"), { from: "test/fixtures/here" })
       .css.match(/;base64/),
     "should not inline big files from dirname(from)"
   )
 
   t.notOk(
     postcss()
-      .use(url({url: "inline"}))
-      .process(read("fixtures/inline-svg"), {from: "test/fixtures/here"})
+      .use(url({ url: "inline" }))
+      .process(read("fixtures/inline-svg"), { from: "test/fixtures/here" })
       .css.match(/;base64/),
     "SVGs shouldn't be encoded in base64"
   )
@@ -124,39 +124,39 @@ test("inline", function(t) {
     postcss()
       .use(require("postcss-import")())
       .use(url(opts))
-      .process(read("fixtures/inline-imported"), {from: "test/fixtures/here"})
+      .process(read("fixtures/inline-imported"), { from: "test/fixtures/here" })
       .css.match(/;base64/),
     "should inline url of imported files"
   )
 
   t.ok(
     postcss()
-      .use(url({url: "inline", filter: "**/*.svg"}))
-      .process(read("fixtures/inline-by-type"), {from: "test/fixtures/here"})
+      .use(url({ url: "inline", filter: "**/*.svg" }))
+      .process(read("fixtures/inline-by-type"), { from: "test/fixtures/here" })
       .css.match(/data\:image\/svg\+xml/),
     "should inline files matching the minimatch pattern"
   )
 
   t.notOk(
     postcss()
-      .use(url({url: "inline", filter: "**/*.svg"}))
-      .process(read("fixtures/inline-by-type"), {from: "test/fixtures/here"})
+      .use(url({ url: "inline", filter: "**/*.svg" }))
+      .process(read("fixtures/inline-by-type"), { from: "test/fixtures/here" })
       .css.match(/data:image\/gif/),
     "shouldn't inline files not matching the minimatch pattern"
   )
 
   t.ok(
     postcss()
-      .use(url({url: "inline", filter: /\.svg$/}))
-      .process(read("fixtures/inline-by-type"), {from: "test/fixtures/here"})
+      .use(url({ url: "inline", filter: /\.svg$/ }))
+      .process(read("fixtures/inline-by-type"), { from: "test/fixtures/here" })
       .css.match(/data\:image\/svg\+xml/),
     "should inline files matching the regular expression"
   )
 
   t.notOk(
     postcss()
-      .use(url({url: "inline", filter: /\.svg$/}))
-      .process(read("fixtures/inline-by-type"), {from: "test/fixtures/here"})
+      .use(url({ url: "inline", filter: /\.svg$/ }))
+      .process(read("fixtures/inline-by-type"), { from: "test/fixtures/here" })
       .css.match(/data:image\/gif/),
     "shouldn't inline files not matching the regular expression"
   )
@@ -167,16 +167,16 @@ test("inline", function(t) {
 
   t.ok(
     postcss()
-      .use(url({url: "inline", filter: customFilterFunction}))
-      .process(read("fixtures/inline-by-type"), {from: "test/fixtures/here"})
+      .use(url({ url: "inline", filter: customFilterFunction }))
+      .process(read("fixtures/inline-by-type"), { from: "test/fixtures/here" })
       .css.match(/data\:image\/svg\+xml/),
     "should inline files matching the regular expression"
   )
 
   t.notOk(
     postcss()
-      .use(url({url: "inline", filter: customFilterFunction}))
-      .process(read("fixtures/inline-by-type"), {from: "test/fixtures/here"})
+      .use(url({ url: "inline", filter: customFilterFunction }))
+      .process(read("fixtures/inline-by-type"), { from: "test/fixtures/here" })
       .css.match(/data:image\/gif/),
     "shouldn't inline files not matching the regular expression"
   )
@@ -360,7 +360,7 @@ test("function-when-inline-fallback", function(t) {
     "inline-fallback-function",
     "should respect the fallback function",
     opts,
-    {from: "test/fixtures/index.css"}
+    { from: "test/fixtures/index.css" }
   )
 
   t.end()
