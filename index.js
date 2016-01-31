@@ -81,7 +81,7 @@ function getUrlProcessor(mode) {
   case "copy":
     return processCopy
   default:
-    throw new Error("Unknow mode for postcss-url: " + mode)
+    throw new Error("Unknown mode for postcss-url: " + mode)
   }
 }
 
