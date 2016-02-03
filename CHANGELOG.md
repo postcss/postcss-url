@@ -1,3 +1,8 @@
+# 5.1.1 - 2016-02-03
+
+- Fixed: typo in an error message
+([#62](https://github.com/postcss/postcss-url/pull/62))
+
 # 5.1.0 - 2016-01-19
 
 - Added: `filter` option
