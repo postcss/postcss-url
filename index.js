@@ -127,7 +127,7 @@ function matchesFilter(filename, pattern) {
  */
 function getDeclProcessor(result, from, to, cb, options, isCustom) {
   var valueCallback = function(decl, oldUrl) {
-    var dirname = decl.source && decl.source.input
+    var dirname = decl.source && decl.source.input && decl.source.input.file
       ? path.dirname(decl.source.input.file)
       : process.cwd()
 
@@ -355,4 +355,3 @@ function processCopy(result, from, dirname, oldUrl, to, options, decl) {
   }
   return assetPath
 }
-

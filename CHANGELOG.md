@@ -1,3 +1,7 @@
+
+- Fixed: node 6 compatibility
+  ([#68](https://github.com/postcss/postcss-url/issues/68))
+
 # 5.1.1 - 2016-02-03
 
 - Fixed: typo in an error message
