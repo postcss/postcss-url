@@ -329,8 +329,6 @@ function processCopy(result, from, dirname, oldUrl, to, options, decl) {
     }
     relativeAssetsPath = path.join(
       relativeAssetsPath,
-      dirname.replace(new RegExp(from.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-                                 + "[\/]\?"), ""),
       path.dirname(oldUrl)
     )
     absoluteAssetsPath = path.resolve(to, relativeAssetsPath)
