@@ -162,6 +162,7 @@ function getDeclProcessor(result, from, to, cb, options, isCustom) {
 function isUrlShouldBeIgnored(url) {
   return url[0] === "/" ||
     url[0] === "#" ||
+    url.indexOf("%23") === 0 ||
     url.indexOf("data:") === 0 ||
     /^[a-z]+:\/\//.test(url)
 }
