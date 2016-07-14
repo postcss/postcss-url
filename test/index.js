@@ -32,14 +32,14 @@ function testCssResult(t, test, name, msg, opts, postcssOpts, plugin) {
 
 function matchCssResult(t, regExp, name, msg, opts, postcssOpts, plugin) {
   testCssResult(t, function(t, css) {
-    t.ok(css.match(regExp))
+    t.ok(css.match(regExp), "should match: " + regExp)
     t.end()
   }, name, msg, opts, postcssOpts, plugin)
 }
 
 function notMatchCssResult(t, regExp, name, msg, opts, postcssOpts, plugin) {
   testCssResult(t, function(t, css) {
-    t.notOk(css.match(regExp))
+    t.notOk(css.match(regExp), "should not match: " + regExp)
     t.end()
   }, name, msg, opts, postcssOpts, plugin)
 }
@@ -61,7 +61,7 @@ test("rebase", function(t) {
   compareFixtures(
     t,
     "cant-rebase",
-    "shouldn't rebase url if not info available")
+    "shouldn't rebase url if no info available")
   compareFixtures(
     t,
     "rebase-to-from",
@@ -121,7 +121,7 @@ test("inline", function(t) {
   compareFixtures(
     t,
     "cant-inline",
-    "shouldn't inline url if not info available", opts)
+    "shouldn't inline url if no info available", opts)
 
   compareFixtures(
     t,
@@ -212,13 +212,14 @@ test("custom", function(t) {
       if (!declOk) {
         t.ok(decl,
             "should offer postcss decl as second parameter")
-        t.ok(options,
-            "should offer postcss decl as last parameter")
+        t.equal(options, opts,
+            "should offer plugin options as last parameter")
         declOk = true
       }
       return URL.toUpperCase()
     },
   }
+
   compareFixtures(
     t,
     "custom",
@@ -316,7 +317,7 @@ test("copy-without-assetsPath", function(t) {
   compareFixtures(
     t,
     "cant-copy",
-    "shouldn't copy assets if not info available", opts)
+    "shouldn't copy assets if no info available", opts)
 
   var postcssOpts = {
     from: "test/fixtures/index.css",
@@ -334,7 +335,7 @@ test("copy-with-assetsPath", function(t) {
   compareFixtures(
     t,
     "cant-copy",
-    "shouldn't copy assets if not info available", opts)
+    "shouldn't copy assets if no info available", opts)
 
   var postcssOpts = {
     from: "test/fixtures/index.css",
@@ -355,7 +356,7 @@ test("copy-when-inline-fallback", function(t) {
   compareFixtures(
     t,
     "cant-copy",
-    "shouldn't copy assets if not info available", opts)
+    "shouldn't copy assets if no info available", opts)
 
   var postcssOpts = {
     from: "test/fixtures/index.css",
