@@ -51,11 +51,13 @@ module.exports = postcss.plugin(
         : from
 
       var cb = getDeclProcessor(result, from, to, callback, options, isCustom)
+      var promises = []
 
-      return new Promise(function(resolve) {
-        styles.walkDecls(cb)
-        resolve()
+      styles.walkDecls(function() {
+        promises.push(cb.apply(null, arguments))
       })
+
+      return Promise.all(promises)
     }
   }
 )
@@ -134,26 +136,79 @@ function getDeclProcessor(result, from, to, cb, options, isCustom) {
       ? path.dirname(decl.source.input.file)
       : process.cwd()
 
+    var warnBadUrl = function(newUrl, oldUrl) {
+      result.warn("Bad url result: '"
+        + newUrl
+        + "'. Fallback to old url: "
+        + oldUrl, { node: decl })
+    }
+
     var newUrl
 
     if (isCustom || !isUrlShouldBeIgnored(oldUrl)) {
       newUrl = cb(result, from, dirname, oldUrl, to, options, decl)
     }
+    else {
+      newUrl = oldUrl
+    }
 
-    return newUrl || oldUrl
+    if (!newUrl) {
+      warnBadUrl(newUrl, oldUrl)
+
+      newUrl = oldUrl
+    }
+
+    if (newUrl && newUrl.then) {
+      return Promise.resolve(newUrl)
+        .then(function(url) {
+          return url || Promise.reject(url)
+        })
+        .catch(function(err) {
+          warnBadUrl(err, oldUrl)
+
+          return Promise.resolve(oldUrl)
+        })
+    }
+    else {
+      return newUrl
+    }
   }
 
   return function(decl) {
+    var id = 0 // for async replacements
+    var promise = Promise.resolve()
+
     UrlsPatterns.some(function(pattern) {
       if (pattern.test(decl.value)) {
         decl.value = decl.value
           .replace(pattern, function(_, beforeUrl, oldUrl, afterUrl) {
-            return beforeUrl + valueCallback(decl, oldUrl) + afterUrl
+            var newUrl = valueCallback(decl, oldUrl)
+            var buildUrl = function(newUrl) {
+              return beforeUrl + newUrl + afterUrl
+            }
+
+            if (newUrl.then) {
+              var marker = "::id" + id++
+
+              promise = newUrl.then(function(newUrl) {
+                decl.value = decl.value.replace(
+                  marker,
+                  buildUrl(newUrl)
+                )
+              })
+
+              return marker
+            }
+            else {
+              return buildUrl(newUrl)
+            }
           })
 
         return true
       }
     })
+
+    return promise
   }
 }
 

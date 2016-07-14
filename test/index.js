@@ -207,6 +207,7 @@ test("inline", function(t) {
 
 test("custom", function(t) {
   var declOk = false
+  var unTouchedUrlsRegExp = /url\([^A-Z\)]+\)/
   var opts = {
     url: function(URL, decl, from, dirname, to, options) {
       if (!declOk) {
@@ -224,6 +225,50 @@ test("custom", function(t) {
     t,
     "custom",
     "should transform url through custom callback", opts)
+
+  matchCssResult(
+    t,
+    unTouchedUrlsRegExp,
+    "custom",
+    "should fallback to an old url, if custom callback returns bad url ", {
+      url: function() {
+        return ""
+      },
+    })
+
+  compareFixtures(
+    t,
+    "custom",
+    "should support promises for custom url callback", {
+      url: function(URL) {
+        return new Promise(function(resolve) {
+          setTimeout(function() {
+            resolve(URL.toUpperCase())
+          }, 100)
+        })
+      },
+    })
+
+  matchCssResult(
+    t,
+    unTouchedUrlsRegExp,
+    "custom",
+    "should fallback to an old url if custom callback promise was rejected", {
+      url: function() {
+        return Promise.reject()
+      },
+    })
+
+  matchCssResult(
+    t,
+    unTouchedUrlsRegExp,
+    "custom",
+    "should fallback to an old url"
+    + "if custom callback promise was resolved with bad url", {
+      url: function() {
+        return Promise.resolve("")
+      },
+    })
 
   t.end()
 })
