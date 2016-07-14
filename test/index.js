@@ -9,20 +9,51 @@ function read(name) {
   return fs.readFileSync("test/" + name + ".css", "utf8").trim()
 }
 
-function compareFixtures(t, name, msg, opts, postcssOpts, plugin) {
+function runPostcss(name, opts, postcssOpts, plugin) {
   opts = opts || {}
   var pcss = postcss()
+
   if (plugin) {
     pcss.use(plugin())
   }
-  pcss.use(url(opts))
-  var actual = pcss.process(read("fixtures/" + name), postcssOpts).css
-  var expected = read("fixtures/" + name + ".expected")
 
-  // handy thing: checkout actual in the *.actual.css file
-  fs.writeFile("test/fixtures/" + name + ".actual.css", actual)
+  return pcss
+    .use(url(opts))
+    .process(read("fixtures/" + name), postcssOpts)
+}
 
-  t.equal(actual, expected, msg)
+function testCssResult(t, test, name, msg, opts, postcssOpts, plugin) {
+  t.test(msg, function(t) {
+    runPostcss(name, opts, postcssOpts, plugin).then(function(result) {
+      test(t, result.css)
+    })
+  })
+}
+
+function matchCssResult(t, regExp, name, msg, opts, postcssOpts, plugin) {
+  testCssResult(t, function(t, css) {
+    t.ok(css.match(regExp))
+    t.end()
+  }, name, msg, opts, postcssOpts, plugin)
+}
+
+function notMatchCssResult(t, regExp, name, msg, opts, postcssOpts, plugin) {
+  testCssResult(t, function(t, css) {
+    t.notOk(css.match(regExp))
+    t.end()
+  }, name, msg, opts, postcssOpts, plugin)
+}
+
+function compareFixtures(t, name, msg, opts, postcssOpts, plugin) {
+  testCssResult(t, function(t, actual) {
+    var expected = read("fixtures/" + name + ".expected")
+
+    // handy thing: checkout actual in the *.actual.css file
+    fs.writeFile("test/fixtures/" + name + ".actual.css", actual)
+
+    t.equal(actual, expected)
+    t.end()
+  }, name, msg, opts, postcssOpts, plugin)
 }
 
 test("rebase", function(t) {
@@ -86,6 +117,7 @@ test("rebase", function(t) {
 
 test("inline", function(t) {
   var opts = { url: "inline" }
+  var postcssOpts = { from: "test/fixtures/here" }
   compareFixtures(
     t,
     "cant-inline",
@@ -96,90 +128,79 @@ test("inline", function(t) {
     "cant-inline-hash",
     "shouldn't inline url if it has a hash in it", opts)
 
-  t.ok(
-    postcss()
-      .use(url(opts))
-      .process(read("fixtures/inline-from"), { from: "test/fixtures/here" })
-      .css.match(/;base64/),
-    "should inline url from dirname(from)"
-  )
+  matchCssResult(
+    t,
+    /;base64/,
+    "inline-from",
+    "should inline url from dirname(from)",
+    opts, postcssOpts)
 
-  t.notOk(
-    postcss()
-      .use(url({ url: "inline", maxSize: 0 }))
-      .process(read("fixtures/inline-from"), { from: "test/fixtures/here" })
-      .css.match(/;base64/),
-    "should not inline big files from dirname(from)"
-  )
+  notMatchCssResult(
+    t,
+    /;base64/,
+    "inline-from",
+    "should not inline big files from dirname(from)",
+    { url: "inline", maxSize: 0 }, postcssOpts)
 
-  t.notOk(
-    postcss()
-      .use(url({ url: "inline" }))
-      .process(read("fixtures/inline-svg"), { from: "test/fixtures/here" })
-      .css.match(/;base64/),
-    "SVGs shouldn't be encoded in base64"
-  )
+  notMatchCssResult(
+    t,
+    /;base64/,
+    "inline-svg",
+    "SVGs shouldn't be encoded in base64",
+    opts, postcssOpts)
 
-  t.ok(
-    postcss()
-      .use(require("postcss-import")())
-      .use(url(opts))
-      .process(read("fixtures/inline-imported"), { from: "test/fixtures/here" })
-      .css.match(/;base64/),
-    "should inline url of imported files"
-  )
+  matchCssResult(
+    t,
+    /;base64/,
+    "inline-imported",
+    "should inline url of imported files",
+    opts, postcssOpts, require("postcss-import"))
 
-  t.ok(
-    postcss()
-      .use(url({ url: "inline", filter: "**/*.svg" }))
-      .process(read("fixtures/inline-by-type"), { from: "test/fixtures/here" })
-      .css.match(/data\:image\/svg\+xml/),
-    "should inline files matching the minimatch pattern"
-  )
+  matchCssResult(
+    t,
+    /data\:image\/svg\+xml/,
+    "inline-by-type",
+    "should inline files matching the minimatch pattern",
+    { url: "inline", filter: "**/*.svg" }, postcssOpts)
 
-  t.notOk(
-    postcss()
-      .use(url({ url: "inline", filter: "**/*.svg" }))
-      .process(read("fixtures/inline-by-type"), { from: "test/fixtures/here" })
-      .css.match(/data:image\/gif/),
-    "shouldn't inline files not matching the minimatch pattern"
-  )
+  notMatchCssResult(
+    t,
+    /data:image\/gif/,
+    "inline-by-type",
+    "shouldn't inline files not matching the minimatch pattern",
+    { url: "inline", filter: "**/*.svg" }, postcssOpts)
 
-  t.ok(
-    postcss()
-      .use(url({ url: "inline", filter: /\.svg$/ }))
-      .process(read("fixtures/inline-by-type"), { from: "test/fixtures/here" })
-      .css.match(/data\:image\/svg\+xml/),
-    "should inline files matching the regular expression"
-  )
+  matchCssResult(
+    t,
+    /data\:image\/svg\+xml/,
+    "inline-by-type",
+    "should inline files matching the regular expression",
+    { url: "inline", filter: /\.svg$/ }, postcssOpts)
 
-  t.notOk(
-    postcss()
-      .use(url({ url: "inline", filter: /\.svg$/ }))
-      .process(read("fixtures/inline-by-type"), { from: "test/fixtures/here" })
-      .css.match(/data:image\/gif/),
-    "shouldn't inline files not matching the regular expression"
-  )
+  notMatchCssResult(
+    t,
+    /data:image\/gif/,
+    "inline-by-type",
+    "shouldn't inline files not matching the regular expression",
+    { url: "inline", filter: /\.svg$/ }, postcssOpts)
 
   var customFilterFunction = function(filename) {
     return /\.svg$/.test(filename)
   }
 
-  t.ok(
-    postcss()
-      .use(url({ url: "inline", filter: customFilterFunction }))
-      .process(read("fixtures/inline-by-type"), { from: "test/fixtures/here" })
-      .css.match(/data\:image\/svg\+xml/),
-    "should inline files matching the regular expression"
-  )
+  matchCssResult(
+    t,
+    /data\:image\/svg\+xml/,
+    "inline-by-type",
+    "should inline files based on custom filter function result",
+    { url: "inline", filter: customFilterFunction }, postcssOpts)
 
-  t.notOk(
-    postcss()
-      .use(url({ url: "inline", filter: customFilterFunction }))
-      .process(read("fixtures/inline-by-type"), { from: "test/fixtures/here" })
-      .css.match(/data:image\/gif/),
-    "shouldn't inline files not matching the regular expression"
-  )
+  notMatchCssResult(
+    t,
+    /data\:image\/gif/,
+    "inline-by-type",
+    "shouldn't inline files rejected by custom filter function",
+    { url: "inline", filter: customFilterFunction }, postcssOpts)
 
   t.end()
 })
@@ -237,55 +258,53 @@ function testCopy(t, opts, postcssOpts) {
       new RegExp("\"" + assetsPath + "[a-z0-9]{16}\\.png\\?v=1\\.1\\#iefix\""),
   }
 
-  var css = postcss()
-    .use(url(opts))
-    .process(read("fixtures/copy"), postcssOpts)
-    .css
-
-  t.ok(
-    (
-      css.match(patterns.copyPixelPng) &&
-      css.match(patterns.copyPixelGif)
-    ),
+  testCssResult(
+    t,
+    function(t, css) {
+      t.ok(
+        css.match(patterns.copyPixelPng) &&
+        css.match(patterns.copyPixelGif)
+      )
+      t.end()
+    },
+    "copy",
     "should copy asset from the source (`from`) to the assets destination " +
-    "(`to` + `assetsPath`) and rebase the url"
-  )
+    "(`to` + `assetsPath`) and rebase the url",
+    opts, postcssOpts)
 
-  css = postcss()
-    .use(url(opts))
-    .process(read("fixtures/copy-parameters"), postcssOpts)
-    .css
-
-  t.ok(
-    (
-      css.match(patterns.copyParamsPixelPngHash) &&
-      css.match(patterns.copyParamsPixelPngParam) &&
-      css.match(patterns.copyParamsPixelGif)
-    ),
+  testCssResult(
+    t,
+    function(t, css) {
+      t.ok(
+        css.match(patterns.copyParamsPixelPngHash) &&
+        css.match(patterns.copyParamsPixelPngParam) &&
+        css.match(patterns.copyParamsPixelGif)
+      )
+      t.end()
+    },
+    "copy-parameters",
     "should copy asset from the source (`from`) to the assets destination " +
-    "(`to` + `assetsPath`) and rebase the url keeping parameters"
-  )
+    "(`to` + `assetsPath`) and rebase the url keeping parameters",
+    opts, postcssOpts)
 
-  opts.useHash = true
+  opts = Object.assign({}, opts, { useHash: true })
 
-  t.ok(
-    postcss()
-      .use(url(opts))
-      .process(read("fixtures/copy-hash"), postcssOpts)
-      .css.match(patterns.copyHashPixel),
+  matchCssResult(
+    t,
+    patterns.copyHashPixel,
+    "copy-hash",
     "should copy asset from the source (`from`) to the assets destination " +
-    "(`to` + `assetsPath`) and rebase the url (using a hash name)"
-  )
+    "(`to` + `assetsPath`) and rebase the url (using a hash name)",
+    opts, postcssOpts)
 
-  t.ok(
-    postcss()
-      .use(url(opts))
-      .process(read("fixtures/copy-hash-parameters"), postcssOpts)
-      .css.match(patterns.copyHashParamsPixel),
-    "should copy asset from the source (`from`) to the assets destination " +
-      "(`to` + `assetsPath`) and rebase the url (using a hash name) keeping " +
-      "parameters"
-  )
+  matchCssResult(
+    t,
+    patterns.copyHashParamsPixel,
+    "copy-hash-parameters",
+    "should copy asset from the source (`from`) to the assets " +
+    "destination (`to` + `assetsPath`) and rebase the url (using a " +
+    "hash name) keeping parameters",
+    opts, postcssOpts)
 
   t.end()
 }

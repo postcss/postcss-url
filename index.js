@@ -52,7 +52,10 @@ module.exports = postcss.plugin(
 
       var cb = getDeclProcessor(result, from, to, callback, options, isCustom)
 
-      styles.walkDecls(cb)
+      return new Promise(function(resolve) {
+        styles.walkDecls(cb)
+        resolve()
+      })
     }
   }
 )
