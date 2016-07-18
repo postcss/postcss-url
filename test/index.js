@@ -230,7 +230,7 @@ test("custom", function(t) {
     t,
     unTouchedUrlsRegExp,
     "custom",
-    "should fallback to an old url, if custom callback returns bad url ", {
+    "should fallback to an old url, if custom callback returns bad url", {
       url: function() {
         return ""
       },
@@ -240,11 +240,16 @@ test("custom", function(t) {
     t,
     "custom",
     "should support promises for custom url callback", {
-      url: function(URL) {
+      url: function url(URL) {
+        // using index to make first url the being processed
+        // to test, that all the promises are handled
+        var index = url.index || 5
+        url.index = index - 1
+
         return new Promise(function(resolve) {
           setTimeout(function() {
             resolve(URL.toUpperCase())
-          }, 100)
+          }, index)
         })
       },
     })

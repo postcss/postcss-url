@@ -176,7 +176,7 @@ function getDeclProcessor(result, from, to, cb, options, isCustom) {
 
   return function(decl) {
     var id = 0 // for async replacements
-    var promise = Promise.resolve()
+    var promises = []
 
     UrlsPatterns.some(function(pattern) {
       if (pattern.test(decl.value)) {
@@ -190,12 +190,12 @@ function getDeclProcessor(result, from, to, cb, options, isCustom) {
             if (newUrl.then) {
               var marker = "::id" + id++
 
-              promise = newUrl.then(function(newUrl) {
+              promises.push(newUrl.then(function(newUrl) {
                 decl.value = decl.value.replace(
                   marker,
                   buildUrl(newUrl)
                 )
-              })
+              }))
 
               return marker
             }
@@ -208,7 +208,7 @@ function getDeclProcessor(result, from, to, cb, options, isCustom) {
       }
     })
 
-    return promise
+    return Promise.all(promises)
   }
 }
 
