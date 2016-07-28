@@ -87,7 +87,9 @@ Custom transform functions are supported.
 
 #### `basePath`
 
-Specify the base path where to search images from
+Specify the base path or paths where to search images from. Can be a string for a single path or an array of paths. For example `basePath: path.resolve(__dirname, 'src')` or `basePath: [path.resolve(__dirname, 'src'), path.resolve(__dirname, 'node_modules')]`.
+**Example:** given that images are located in `src/assets`, using `basePath: path.resolve(__dirname, 'src')` and `background-image: url("assets/my-image.png");` will resolve the image correctly.
+**Note:** this option will have no effect on paths starting with a `.`, for example `background-image: url("./my-image.png");` or other relative paths.
 
 #### `assetsPath`
 

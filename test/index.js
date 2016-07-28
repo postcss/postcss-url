@@ -1,5 +1,5 @@
 var test = require("tape")
-
+var path = require("path")
 var fs = require("fs")
 
 var url = require("..")
@@ -102,6 +102,52 @@ test("inline", function(t) {
       .process(read("fixtures/inline-from"), { from: "test/fixtures/here" })
       .css.match(/;base64/),
     "should inline url from dirname(from)"
+  )
+
+  t.ok(
+    postcss()
+      .use(url({
+        url: "inline",
+        basePath: path.resolve(__dirname, "../", "test", "fixtures"),
+      }))
+      .process(
+        read("fixtures/inline-base-path"), { from: "test/fixtures/here" }
+      )
+      .css.match(/;base64/),
+    "should inline url from basePath string"
+  )
+
+  t.ok(
+    postcss()
+      .use(url({
+        url: "inline",
+        basePath: [
+          path.resolve(__dirname, "../", "node_modules"),
+          path.resolve(__dirname, "../", "test", "fixtures"),
+        ],
+      }))
+      .process(
+        read("fixtures/inline-base-path"), { from: "test/fixtures/here" }
+      )
+      .css.match(/;base64/),
+    "should inline url from basePath array"
+  )
+
+  t.ok(
+    postcss()
+      .use(url({
+        url: "inline",
+        basePath: [
+          path.resolve(__dirname, "../", "node_modules"),
+          path.resolve(__dirname, "../", "test", "fixtures"),
+        ],
+      }))
+      .process(
+        read("fixtures/inline-base-path-relative"),
+        { from: "test/fixtures/here" }
+      )
+      .css.match(/;base64/),
+    "should inline url from basePath, except when the url is relative"
   )
 
   t.notOk(
