@@ -207,6 +207,7 @@ function processInline(result, from, dirname, oldUrl, to, options, decl) {
   var basePath = options.basePath
   var filter = options.filter
   var fullFilePath
+  var file
 
   maxSize *= 1024
 
@@ -229,16 +230,28 @@ function processInline(result, from, dirname, oldUrl, to, options, decl) {
     return processFallback()
   }
 
-  if (basePath) {
-    fullFilePath = path.join(basePath, link.pathname)
+  if (basePath && link.pathname[0] !== ".") {
+    if (typeof basePath === "string") {
+      fullFilePath = path.join(basePath, link.pathname)
+      file = path.resolve(from, fullFilePath)
+    }
+    else if (basePath.constructor === Array) {
+      for (var i = 0; i < basePath.length; i++) {
+        fullFilePath = path.join(basePath[i], link.pathname)
+        file = path.resolve(from, fullFilePath)
+        if (fs.existsSync(file)) {
+          break
+        }
+      }
+    }
   }
   else {
     fullFilePath = dirname !== from
       ? dirname + path.sep + link.pathname
       : link.pathname
+    file = path.resolve(from, fullFilePath)
   }
 
-  var file = path.resolve(from, fullFilePath)
   if (!fs.existsSync(file)) {
     result.warn("Can't read file '" + file + "', ignoring", { node: decl })
     return
