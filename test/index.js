@@ -346,6 +346,66 @@ test("copy-when-inline-fallback", function(t) {
   testCopy(t, opts, postcssOpts)
 })
 
+function removeFile(filename) {
+  try {
+    fs.unlinkSync(filename);
+  }
+  catch(e) {
+    // ignore file does not exist
+    if (e.toString().indexOf('ENOENT') < 0) {
+      throw e;
+    }
+  }
+}
+
+function fileExists(filename) {
+  try {
+    fs.statSync(filename);
+    return true;
+  }
+  catch(e) {
+    // ignore file does not exist
+    if (e.toString().indexOf('ENOENT') < 0) {
+      throw e;
+    }
+    return false;
+  }
+}
+
+function testFileExists(t, filename) {
+  t.ok(
+    fileExists(filename),
+    'file ' + filename + ' should exist'
+  );
+}
+
+test("copy-nested-with-assetsPath", function(t) {
+  removeFile('test/fixtures/build/assets/pixel.gif');
+  removeFile('test/fixtures/build/assets/imported/pixel.png');
+  var opts = {
+    url: "copy",
+    assetsPath: "assets/nested",
+  }
+  var postcssOpts = {
+    from: "test/fixtures/nested/index.css",
+    to: "test/fixtures/build/index.css",
+  }
+
+  compareFixtures(
+    t,
+    "nested/copy",
+    "should copy assets from relative path starting with ../",
+    opts,
+    postcssOpts,
+    require("postcss-import")
+  );
+
+  testFileExists(t, 'test/fixtures/build/assets/pixel.gif');
+  testFileExists(t, 'test/fixtures/build/assets/imported/pixel.png');
+
+  t.end();
+})
+
 test("function-when-inline-fallback", function(t) {
   var opts = {
     url: "inline",
