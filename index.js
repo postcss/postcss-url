@@ -272,6 +272,33 @@ function processInline(result, from, dirname, oldUrl, to, options, decl) {
 }
 
 /**
+ * Given a source directory and a target filename, return the relative
+ * file path from source to target.
+ * @param source {String} directory path to start from for traversal
+ * @param target {String} directory path and filename to seek from source
+ * @return Relative path (e.g. "../../style.css") as {String}
+ *
+ * Credits: https://gist.github.com/eriwen/1211656
+ */
+function getRelativePath(source, target) {
+  var sep = (source.indexOf("/") !== -1) ? "/" : "\\",
+    targetArr = target.split(sep),
+    sourceArr = source.split(sep),
+    targetPath = targetArr.join(sep),
+    relativePath = "";
+
+  while (targetPath.indexOf(sourceArr.join(sep)) === -1) {
+    sourceArr.pop();
+    relativePath += ".." + sep;
+  }
+
+  var relPathArr = targetArr.slice(sourceArr.length);
+  relPathArr.length && (relativePath += relPathArr.join(sep) + sep);
+
+  return relativePath;
+}
+
+/**
  * Copy images from readed from url() to an specific assets destination
  * (`assetsPath`) and fix url() according to that path.
  * You can rename the assets by a hash or keep the real filename.
@@ -329,8 +356,7 @@ function processCopy(result, from, dirname, oldUrl, to, options, decl) {
     }
     relativeAssetsPath = path.join(
       relativeAssetsPath,
-      dirname.replace(new RegExp(from.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-                                 + "[\/]\?"), ""),
+      getRelativePath(from, dirname),
       path.dirname(oldUrl)
     )
     absoluteAssetsPath = path.resolve(to, relativeAssetsPath)
