@@ -281,11 +281,11 @@ function processInline(result, from, dirname, oldUrl, to, options, decl) {
  * Credits: https://gist.github.com/eriwen/1211656
  */
 function getRelativePath(source, target) {
-  var sep = (source.indexOf("/") !== -1) ? "/" : "\\",
-    targetArr = target.split(sep),
-    sourceArr = source.split(sep),
-    targetPath = targetArr.join(sep),
-    relativePath = "";
+  var sep = (source.indexOf("/") !== -1) ? "/" : "\\";
+  var targetArr = target.split(sep);
+  var sourceArr = source.split(sep);
+  var targetPath = targetArr.join(sep);
+  var relativePath = "";
 
   while (targetPath.indexOf(sourceArr.join(sep)) === -1) {
     sourceArr.pop();
