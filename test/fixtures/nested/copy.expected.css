@@ -1,0 +1,7 @@
+body {
+  clip-path: url("assets/imported/pixel.png")
+}
+
+div {
+  clip-path: url("assets/pixel.gif")
+}
