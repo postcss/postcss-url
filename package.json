@@ -19,7 +19,6 @@
     "lib/index.js"
   ],
   "dependencies": {
-    "directory-encoder": "^0.7.2",
     "js-base64": "^2.1.5",
     "mime": "^1.2.11",
     "minimatch": "^3.0.0",
