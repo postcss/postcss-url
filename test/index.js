@@ -4,7 +4,7 @@ let test = require('tape');
 
 let fs = require('fs');
 
-let url = require('..');
+let url = require('../src');
 let postcss = require('postcss');
 
 function read(name) {
@@ -233,10 +233,16 @@ function testCopy(t, opts, postcssOpts) {
       new RegExp('"' + assetsPath + 'imported\/pixel\\.png\\?foo=bar"'),
     copyParamsPixelGif:
       new RegExp('"' + assetsPath + 'pixel\\.gif\\#el"'),
-    copyHashPixel:
-      new RegExp('"' + assetsPath + '[a-z0-9]{16}\\.png"'),
-    copyHashParamsPixel:
-      new RegExp('"' + assetsPath + '[a-z0-9]{16}\\.png\\?v=1\\.1\\#iefix"')
+    copyXXHashPixel8:
+      new RegExp("\"" + assetsPath + "[a-z0-9]{8}\\.png\""),
+    copyXXHashParamsPixel8:
+      new RegExp("\"" + assetsPath + "[a-z0-9]{8}\\.png\\?v=1\\.1\\#iefix\""),
+    copyXXHashPixel16:
+      new RegExp("\"" + assetsPath + "[a-z0-9]{16}\\.png\""),
+    copyXXHashParamsPixel16:
+      new RegExp("\"" + assetsPath + "[a-z0-9]{16}\\.png\\?v=1\\.1\\#iefix\""),
+    copyCustomHashPixel16:
+      new RegExp("\"" + assetsPath + "123\\.png\""),
   };
 
   let css = postcss()
@@ -269,25 +275,68 @@ function testCopy(t, opts, postcssOpts) {
   );
 
   opts.useHash = true;
+  opts.hashOptions = {
+    method: "xxhash32",
+    shrink: 8,
+  }
 
   t.ok(
     postcss()
       .use(url(opts))
-      .process(read('fixtures/copy-hash'), postcssOpts)
-      .css.match(patterns.copyHashPixel),
-    'should copy asset from the source (`from`) to the assets destination ' +
-    '(`to` + `assetsPath`) and rebase the url (using a hash name)'
-  );
+      .process(read("fixtures/copy-hash"), postcssOpts)
+      .css.match(patterns.copyXXHashPixel8),
+    "should copy asset from the source (`from`) to the assets destination " +
+    "(`to` + `assetsPath`) and rebase the url (using a xxhash32 hash name )"
+  )
 
   t.ok(
     postcss()
       .use(url(opts))
-      .process(read('fixtures/copy-hash-parameters'), postcssOpts)
-      .css.match(patterns.copyHashParamsPixel),
-    'should copy asset from the source (`from`) to the assets destination ' +
-      '(`to` + `assetsPath`) and rebase the url (using a hash name) keeping ' +
-      'parameters'
-  );
+      .process(read("fixtures/copy-hash-parameters"), postcssOpts)
+      .css.match(patterns.copyXXHashParamsPixel8),
+    "should copy asset from the source (`from`) to the assets destination " +
+      "(`to` + `assetsPath`) and rebase the url (using a xxhash32 hash name" +
+      ") keeping parameters"
+  )
+
+  opts.hashOptions = {
+    method: "xxhash64",
+    shrink: 16,
+  }
+
+  t.ok(
+    postcss()
+      .use(url(opts))
+      .process(read("fixtures/copy-hash"), postcssOpts)
+      .css.match(patterns.copyXXHashPixel16),
+    "should copy asset from the source (`from`) to the assets destination " +
+    "(`to` + `assetsPath`) and rebase the url (using a xxhash32 hash name )"
+  )
+
+  t.ok(
+    postcss()
+      .use(url(opts))
+      .process(read("fixtures/copy-hash-parameters"), postcssOpts)
+      .css.match(patterns.copyXXHashParamsPixel16),
+    "should copy asset from the source (`from`) to the assets destination " +
+      "(`to` + `assetsPath`) and rebase the url (using a xxhash32 hash name" +
+      ") keeping parameters"
+  )
+
+  opts.hashOptions = {
+    method: () => "12345",
+    shrink: 3,
+  }
+
+  t.ok(
+    postcss()
+      .use(url(opts))
+      .process(read("fixtures/copy-hash"), postcssOpts)
+      .css.match(patterns.copyCustomHashPixel),
+    "should copy asset from the source (`from`) to the assets destination " +
+    "(`to` + `assetsPath`) and rebase the url (using a custom hash name )"
+  )  
+
 
   t.end();
 }

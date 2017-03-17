@@ -1,7 +1,11 @@
 'use strict';
 
 const path = require('path');
-const crypto = require('crypto');
+const calcHash = require('../calc-hash');
+const url = require('url');
+const fs = require('fs');
+const pathIsAbsolute = require('path-is-absolute');
+const mkdirp = require('mkdirp');
 
 /**
  * Copy images from readed from url() to an specific assets destination
@@ -32,9 +36,9 @@ module.exports = function processCopy(originUrl, dir, options, result, decl) {
   let name = path.basename(filePath);
   let useHash = options.useHash || false;
 
-    // check if the file exist in the source
+  // check if the file exist in the source
   try {
-    var contents = fs.readFileSync(filePath);
+    var contents = fs.readFileSync(filePath)
   } catch (err) {
     result.warn('Can\'t read file \'' + filePath + '\', ignoring', { node: decl });
     return;
@@ -43,14 +47,16 @@ module.exports = function processCopy(originUrl, dir, options, result, decl) {
   if (useHash) {
     absoluteAssetsPath = path.resolve(dir.to, relativeAssetsPath);
 
-        // create the destination directory if it not exist
+    // create the destination directory if it not exist
     mkdirp.sync(absoluteAssetsPath);
 
-    name = crypto.createHash('sha1')
-        .update(contents)
-        .digest('hex')
-        .substr(0, 16);
-    name = name + path.extname(filePath);
+    let hashOptions = options.hashOptions || {
+      method: "xxhash32",
+      shrink: 8
+    }
+
+    name = calcHash(contents, hashOptions) + path.extname(filePath);
+
     nameUrl = name + (fileLink.search || '') + (fileLink.hash || '');
   } else {
     if (!pathIsAbsolute.posix(dir.from)) {

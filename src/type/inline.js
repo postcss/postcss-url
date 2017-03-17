@@ -4,7 +4,7 @@ const path = require('path');
 const url = require('url');
 const fs = require('fs');
 const mime = require('mime');
-const SvgEncoder = require('directory-encoder/lib/svg-uri-encoder.js');
+const svgEncode = require("../svg-encode");
 
 const processCopy = require('./copy');
 const processCustom = require('./custom');
@@ -66,9 +66,7 @@ module.exports = function (originUrl, dir, options, result, decl) {
     return;
   }
   if (mimeType === 'image/svg+xml') {
-    let svg = new SvgEncoder(file);
-
-    return svg.encode();
+    return svgEncode(file);
   }
 
   file = fs.readFileSync(file);

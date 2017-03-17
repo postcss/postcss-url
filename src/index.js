@@ -3,14 +3,11 @@
 /**
  * Module dependencies.
  */
-const fs = require('fs');
 const path = require('path');
 
 const postcss = require('postcss');
 const url = require('url');
-const mkdirp = require('mkdirp');
 const minimatch = require('minimatch');
-const pathIsAbsolute = require('path-is-absolute');
 /**
  * @typedef UrlRegExp
  * @name UrlRegExp

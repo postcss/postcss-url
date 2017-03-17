@@ -189,7 +189,7 @@
         "space-before-function-paren": [1, {"anonymous": "always", "named": "never"}], // require or disallow space before function opening parenthesis (off by default)
         "space-in-brackets": [1, "never"], // require or disallow spaces inside brackets (off by default)
         "space-in-parens": [1, "never"], // require or disallow spaces inside parentheses (off by default)
-        "space-return-throw-case": [1, "always"], // require a space after return, throw, and case
+        "space-return-throw-case": [1], // require a space after return, throw, and case
         "space-unary-ops": [1, {"words": true, "nonwords": false}], // Require or disallow spaces before/after unary operators (words on by default, nonwords off by default)
         "spaced-line-comment": [1, "always"], // require or disallow a space immediately following the // in a line comment (off by default)
         "wrap-regex": 0, // require regex literals to be wrapped in parentheses (off by default)

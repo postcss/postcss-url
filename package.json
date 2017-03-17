@@ -16,16 +16,16 @@
   "license": "MIT",
   "repository": "https://github.com/postcss/postcss-url.git",
   "files": [
-    "index.js"
+    "src/index.js"
   ],
   "dependencies": {
-    "directory-encoder": "^0.7.2",
     "js-base64": "^2.1.5",
     "mime": "^1.2.11",
     "minimatch": "^3.0.0",
     "mkdirp": "^0.5.0",
     "path-is-absolute": "^1.0.0",
-    "postcss": "^5.0.0"
+    "postcss": "^5.0.0",
+    "xxhashjs": "^0.2.1"
   },
   "devDependencies": {
     "eslint": "^3.16.1",
