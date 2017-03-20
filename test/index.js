@@ -95,8 +95,10 @@ test('inline', function (t) {
 
   compareFixtures(
     t,
-    'cant-inline-hash',
-    'shouldn\'t inline url if it has a hash in it', opts);
+    'can-inline-hash',
+    'should inline url if it has a hash in it',
+    { url: 'inline', encodeType: 'encodeURIComponent' },
+    { from: 'test/fixtures/here' });
 
   t.ok(
     postcss()
@@ -116,7 +118,7 @@ test('inline', function (t) {
 
   t.notOk(
     postcss()
-      .use(url({ url: 'inline' }))
+      .use(url({ url: 'inline', encodeType: 'encodeURIComponent' }))
       .process(read('fixtures/inline-svg'), { from: 'test/fixtures/here' })
       .css.match(/;base64/),
     'SVGs shouldn\'t be encoded in base64'
@@ -133,7 +135,7 @@ test('inline', function (t) {
 
   t.ok(
     postcss()
-      .use(url({ url: 'inline', filter: '**/*.svg' }))
+      .use(url({ url: 'inline', filter: '**/*.svg', encodeType: 'encodeURIComponent' }))
       .process(read('fixtures/inline-by-type'), { from: 'test/fixtures/here' })
       .css.match(/data\:image\/svg\+xml/),
     'should inline files matching the minimatch pattern'
@@ -141,7 +143,7 @@ test('inline', function (t) {
 
   t.notOk(
     postcss()
-      .use(url({ url: 'inline', filter: '**/*.svg' }))
+      .use(url({ url: 'inline', filter: '**/*.svg', encodeType: 'encodeURIComponent' }))
       .process(read('fixtures/inline-by-type'), { from: 'test/fixtures/here' })
       .css.match(/data:image\/gif/),
     'shouldn\'t inline files not matching the minimatch pattern'
@@ -149,7 +151,7 @@ test('inline', function (t) {
 
   t.ok(
     postcss()
-      .use(url({ url: 'inline', filter: /\.svg$/ }))
+      .use(url({ url: 'inline', filter: /\.svg$/, encodeType: 'encodeURIComponent' }))
       .process(read('fixtures/inline-by-type'), { from: 'test/fixtures/here' })
       .css.match(/data\:image\/svg\+xml/),
     'should inline files matching the regular expression'
@@ -157,7 +159,7 @@ test('inline', function (t) {
 
   t.notOk(
     postcss()
-      .use(url({ url: 'inline', filter: /\.svg$/ }))
+      .use(url({ url: 'inline', filter: /\.svg$/, encodeType: 'encodeURIComponent' }))
       .process(read('fixtures/inline-by-type'), { from: 'test/fixtures/here' })
       .css.match(/data:image\/gif/),
     'shouldn\'t inline files not matching the regular expression'
@@ -169,7 +171,7 @@ test('inline', function (t) {
 
   t.ok(
     postcss()
-      .use(url({ url: 'inline', filter: customFilterFunction }))
+      .use(url({ url: 'inline', filter: customFilterFunction, encodeType: 'encodeURIComponent' }))
       .process(read('fixtures/inline-by-type'), { from: 'test/fixtures/here' })
       .css.match(/data\:image\/svg\+xml/),
     'should inline files matching the regular expression'

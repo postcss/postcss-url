@@ -149,7 +149,6 @@ const getDeclDirname = (decl) => {
  */
 function isUrlShouldBeIgnored(url) {
     return url[0] === '/' ||
-        url[0] === '#' ||
         url.indexOf('data:') === 0 ||
         /^[a-z]+:\/\//.test(url);
 }

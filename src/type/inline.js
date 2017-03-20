@@ -4,7 +4,7 @@ const path = require('path');
 const url = require('url');
 const fs = require('fs');
 const mime = require('mime');
-const svgEncode = require("../svg-encode");
+const encodeFile = require("../encode-file");
 
 const processCopy = require('./copy');
 const processCustom = require('./custom');
@@ -17,27 +17,25 @@ module.exports = function (originUrl, dir, options, result, decl) {
   let maxSize = options.maxSize === undefined ? 14 : options.maxSize;
   let fallback = options.fallback;
   let basePath = options.basePath;
+  let encodeType = options.encodeType || 'base64';
   let fullFilePath;
 
   maxSize = maxSize * 1024;
 
   function processFallback() {
     if (typeof fallback === 'function') {
-      return processCustom(fallback)(dir.from, dir.to, options, result);
+      options.url = fallback;
+      return processCustom(originUrl, dir, options, result, decl);
     }
     switch (fallback) {
     case 'copy':
-      return processCopy(dir.from, dir.to, options, result);
+      return processCopy(originUrl, dir, options, result, decl);
     default:
       return;
     }
   }
 
-    // ignore URLs with hashes/fragments, they can't be inlined
   let link = url.parse(originUrl);
-  if (link.hash) {
-    return processFallback();
-  }
 
   if (basePath) {
     fullFilePath = path.join(basePath, link.pathname);
@@ -53,7 +51,7 @@ module.exports = function (originUrl, dir, options, result, decl) {
     return;
   }
 
-  let stats = fs.statSync(file);
+  let stats = fs.statSync(file)
 
   if (stats.size >= maxSize) {
     return processFallback();
@@ -65,10 +63,7 @@ module.exports = function (originUrl, dir, options, result, decl) {
     result.warn('Unable to find asset mime-type for ' + file, { node: decl });
     return;
   }
-  if (mimeType === 'image/svg+xml') {
-    return svgEncode(file);
-  }
 
-  file = fs.readFileSync(file);
-  return 'data:' + mimeType + ';base64,' + file.toString('base64');
+  const content = fs.readFileSync(file);
+  return encodeFile(content, mimeType, encodeType);
 };
