@@ -29,8 +29,8 @@ module.exports = function processCopy(originUrl, dir, options, result, decl) {
   let filePathUrl = path.resolve(dir.file, originUrl);
   let nameUrl = path.basename(filePathUrl);
 
-    // remove hash or parameters in the url.
-    // e.g., url('glyphicons-halflings-regular.eot?#iefix')
+  // remove hash or parameters in the url.
+  // e.g., url('glyphicons-halflings-regular.eot?#iefix')
   let fileLink = url.parse(originUrl);
   let filePath = path.resolve(dir.file, fileLink.pathname);
   let name = path.basename(filePath);
