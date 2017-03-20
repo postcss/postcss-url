@@ -8,6 +8,9 @@ const encodeFile = require("../encode-file");
 
 const processCopy = require('./copy');
 const processCustom = require('./custom');
+
+const restoreHash = (content, hash) => hash ? content + hash : content;
+
 /**
  * Inline image in url()
  *
@@ -15,7 +18,7 @@ const processCustom = require('./custom');
  */
 module.exports = function (originUrl, dir, options, result, decl) {
   let maxSize = options.maxSize === undefined ? 14 : options.maxSize;
-  let fallback = options.fallback;
+  let fallback = options.url;
   let basePath = options.basePath;
   let encodeType = options.encodeType || 'base64';
   let fullFilePath;
@@ -52,12 +55,18 @@ module.exports = function (originUrl, dir, options, result, decl) {
   }
 
   let stats = fs.statSync(file)
-
   if (stats.size >= maxSize) {
     return processFallback();
   }
 
   let mimeType = mime.lookup(file);
+
+  // Warn for svg with hashes/fragments
+  if (link.hash && mimeType === 'image/svg+xml') {
+    result.warn(
+      'Image type is svg and link contains #. Postcss-url cant handle svg fragments. ' + file, { node: decl }
+    );
+  }
 
   if (!mimeType) {
     result.warn('Unable to find asset mime-type for ' + file, { node: decl });
@@ -65,5 +74,5 @@ module.exports = function (originUrl, dir, options, result, decl) {
   }
 
   const content = fs.readFileSync(file);
-  return encodeFile(content, mimeType, encodeType);
+  return restoreHash(encodeFile(content, mimeType, encodeType), link.hash);
 };
