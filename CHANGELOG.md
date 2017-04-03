@@ -1,3 +1,15 @@
+# 6.0.0 - 2017-04-02
+
+- Changed: es5 -> es6
+- Added: multiple options for postcss-url as array
+- Added: multiple `basePath` as array
+- Added: _copy_ accept `basePath` param
+- Changed: hash function to xxhash
+- Changed: arguments in custom url callback
+- Changed: no processing callback in _inline_ without `maxSize`
+- Changed: `filter` matches by asset path, relative to project (process.cwd)
+- Changed: _copy_ can work without postcss `to` option, but required `assetPath`
+
 # 5.1.2 - 2016-05-01
 
 - Fixed: node 6 compatibility
