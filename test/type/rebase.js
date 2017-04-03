@@ -1,6 +1,14 @@
 describe('rebase', () => {
     const opts = {};
 
+    it('rebase with empty options', () => {
+        processedCss(
+            'fixtures/copy-hash',
+            undefined,
+            { from: 'test/fixtures/here' }
+        ).css;
+    });
+
     compareFixtures(
         'cant-rebase',
         'shouldn\'t rebase url if not info available');
