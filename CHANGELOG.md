@@ -1,3 +1,7 @@
+# 6.0.1 - 2017-04-03
+- Fixed: bug with empty options
+  ([#87](https://github.com/postcss/postcss-url/issues/87))
+
 # 6.0.0 - 2017-04-02
 
 - Changed: es5 -> es6
