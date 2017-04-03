@@ -1,0 +1,7 @@
+body {
+  background: url("pixel-baseDir1.png")
+}
+
+body:before {
+  background: url("pixel-baseDir2.png")
+}
