@@ -82,8 +82,8 @@ describe('inline', () => {
     });
 
     it('should inline files matching by custom function', () => {
-        const customFilterFunction = function(filename) {
-            return /\.svg$/.test(filename);
+        const customFilterFunction = function(asset) {
+            return /\.svg$/.test(asset.absolutePath);
         };
         const css = processedCss(
             'fixtures/inline-by-type',

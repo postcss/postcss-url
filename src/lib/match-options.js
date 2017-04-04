@@ -1,28 +1,33 @@
 'use strict';
 
 const minimatch = require('minimatch');
+const path = require('path');
 
 /**
- * Returns wether the given filename matches the given pattern
+ * Returns whether the given asset matches the given pattern
  * Allways returns true if the given pattern is empty
  *
- * @param {String} filename the processed filename
+ * @param {PostcssUrl~Asset} asset the processed asset
  * @param {String|RegExp|Function} pattern A minimatch string,
- *   regular expression or function to test the filename
+ *   regular expression or function to test the asset
  *
  * @returns {Boolean}
  */
-const matchesFilter = (filename, pattern) => {
+const matchesFilter = (asset, pattern) => {
+    const relativeToRoot = path.relative(process.cwd(), asset.absolutePath);
+
     if (typeof pattern === 'string') {
         pattern = minimatch.filter(pattern);
+
+        return pattern(relativeToRoot);
     }
 
     if (pattern instanceof RegExp) {
-        return pattern.test(filename);
+        return pattern.test(relativeToRoot);
     }
 
     if (pattern instanceof Function) {
-        return pattern(filename);
+        return pattern(asset);
     }
 
     return true;
@@ -31,18 +36,18 @@ const matchesFilter = (filename, pattern) => {
 /**
  * Matching options by filter property
  *
- * @param {String} filepath - relative to project (process.cwd) asset path
+ * @param {PostcssUrl~Asset} asset
  * @param {PostcssUrl~Options|PostcssUrl~Options[]} options
  * @returns {PostcssUrl~Options|undefined}
  */
-const matchOptions = (filepath, options) => {
+const matchOptions = (asset, options) => {
     if (!options) return;
 
     if (Array.isArray(options)) {
-        return options.find((option) => matchesFilter(filepath, option.filter));
+        return options.find((option) => matchesFilter(asset, option.filter));
     }
 
-    if (!matchesFilter(filepath, options.filter)) return;
+    if (!matchesFilter(asset, options.filter)) return;
 
     return options;
 };
