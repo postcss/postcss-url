@@ -61,13 +61,15 @@ const getPattern = (decl) =>
  * @returns {String|undefined}
  */
 const replaceUrl = (url, dir, options, result, decl) => {
-    const asset = prepareAsset(url, dir, options.basePath);
+    const asset = prepareAsset(url, dir, decl);
     const relativeToRoot = path.relative(process.cwd(), asset.absolutePath);
 
     const matchedOptions = matchOptions(relativeToRoot, options);
+
     if (!matchedOptions) return;
 
     const isFunction = typeof matchedOptions.url === 'function';
+
     if (!isFunction && isUrlShouldBeIgnored(url, matchedOptions)) return;
 
     const mode = isFunction ? 'custom' : (matchedOptions.url || 'rebase');
@@ -114,7 +116,7 @@ module.exports = postcss.plugin('postcss-url', (options) => {
 
             return declProcessor(options, result, dir, decl);
         });
-    }
+    };
 });
 
 /**

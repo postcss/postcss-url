@@ -16,6 +16,17 @@ const normalize = (assetUrl) => {
 };
 
 /**
+ * @param {String} assetUrl
+ * @returns {Boolean}
+ */
+const isUrlWithoutPathname = (assetUrl) => {
+    return assetUrl[0] === '#'
+        || assetUrl.indexOf('%23') === 0
+        || assetUrl.indexOf('data:') === 0
+        || /^[a-z]+:\/\//.test(assetUrl);
+};
+
+/**
  * Check if url is absolute, hash or data-uri
  *
  * @param {String} assetUrl
@@ -23,11 +34,7 @@ const normalize = (assetUrl) => {
  * @returns {Boolean}
  */
 const isUrlShouldBeIgnored = (assetUrl, options) => {
-    return assetUrl[0] === '#'
-        || assetUrl.indexOf('%23') === 0
-        || (assetUrl[0] === '/' && !options.basePath)
-        || assetUrl.indexOf('data:') === 0
-        || /^[a-z]+:\/\//.test(assetUrl);
+    return isUrlWithoutPathname(assetUrl) || (assetUrl[0] === '/' && !options.basePath);
 };
 
 /**
@@ -49,13 +56,22 @@ const getTargetDir = (dir) =>
     dir.from !== dir.to ? dir.to : process.cwd();
 
 /**
+ * Stylesheet file path from decl
+ *
+ * @param {Decl} decl
+ * @returns {String}
+ */
+const getPathDeclFile = (decl) =>
+    decl.source && decl.source.input && decl.source.input.file;
+
+/**
  * Stylesheet file dir from decl
  *
  * @param {Decl} decl
  * @returns {String}
  */
 const getDirDeclFile = (decl) => {
-    const filename = decl.source && decl.source.input && decl.source.input.file;
+    const filename = getPathDeclFile(decl);
 
     return filename ? path.dirname(filename) : process.cwd();
 };
@@ -85,11 +101,15 @@ const getPathByBasePath = (basePath, dirFrom, relPath) => {
  *
  * @param {String} assetUrl
  * @param {PostcssUrl~Dir} dir
+ * @param {Decl} decl
  * @returns {PostcssUrl~Asset}
  */
-const prepareAsset = (assetUrl, dir) => {
+const prepareAsset = (assetUrl, dir, decl) => {
     const parsedUrl = url.parse(assetUrl);
-    const absolutePath = path.join(dir.file, parsedUrl.pathname);
+    const pathname = !isUrlWithoutPathname(assetUrl) ? parsedUrl.pathname : null;
+    const absolutePath = pathname
+        ? path.join(dir.file, pathname)
+        : getPathDeclFile(decl);
 
     return {
         url: assetUrl,
@@ -106,6 +126,7 @@ module.exports = {
     prepareAsset,
     getAssetsPath,
     getDirDeclFile,
+    getPathDeclFile,
     getTargetDir,
     getPathByBasePath,
     isUrlShouldBeIgnored

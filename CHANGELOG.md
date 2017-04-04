@@ -1,3 +1,7 @@
+# 6.0.3 - 2017-04-04
+Fixed: hash url error
+  ([#89])(https://github.com/postcss/postcss-url/issues/89)
+  
 # 6.0.2 - 2017-04-04
 Fixed: match options before analyzing
   ([pull-88](https://github.com/postcss/postcss-url/pull/88))
