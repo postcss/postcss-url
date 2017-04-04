@@ -61,21 +61,20 @@ const getPattern = (decl) =>
  * @returns {String|undefined}
  */
 const replaceUrl = (url, dir, options, result, decl) => {
-    const isFunction = typeof options.url === 'function';
-
-    if (!isFunction && isUrlShouldBeIgnored(url, options)) return;
-
     const asset = prepareAsset(url, dir, options.basePath);
     const relativeToRoot = path.relative(process.cwd(), asset.absolutePath);
 
-    options = matchOptions(relativeToRoot, options);
-    if (!options) return;
+    const matchedOptions = matchOptions(relativeToRoot, options);
+    if (!matchedOptions) return;
 
-    const mode = isFunction ? 'custom' : (options.url || 'rebase');
-    const urlProcessor = getUrlProcessor(mode || 'rebase');
+    const isFunction = typeof matchedOptions.url === 'function';
+    if (!isFunction && isUrlShouldBeIgnored(url, matchedOptions)) return;
+
+    const mode = isFunction ? 'custom' : (matchedOptions.url || 'rebase');
+    const urlProcessor = getUrlProcessor(mode);
     const warn = (message) => decl.warn(result, message);
 
-    return urlProcessor(asset, dir, options, decl, warn, result);
+    return urlProcessor(asset, dir, matchedOptions, decl, warn, result);
 };
 
 /**
