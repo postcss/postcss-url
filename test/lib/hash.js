@@ -25,4 +25,13 @@ describe('hash', () => {
 
         assert.equal(calcHash(fileContent, options), '123');
     });
+
+    it('should calc hash with crypto method', () => {
+        const options = {
+            method: 'sha256',
+            shrink: 16
+        };
+
+        assert.equal(calcHash(fileContent, options), '09d46019c7a75b96');
+    });
 });
