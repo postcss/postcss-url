@@ -1,3 +1,7 @@
+# 6.0.2 - 2017-04-04
+Fixed: match options before analyzing
+  ([pull-88](https://github.com/postcss/postcss-url/pull/88))
+
 # 6.0.1 - 2017-04-03
 - Fixed: bug with empty options
   ([#87](https://github.com/postcss/postcss-url/issues/87))
