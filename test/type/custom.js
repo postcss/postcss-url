@@ -17,4 +17,12 @@ describe('custom', () => {
         'should transform url through custom callback',
         opts
     );
+
+    it.only('should work with steven css and config :)', () => {
+        const css = processedCss(
+            'fixtures/steven-example',
+            { url: function() {return 'replaced-font-url'} }
+        );
+        assert.match(css, /replaced-font-url/);
+    });
 });
