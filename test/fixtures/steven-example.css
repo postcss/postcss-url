@@ -1,0 +1,27 @@
+@font-face {
+    font-family: fake;
+    font-style: normal;
+    font-weight: 400;
+    src: url("/Users/stevendvachon/BatchBlue/mashapp-email-templates/test/fixtures/fonts/fake.woff2") format("woff2"), url("/Users/stevendvachon/BatchBlue/mashapp-email-templates/test/fixtures/fonts/fake.woff") format("woff");
+}
+body {
+    background-color: #123456;
+    font-family: fake;
+}
+#id {
+    color: #654321;
+}
+.class {
+    color: black;
+}
+.class:hover {
+    color: white;
+}
+.unused {
+    color: green;
+}
+@media screen {
+    .unused-too {
+        color: green;
+    }
+}
