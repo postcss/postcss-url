@@ -108,14 +108,14 @@ const prepareAsset = (assetUrl, dir, decl) => {
     const parsedUrl = url.parse(assetUrl);
     const pathname = !isUrlWithoutPathname(assetUrl) ? parsedUrl.pathname : null;
     const absolutePath = pathname
-        ? path.join(dir.file, pathname)
+        ? path.resolve(path.join(dir.file, pathname))
         : getPathDeclFile(decl);
 
     return {
         url: assetUrl,
-        pathname: parsedUrl.pathname,
-        absolutePath: path.resolve(absolutePath),
-        relativePath: path.relative(dir.from, absolutePath),
+        pathname,
+        absolutePath: absolutePath || dir.from,
+        relativePath: absolutePath ? path.relative(dir.from, absolutePath) : '.',
         search: (parsedUrl.search || ''),
         hash: (parsedUrl.hash || '')
     };

@@ -17,4 +17,12 @@ describe('custom', () => {
         'should transform url through custom callback',
         opts
     );
+    compareFixtures(
+        'custom',
+        'should transform url through custom callback with arrayp options',
+        [
+            { url: 'rebase', filter: /\.svg$/ },
+            opts
+        ]
+    );
 });
