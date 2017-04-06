@@ -146,7 +146,7 @@ describe('paths', () => {
         const checkCustomAsset = (assetUrl) => {
             const asset = paths.prepareAsset(assetUrl, dirs, decl);
 
-            assert.equal(asset.absolutePath, path.resolve('/project/styles/style.css'));
+            assert.equal(asset.absolutePath, '/project/styles/style.css');
             assert.equal(paths.normalize(asset.relativePath), '../styles/style.css');
         };
 
