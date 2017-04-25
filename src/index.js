@@ -62,9 +62,8 @@ const getPattern = (decl) =>
  */
 const replaceUrl = (url, dir, options, result, decl) => {
     const asset = prepareAsset(url, dir, decl);
-    const relativeToRoot = path.relative(process.cwd(), asset.absolutePath);
 
-    const matchedOptions = matchOptions(relativeToRoot, options);
+    const matchedOptions = matchOptions(asset, options);
 
     if (!matchedOptions) return;
 
