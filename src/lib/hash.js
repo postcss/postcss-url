@@ -1,5 +1,6 @@
 'use strict';
 
+const crypto = require('crypto');
 const xxh = require('xxhashjs');
 const HEXBASE = 16;
 
@@ -23,13 +24,30 @@ const getHash = (content, options) => {
         return options.method(content);
     }
 
-    return getxxhash(content, options);
+    if (options.method.indexOf('xxhash') === 0) {
+        return getxxhash(content, options);
+    }
+
+    try {
+        const hashFunc = crypto.createHash(options.method);
+
+        return hashFunc.update(content)
+        .digest('hex');
+    } catch (e) {
+        return null;
+    }
 };
 
 module.exports = function(content, options) {
     options = options || defaultHashOptions;
 
-    const hash = getHash(content, options);
+    let hash = getHash(content, options);
+
+    if (hash == null) {
+        // bad hash method; fallback to defaults
+        // TODO: warning/error reporting?
+        hash = getHash(content, defaultHashOptions);
+    }
 
     return options.shrink ? hash.substr(0, options.shrink) : hash;
 };
