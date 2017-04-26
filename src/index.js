@@ -5,6 +5,7 @@ const postcss = require('postcss');
 
 const paths = require('./lib/paths');
 
+const getPathDeclFile = paths.getPathDeclFile;
 const getDirDeclFile = paths.getDirDeclFile;
 const prepareAsset = paths.prepareAsset;
 const isUrlShouldBeIgnored = paths.isUrlShouldBeIgnored;
@@ -74,8 +75,13 @@ const replaceUrl = (url, dir, options, result, decl) => {
     const mode = isFunction ? 'custom' : (matchedOptions.url || 'rebase');
     const urlProcessor = getUrlProcessor(mode);
     const warn = (message) => decl.warn(result, message);
+    const addDependency = (file) => result.messages.push({
+        type: 'dependency',
+        file,
+        parent: getPathDeclFile(decl)
+    });
 
-    return urlProcessor(asset, dir, matchedOptions, decl, warn, result);
+    return urlProcessor(asset, dir, matchedOptions, decl, warn, result, addDependency);
 };
 
 /**

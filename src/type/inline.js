@@ -35,10 +35,12 @@ function processFallback(originUrl, dir, options) {
  * @param {PostcssUrl~Options} options
  * @param {PostcssUrl~Decl} decl
  * @param {Function} warn
+ * @param {Result} result
+ * @param {Function} addDependency
  *
  * @returns {String|Undefined}
  */
-module.exports = function(asset, dir, options, decl, warn) {
+module.exports = function(asset, dir, options, decl, warn, result, addDependency) {
     const file = getFile(asset, options, dir, warn);
 
     if (!file) return;
@@ -68,6 +70,8 @@ module.exports = function(asset, dir, options, decl, warn) {
         // eslint-disable-next-line max-len
         warn(`Image type is svg and link contains #. Postcss-url cant handle svg fragments. SVG file fully inlined. ${file.path}`);
     }
+
+    addDependency(file.path);
 
     const encodedStr = encodeFile(file, encodeType);
 

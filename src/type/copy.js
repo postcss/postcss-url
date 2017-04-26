@@ -26,12 +26,14 @@ const getHashName = (file, options) =>
  * @param {PostcssUrl~Asset} asset
  * @param {PostcssUrl~Dir} dir
  * @param {PostcssUrl~Option} options
- * @param {PostscssUrl~Decl} decl
+ * @param {PostcssUrl~Decl} decl
  * @param {Function} warn
+ * @param {Result} result
+ * @param {Function} addDependency
  *
  * @returns {String|Undefined}
  */
-module.exports = function processCopy(asset, dir, options, decl, warn) {
+module.exports = function processCopy(asset, dir, options, decl, warn, result, addDependency) {
     if (!options.assetsPath && dir.from === dir.to) {
         warn('Option `to` of postcss is required, ignoring');
 
@@ -58,6 +60,8 @@ module.exports = function processCopy(asset, dir, options, decl, warn) {
     if (!fs.existsSync(newAssetPath)) {
         fs.writeFileSync(newAssetPath, file.contents);
     }
+
+    addDependency(file.path);
 
     return `${newRelativeAssetPath}${asset.search}${asset.hash}`;
 };
