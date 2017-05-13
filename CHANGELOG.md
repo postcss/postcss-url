@@ -1,4 +1,11 @@
+# 6.1.0 - 2017-05-13
+
+Changed: filter functions access to asset object
+Added: support crypto hash function methods
+Added: support for postcss's dependency messaging
+
 # 6.0.4 - 2017-04-06
+
 Fixed: prepare asset without file path in decl
   ([#94](https://github.com/postcss/postcss-url/issues/94))
   
