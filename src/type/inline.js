@@ -66,7 +66,7 @@ module.exports = function(asset, dir, options, decl, warn, result, addDependency
     const encodeType = options.encodeType || defaultEncodeType;
 
     // Warn for svg with hashes/fragments
-    if (isSvg && asset.hash) {
+    if (isSvg && asset.hash && !options.ignoreFragmentWarning) {
         // eslint-disable-next-line max-len
         warn(`Image type is svg and link contains #. Postcss-url cant handle svg fragments. SVG file fully inlined. ${file.path}`);
     }
