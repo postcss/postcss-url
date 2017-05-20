@@ -11,8 +11,15 @@ describe('inline', () => {
     );
 
     compareFixtures(
+        'can-inline-hash-include',
+        'should inline url and include hash, if it has a hash in it and option is enabled',
+        { url: 'inline', encodeType: 'encodeURIComponent', includeUriFragment: true },
+        postcssOpts
+    );
+
+    compareFixtures(
         'can-inline-hash',
-        'should inline url if it has a hash in it',
+        'should inline url and not include hash, if it has a hash in it',
         { url: 'inline', encodeType: 'encodeURIComponent' },
         postcssOpts
     );
