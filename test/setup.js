@@ -20,13 +20,16 @@ function compareFixtures(name, msg, opts, postcssOpts, plugin) {
         }
 
         pcss.use(url(opts));
-        const actual = pcss.process(read(`fixtures/${name}`), postcssOpts).css;
-        const expected = read(`fixtures/${name}.expected`);
+        pcss.process(read(`fixtures/${name}`), postcssOpts)
+          .then((result) => {
+              const actual = result.css;
+              const expected = read(`fixtures/${name}.expected`);
 
-        // handy thing: checkout actual in the *.actual.css file
-        fs.writeFile(`test/fixtures/${name}.actual.css`, actual);
+            // handy thing: checkout actual in the *.actual.css file
+              fs.writeFile(`test/fixtures/${name}.actual.css`, actual);
 
-        assert.equal(actual, expected);
+              assert.equal(actual, expected);
+          });
     });
 }
 
