@@ -137,6 +137,7 @@ Checkout [tests](test) for examples.
   * `encodeType` - `base64`, `encodeURI`, `encodeURIComponent`
   * `maxSize` - file size in kbytes
   * `fallback` - `copy` or custom function for files > `maxSize`
+  * `ignoreFragmentWarning` - do not warn when an SVG URL with a fragment is inlined
 * `copy`
     * `basePath` - path or array of paths to search assets (relative to `from`, or absolute)
     * `assetsPath` - directory to copy assets (relative to `to` or absolute)
@@ -178,6 +179,14 @@ You can use this option to adjust urls for CDN.
 _(default: `14`)_
 
 Specify the maximum file size to inline (in kbytes)
+
+#### `ignoreFragmentWarning`
+_(default: `false`)_
+
+Do not warn when an SVG URL with a fragment is inlined.
+PostCSS-URL does not support partial inlining.  The entire SVG file will be inlined.  By default a warning will be issued when this occurs.
+
+**NOTE:** Only files less than the maximum size will be inlined.
 
 #### `filter`
 
