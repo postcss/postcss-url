@@ -1,3 +1,7 @@
+# 7.0.0 - 2017-06-05
+
+Added: PostCss 6 support
+
 # 6.3.0 - 2017-06-04
 
 Added: `multi` property for `custom`
