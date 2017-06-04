@@ -1,3 +1,9 @@
+# 6.3.0 - 2017-06-04
+
+Added: `multi` property for `custom`
+Added: option to include fragment identifiers on inline data URIs
+Added: support ignoring SVG fragment inlining warning
+
 # 6.1.0 - 2017-05-13
 
 Changed: filter functions access to asset object
