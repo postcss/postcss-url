@@ -113,6 +113,7 @@ const prepareAsset = (assetUrl, dir, decl) => {
 
     return {
         url: assetUrl,
+        originUrl: assetUrl,
         pathname,
         absolutePath: absolutePath || dir.from,
         relativePath: absolutePath ? path.relative(dir.from, absolutePath) : '.',

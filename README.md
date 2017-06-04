@@ -115,6 +115,9 @@ after:
 
 ### Muiltiple options
 
+process first matched option by default.
+```multi: true``` in `custom` will processing with other options
+
 ```js
 const options = [
     { filter: '**/assets/copy/*.png', url: 'copy', assetsPath: 'img', useHash: true },
@@ -145,6 +148,7 @@ Checkout [tests](test) for examples.
     * `useHash` - use filehash(xxhash) for naming
     * `hashOptions` - options for hash function
 * `custom {Function}`
+    * `multi` - processing with other options
 
 ### Options list
 

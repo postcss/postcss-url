@@ -14,16 +14,16 @@ describe('misc', () => {
           const dependencies = result.messages.filter((m) => m.type === 'dependency');
 
           assert.deepEqual(dependencies, [
-            {
-              type: 'dependency',
-              file: path.resolve('test/fixtures/imported/pixel.png'),
-              parent: path.resolve('test/fixtures/copy.css'),
-            },
-            {
-              type: 'dependency',
-              file: path.resolve('test/fixtures/pixel.gif'),
-              parent: path.resolve('test/fixtures/copy.css'),
-            }
+              {
+                  type: 'dependency',
+                  file: path.resolve('test/fixtures/imported/pixel.png'),
+                  parent: path.resolve('test/fixtures/copy.css')
+              },
+              {
+                  type: 'dependency',
+                  file: path.resolve('test/fixtures/pixel.gif'),
+                  parent: path.resolve('test/fixtures/copy.css')
+              }
           ]);
       });
     });
@@ -41,16 +41,16 @@ describe('misc', () => {
           const dependencies = result.messages.filter((m) => m.type === 'dependency');
 
           assert.deepEqual(dependencies, [
-            {
-              type: 'dependency',
-              file: path.resolve('test/fixtures/imported/pixel.png'),
-              parent: path.resolve('test/fixtures/copy.css'),
-            },
-            {
-              type: 'dependency',
-              file: path.resolve('test/fixtures/pixel.gif'),
-              parent: path.resolve('test/fixtures/copy.css'),
-            }
+              {
+                  type: 'dependency',
+                  file: path.resolve('test/fixtures/imported/pixel.png'),
+                  parent: path.resolve('test/fixtures/copy.css')
+              },
+              {
+                  type: 'dependency',
+                  file: path.resolve('test/fixtures/pixel.gif'),
+                  parent: path.resolve('test/fixtures/copy.css')
+              }
           ]);
       });
     });

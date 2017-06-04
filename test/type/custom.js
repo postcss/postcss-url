@@ -25,4 +25,23 @@ describe('custom', () => {
             opts
         ]
     );
+
+    compareFixtures(
+        'custom-multi',
+        'should transform url through custom callback with multi option',
+        [
+            { url: 'rebase', filter: /\.svg$/ },
+            {
+                url(asset) {
+                    return asset.url.slice(1);
+                }
+            },
+            {
+                url(asset) {
+                    return asset.url.toLowerCase();
+                },
+                multi: true
+            }
+        ]
+    );
 });
