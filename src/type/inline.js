@@ -75,5 +75,5 @@ module.exports = function(asset, dir, options, decl, warn, result, addDependency
 
     const encodedStr = encodeFile(file, encodeType);
 
-    return asset.hash ? encodedStr + asset.hash : encodedStr;
+    return (options.includeUriFragment && asset.hash) ? encodedStr + asset.hash : encodedStr;
 };
