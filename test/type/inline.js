@@ -51,13 +51,13 @@ describe('inline', () => {
     });
 
     it('should inline url of imported files', () => {
-        const css = postcss()
+        postcss()
             .use(require('postcss-import')())
             .use(postcssUrl(opts))
             .process(read('fixtures/inline-imported'), { from: 'test/fixtures/here' })
-            .css;
-
-        assert.ok(css.match(/;base64/));
+            .then((result) => {
+                assert.ok(result.css.match(/;base64/));
+            });
     });
 
     it('should inline files matching the minimatch pattern', () => {
