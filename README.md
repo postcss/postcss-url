@@ -142,6 +142,7 @@ Checkout [tests](test) for examples.
   * `maxSize` - file size in kbytes
   * `fallback` - `copy` or custom function for files > `maxSize`
   * `ignoreFragmentWarning` - do not warn when an SVG URL with a fragment is inlined
+  * `optimizeSvgEncode` - reduce size of inlined svg (IE9+, Android 3+)
 * `copy`
     * `basePath` - path or array of paths to search assets (relative to `from`, or absolute)
     * `assetsPath` - directory to copy assets (relative to `to` or absolute)
