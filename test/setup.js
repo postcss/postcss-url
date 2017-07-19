@@ -20,7 +20,8 @@ function compareFixtures(name, msg, opts, postcssOpts, plugin) {
         }
 
         pcss.use(url(opts));
-        pcss.process(read(`fixtures/${name}`), postcssOpts)
+
+        return pcss.process(read(`fixtures/${name}`), postcssOpts)
           .then((result) => {
               const actual = result.css;
               const expected = read(`fixtures/${name}.expected`);
