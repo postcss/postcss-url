@@ -1,3 +1,8 @@
+# 7.1.0 - 2017-07-19
+
+Added: `optimizeSvgEncode` option for inlined svg ([#103](https://github.com/postcss/postcss-url/issues/103))
+Added: `rebase` as fallback in copy ([#104](https://github.com/postcss/postcss-url/issues/104))
+
 # 7.0.0 - 2017-06-05
 
 Added: PostCss 6 support
