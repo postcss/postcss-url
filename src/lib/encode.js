@@ -1,22 +1,55 @@
 'use strict';
 
 /**
+ * Optimize encoding SVG files (IE9+, Android 3+)
+ * @see https://codepen.io/tigt/post/optimizing-svgs-in-data-uris
+ *
+ * @param {String} svgContent
+ * @returns {String}
+ */
+const optimizedSvgEncode = (svgContent) => {
+    const result = encodeURIComponent(svgContent)
+        .replace(/%3D/g, '=')
+        .replace(/%3A/g, ':')
+        .replace(/%2F/g, '/')
+        .replace(/%22/g, "'")
+        .replace(/%2C/g, ',')
+        .replace(/%3B/g, ';');
+
+    //
+    return result.replace(/(%[0-9A-Z]{2})/g, (matched, AZ) => {
+        return AZ.toLowerCase();
+    });
+};
+/**
  * Encoding file contents to string
  *
  * @param {PostcssUrl~File} file
  * @param {String} [encodeType=base64|encodeURI|encodeURIComponent]
+ * @param {Boolean} [shouldOptimizeURIEncode]
  * @returns {string}
  */
-module.exports = (file, encodeType) => {
-    const inlineDecl = `data:${file.mimeType}`;
+
+module.exports = (file, encodeType, shouldOptimizeURIEncode) => {
+    const dataMime = `data:${file.mimeType}`;
 
     if (encodeType === 'base64') {
-        return `${inlineDecl};base64,${file.contents.toString('base64')}`;
+        return `${dataMime};base64,${file.contents.toString('base64')}`;
     }
 
     const encodeFunc = encodeType === 'encodeURI' ? encodeURI : encodeURIComponent;
 
-    return `${inlineDecl},${encodeFunc(file.contents.toString('utf8'))
+    const content = file.contents.toString('utf8')
+        // removing new lines
+        .replace(/\n+/g, '');
+
+    let encodedStr = (shouldOptimizeURIEncode && encodeType === 'encodeURIComponent')
+        ? optimizedSvgEncode(content)
+        : encodeFunc(content);
+
+    encodedStr = encodedStr
         .replace(/%20/g, ' ')
-        .replace(/#/g, '%23')}`;
+        .replace(/#/g, '%23');
+
+    return `${dataMime},${encodedStr}`;
 };

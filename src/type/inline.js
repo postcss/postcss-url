@@ -3,6 +3,7 @@
 const fs = require('fs');
 
 const processCopy = require('./copy');
+const processRebase = require('./rebase');
 
 const encodeFile = require('../lib/encode');
 const getFile = require('../lib/get-file');
@@ -21,6 +22,8 @@ function processFallback(originUrl, dir, options) {
     switch (options.fallback) {
         case 'copy':
             return processCopy.apply(null, arguments);
+        case 'rebase':
+            return processRebase.apply(null, arguments);
         default:
             return;
     }
@@ -62,7 +65,7 @@ module.exports = function(asset, dir, options, decl, warn, result, addDependency
     }
 
     const isSvg = file.mimeType === 'image/svg+xml';
-    const defaultEncodeType = isSvg ? 'encodeUriComponent' : 'base64';
+    const defaultEncodeType = isSvg ? 'encodeURIComponent' : 'base64';
     const encodeType = options.encodeType || defaultEncodeType;
 
     // Warn for svg with hashes/fragments
@@ -73,7 +76,7 @@ module.exports = function(asset, dir, options, decl, warn, result, addDependency
 
     addDependency(file.path);
 
-    const encodedStr = encodeFile(file, encodeType);
+    const encodedStr = encodeFile(file, encodeType, options.optimizeSvgEncode && isSvg);
 
     return (options.includeUriFragment && asset.hash) ? encodedStr + asset.hash : encodedStr;
 };

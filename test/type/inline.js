@@ -50,6 +50,13 @@ describe('inline', () => {
         assert.notOk(css.match(/;base64/));
     });
 
+    compareFixtures(
+        'inline-svg-optimized',
+        'should inline svg optmized',
+        { url: 'inline', optimizeSvgEncode: true },
+        postcssOpts
+    );
+
     it('should inline url of imported files', () => {
         postcss()
             .use(require('postcss-import')())
@@ -105,20 +112,29 @@ describe('inline', () => {
         );
     });
 
-    it('function when inline fallback', () => {
-        const optsWithFallback = {
-            url: 'inline',
-            maxSize: 0.0001,
-            fallback() {
-                return 'one';
-            }
-        };
-
+    describe('function when inline fallback', () => {
         compareFixtures(
             'inline-fallback-function',
             'should respect the fallback function',
-            optsWithFallback,
+            {
+                url: 'inline',
+                maxSize: 0.0001,
+                fallback() {
+                    return 'one';
+                }
+            },
             { from: 'test/fixtures/index.css' }
+        );
+
+        compareFixtures(
+            'inline-fallback-rebase',
+            'should respect the fallback rebase',
+            {
+                url: 'inline',
+                maxSize: 0.0001,
+                fallback: 'rebase'
+            },
+            { from: 'test/fixtures/index.css', to: 'test/fixtures/build/index.css' }
         );
     });
 
