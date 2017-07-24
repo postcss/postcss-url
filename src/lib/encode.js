@@ -16,7 +16,7 @@ const optimizedSvgEncode = (svgContent) => {
         .replace(/%2C/g, ',')
         .replace(/%3B/g, ';');
 
-    //
+    // Lowercase the hex-escapes for better gzipping
     return result.replace(/(%[0-9A-Z]{2})/g, (matched, AZ) => {
         return AZ.toLowerCase();
     });
@@ -30,7 +30,7 @@ const optimizedSvgEncode = (svgContent) => {
  * @returns {string}
  */
 
-module.exports = (file, encodeType, shouldOptimizeURIEncode) => {
+module.exports = (file, encodeType, shouldOptimizeSvgEncode) => {
     const dataMime = `data:${file.mimeType}`;
 
     if (encodeType === 'base64') {
@@ -43,7 +43,7 @@ module.exports = (file, encodeType, shouldOptimizeURIEncode) => {
         // removing new lines
         .replace(/\n+/g, '');
 
-    let encodedStr = (shouldOptimizeURIEncode && encodeType === 'encodeURIComponent')
+    let encodedStr = (shouldOptimizeSvgEncode && encodeType === 'encodeURIComponent')
         ? optimizedSvgEncode(content)
         : encodeFunc(content);
 

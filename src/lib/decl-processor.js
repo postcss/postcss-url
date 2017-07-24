@@ -23,6 +23,8 @@ const URL_PATTERNS = [
     /(AlphaImageLoader\(\s*src=['"]?)([^"')]+)(["'])/g
 ];
 
+const WITH_QUOTES = /^['"]/;
+
 /**
  * Restricted modes
  *
@@ -120,7 +122,14 @@ const declProcessor = (from, to, options, result, decl) => {
         .replace(pattern, (matched, before, url, after) => {
             const newUrl = replaceUrl(url, dir, options, result, decl);
 
-            return newUrl ? `${before}${newUrl}${after}` : matched;
+            if (!newUrl) return matched;
+
+            if (WITH_QUOTES.test(newUrl) && WITH_QUOTES.test(after)) {
+                before = before.slice(0, -1);
+                after = after.slice(1);
+            }
+
+            return `${before}${newUrl}${after}`;
         });
 };
 

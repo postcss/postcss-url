@@ -76,7 +76,12 @@ module.exports = function(asset, dir, options, decl, warn, result, addDependency
 
     addDependency(file.path);
 
-    const encodedStr = encodeFile(file, encodeType, options.optimizeSvgEncode && isSvg);
+    const optimizeSvgEncode = isSvg && options.optimizeSvgEncode;
+    const encodedStr = encodeFile(file, encodeType, optimizeSvgEncode);
+    const resultValue = options.includeUriFragment && asset.hash
+        ? encodedStr + asset.hash
+        : encodedStr;
 
-    return (options.includeUriFragment && asset.hash) ? encodedStr + asset.hash : encodedStr;
+    // wrap url by quotes if optimized svg
+    return optimizeSvgEncode ? `"${resultValue}"` : resultValue;
 };

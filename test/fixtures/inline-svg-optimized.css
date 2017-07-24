@@ -1,3 +1,5 @@
 body {
-  background: url("svg-to-optimize.svg")
+  background: url(svg-to-optimize.svg);
+  background: url('svg-to-optimize.svg');
+  background: url("svg-to-optimize.svg");
 }
