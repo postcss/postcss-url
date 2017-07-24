@@ -1,3 +1,7 @@
+# 7.1.0 - 2017-07-24
+
+Fixed: force wrap url by quotes for `optimizeSvgEncode` ([#105](https://github.com/postcss/postcss-url/issues/105))
+
 # 7.1.0 - 2017-07-19
 
 Added: `optimizeSvgEncode` option for inlined svg ([#103](https://github.com/postcss/postcss-url/issues/103))
