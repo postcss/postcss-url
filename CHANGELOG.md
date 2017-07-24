@@ -1,4 +1,4 @@
-# 7.1.0 - 2017-07-24
+# 7.1.1 - 2017-07-24
 
 Fixed: force wrap url by quotes for `optimizeSvgEncode` ([#105](https://github.com/postcss/postcss-url/issues/105))
 
