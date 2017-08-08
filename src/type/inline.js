@@ -82,6 +82,6 @@ module.exports = function(asset, dir, options, decl, warn, result, addDependency
         ? encodedStr + asset.hash
         : encodedStr;
 
-    // wrap url by quotes if optimized svg
-    return optimizeSvgEncode ? `"${resultValue}"` : resultValue;
+    // wrap url by quotes if percent-encoded svg
+    return isSvg && encodeType !== 'base64' ? `"${resultValue}"` : resultValue;
 };
