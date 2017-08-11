@@ -57,6 +57,13 @@ describe('inline', () => {
         postcssOpts
     );
 
+    compareFixtures(
+        'inline-svg-with-parens',
+        'should inline svg wrapped by quotes',
+        { url: 'inline' },
+        postcssOpts
+    );
+
     it('should inline url of imported files', () => {
         postcss()
             .use(require('postcss-import')())
