@@ -135,6 +135,7 @@ Checkout [tests](test) for examples.
 ### Options combinations
 
 * `rebase` - _default_
+  * `relative` - prepend a `./` in front of rebased path
 * `inline`
   * `basePath` - path or array of paths to search assets (relative to `from`, or absolute)
   * `encodeType` - `base64`, `encodeURI`, `encodeURIComponent`
@@ -180,6 +181,11 @@ Custom transform function. Takes following arguments:
 
 And should return the transformed url.
 You can use this option to adjust urls for CDN.
+
+#### `relative`
+_(default: `false`)_
+
+Specifies if a `./` should be prepended to rebased path.
 
 #### `maxSize`
 _(default: `14`)_
