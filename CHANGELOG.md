@@ -1,4 +1,8 @@
-# 7.1.2 - 2017-08-11
+#7.2.0 - 2017-10-17
+
+Added: `assetsPath` option for `rebase`
+
+#7.1.2 - 2017-08-11
 
 Fixed: wrap url by quotes for inlined svg ([#78](https://github.com/postcss/postcss-url/issues/78))
 
