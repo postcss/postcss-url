@@ -135,6 +135,7 @@ Checkout [tests](test) for examples.
 ### Options combinations
 
 * `rebase` - _default_
+  * `assetsPath` - directory to copy assets (relative to `to` or absolute)
 * `inline`
   * `basePath` - path or array of paths to search assets (relative to `from`, or absolute)
   * `encodeType` - `base64`, `encodeURI`, `encodeURIComponent`

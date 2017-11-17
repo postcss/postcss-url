@@ -1,5 +1,37 @@
+const rebase = require('../../src/type/rebase');
+
 describe('rebase', () => {
     const opts = {};
+
+    describe('base unit', () => {
+        it('should calc relative path', () => {
+            const res = rebase({
+                absolutePath: '/project/blocks/item/1.png',
+                search: '',
+                hash: ''
+            }, {
+                to: '/project/build'
+            });
+
+            assert.equal(res, '../blocks/item/1.png');
+        });
+
+        it('should calc relative path by assetsPath option', () => {
+            const res = rebase({
+                absolutePath: '/project/blocks/item/1.png',
+                search: '',
+                hash: ''
+            }, {
+                //  in gulp plugin from === to
+                to: '/project/blocks/item/1.png',
+                from: '/project/blocks/item/1.png'
+            }, {
+                assetsPath: '/project/build'
+            });
+
+            assert.equal(res, '../blocks/item/1.png');
+        });
+    });
 
     it('rebase with empty options', () => {
         processedCss(
