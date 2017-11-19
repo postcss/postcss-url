@@ -1,3 +1,7 @@
+#7.2.1 - 2017-10-19
+
+Fixed: dependency security ([#108](https://github.com/postcss/postcss-url/issues/108)) ([#109](https://github.com/postcss/postcss-url/issues/109))
+
 #7.2.0 - 2017-10-17
 
 Added: `assetsPath` option for `rebase`
