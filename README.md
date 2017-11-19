@@ -2,6 +2,8 @@
 
 [![Travis Build Status](https://img.shields.io/travis/postcss/postcss-url/master.svg?label=unix%20build)](https://travis-ci.org/postcss/postcss-url)
 [![AppVeyor Build Status](https://img.shields.io/appveyor/ci/MoOx/postcss-url/master.svg?label=windows%20build)](https://ci.appveyor.com/project/MoOx/postcss-url)
+[![dependencies Status](https://david-dm.org/postcss/postcss-url/status.svg)](https://david-dm.org/postcss/postcss-url)
+[![devDependencies Status](https://david-dm.org/postcss/postcss-url/dev-status.svg)](https://david-dm.org/postcss/postcss-url?type=dev)
 
 > [PostCSS](https://github.com/postcss/postcss) plugin to rebase, inline or copy on url().
 
