@@ -74,6 +74,7 @@ describe('copy when inline fallback', () => {
 
 function testCopy(opts, postcssOpts) {
     const optsWithHash = Object.assign({}, opts, { useHash: true });
+    const optsWithAppendHash = Object.assign({}, opts, { useHash: true, hashOptions: { append: true } });
     const assetsPath = opts.assetsPath ? `${opts.assetsPath}\/` : '';
     const patterns = {
         copyPixelPng: new RegExp(`"${assetsPath}imported\/pixel\.png"`),
@@ -82,7 +83,8 @@ function testCopy(opts, postcssOpts) {
         copyParamsPixelPngParam: new RegExp(`"${assetsPath}imported\/pixel\\.png\\?foo=bar"`),
         copyParamsPixelGif: new RegExp(`"${assetsPath}pixel\\.gif\\#el"`),
         copyXXHashPixel8: new RegExp(`"${assetsPath}[a-z0-9]{8}\\.png"`),
-        copyXXHashParamsPixel8: new RegExp(`"${assetsPath}[a-z0-9]{8}\\.png\\?v=1\\.1\\#iefix"`)
+        copyXXHashParamsPixel8: new RegExp(`"${assetsPath}[a-z0-9]{8}\\.png\\?v=1\\.1\\#iefix"`),
+        copyXXHashPrependPixel8: new RegExp(`"${assetsPath}pixel_[a-z0-9]{8}\\.png"`)
     };
     const matchAll = (css, patternsKeys) =>
         assert.ok(patternsKeys.every((pat) => css.match(patterns[pat])));
@@ -122,6 +124,16 @@ function testCopy(opts, postcssOpts) {
             );
 
             matchAll(css, ['copyXXHashParamsPixel8']);
+        });
+
+        it('rebase the url using a hash and prepending the original filename', () => {
+            const css = processedCss(
+                'fixtures/copy-hash',
+                optsWithAppendHash,
+                postcssOpts
+            );
+
+            matchAll(css, ['copyXXHashPrependPixel8']);
         });
     });
 }
