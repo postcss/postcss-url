@@ -1,3 +1,7 @@
+# 7.3.1 - 2018-02-25
+
+Fixed: ignore urls which starts with `//` ([PR#117](https://github.com/postcss/postcss-url/pull/117))
+
 # 7.3.0 - 2017-10-26
 
 Added: hash option - `append` ([PR#114](https://github.com/postcss/postcss-url/pull/114))
