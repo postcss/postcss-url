@@ -16,6 +16,21 @@ describe('paths', () => {
         ].every(isUrlShouldBeIgnored));
     });
 
+    it('should ignore some urls with basePath', () => {
+        const isUrlShouldBeIgnored = (url) =>
+            paths.isUrlShouldBeIgnored(url, {
+                basePath: ['/path']
+            });
+
+        assert.ok([
+            '#hash',
+            '%23encodedHash',
+            '//somecdnpath.com/asset.png',
+            'data:someDataInlined',
+            'https://somecdnpath.com/asset.png'
+        ].every(isUrlShouldBeIgnored));
+    });
+
     it('should\'t ignore absolute urls if have basePath', () => {
         assert.notOk(paths.isUrlShouldBeIgnored('/absoluteUrl', {
             basePath: ['/path']
