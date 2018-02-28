@@ -19,7 +19,7 @@ const prepareAsset = paths.prepareAsset;
  * @type {UrlRegExp[]}
  */
 const URL_PATTERNS = [
-    /(url\(\s*['"]?)(?!~)([^"')]+)(["']?\s*\))/g,
+    /(url\(\s*['"]?)([^"')]+)(["']?\s*\))/g,
     /(AlphaImageLoader\(\s*src=['"]?)([^"')]+)(["'])/g
 ];
 
