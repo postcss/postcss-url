@@ -1,3 +1,8 @@
+compareFixtures(
+  'skip-urls-with-tilde',
+  'should skip URLs with tilde'
+);
+
 describe('copy without assetsPath', () => {
     const opts = {
         url: 'copy'

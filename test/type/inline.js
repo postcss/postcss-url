@@ -24,6 +24,11 @@ describe('inline', () => {
         postcssOpts
     );
 
+    compareFixtures(
+      'skip-urls-with-tilde',
+      'should skip URLs with tilde'
+    );
+
     it('should inline url from dirname(from)', () => {
         const css = processedCss('fixtures/inline-from', opts, postcssOpts);
 
