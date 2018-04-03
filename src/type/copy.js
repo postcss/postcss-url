@@ -13,7 +13,7 @@ const getAssetsPath = paths.getAssetsPath;
 const normalize = paths.normalize;
 
 const getHashName = (file, options) =>
-    (options && options.append ? (path.basename(file.path, path.extname(file.path)) + '_') : '')
+    (options && options.append ? (`${path.basename(file.path, path.extname(file.path))}_`) : '')
      + calcHash(file.contents, options)
      + path.extname(file.path);
 
