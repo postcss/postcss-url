@@ -19,6 +19,9 @@
   "files": [
     "src"
   ],
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "dependencies": {
     "mime": "^1.4.1",
     "minimatch": "^3.0.4",
