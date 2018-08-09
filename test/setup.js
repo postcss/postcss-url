@@ -27,7 +27,7 @@ function compareFixtures(name, msg, opts, postcssOpts, plugin) {
               const expected = read(`fixtures/${name}.expected`);
 
             // handy thing: checkout actual in the *.actual.css file
-              fs.writeFile(`test/fixtures/${name}.actual.css`, actual);
+              fs.writeFileSync(`test/fixtures/${name}.actual.css`, actual);
 
               assert.equal(actual, expected);
           });
