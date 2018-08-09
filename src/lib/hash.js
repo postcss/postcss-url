@@ -15,9 +15,9 @@ const getxxhash = (content, options) => {
     const seed = 0;
 
     return hashFunc(seed)
-    .update(content)
-    .digest()
-    .toString(HEXBASE);
+        .update(content)
+        .digest()
+        .toString(HEXBASE);
 };
 
 const getHash = (content, options) => {
@@ -33,7 +33,7 @@ const getHash = (content, options) => {
         const hashFunc = crypto.createHash(options.method);
 
         return hashFunc.update(content)
-        .digest('hex');
+            .digest('hex');
     } catch (e) {
         return null;
     }

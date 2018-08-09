@@ -87,7 +87,7 @@ describe('rebase', () => {
         { from: 'test/fixtures/here', to: 'there' }
     );
     compareFixtures(
-      'skip-urls-with-tilde',
-      'should skip URLs with tilde'
+        'skip-urls-with-tilde',
+        'should skip URLs with tilde'
     );
 });

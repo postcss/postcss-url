@@ -95,6 +95,7 @@ module.exports = {
         'no-template-curly-in-string': 'error',
         'computed-property-spacing': ['error', 'never'],
         'template-curly-spacing': ['error', 'never'],
-        'object-shorthand': ['error', 'always']
+        'object-shorthand': ['error', 'always'],
+        'no-useless-escape': 0
     }
 };
