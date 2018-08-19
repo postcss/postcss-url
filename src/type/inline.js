@@ -43,6 +43,7 @@ function processFallback(originUrl, dir, options) {
  *
  * @returns {String|Undefined}
  */
+// eslint-disable-next-line complexity
 module.exports = function(asset, dir, options, decl, warn, result, addDependency) {
     const file = getFile(asset, options, dir, warn);
 

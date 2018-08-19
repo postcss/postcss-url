@@ -25,8 +25,8 @@ describe('inline', () => {
     );
 
     compareFixtures(
-      'skip-urls-with-tilde',
-      'should skip URLs with tilde'
+        'skip-urls-with-tilde',
+        'should skip URLs with tilde'
     );
 
     it('should inline url from dirname(from)', () => {

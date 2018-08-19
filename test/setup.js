@@ -22,15 +22,15 @@ function compareFixtures(name, msg, opts, postcssOpts, plugin) {
         pcss.use(url(opts));
 
         return pcss.process(read(`fixtures/${name}`), postcssOpts)
-          .then((result) => {
-              const actual = result.css;
-              const expected = read(`fixtures/${name}.expected`);
+            .then((result) => {
+                const actual = result.css;
+                const expected = read(`fixtures/${name}.expected`);
 
-            // handy thing: checkout actual in the *.actual.css file
-              fs.writeFile(`test/fixtures/${name}.actual.css`, actual);
+                // handy thing: checkout actual in the *.actual.css file
+                fs.writeFile(`test/fixtures/${name}.actual.css`, actual, () => {});
 
-              assert.equal(actual, expected);
-          });
+                assert.equal(actual, expected);
+            });
     });
 }
 
@@ -40,7 +40,7 @@ function read(name) {
 
 function processedCss(fixtures, urlOpts, postcssOpts) {
     return postcss()
-    .use(url(urlOpts))
-    .process(read(fixtures), postcssOpts)
+        .use(url(urlOpts))
+        .process(read(fixtures), postcssOpts)
         .css;
 }
