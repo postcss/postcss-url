@@ -6,38 +6,38 @@ const mime = require('mime');
 const getPathByBasePath = require('./paths').getPathByBasePath;
 
 const readFileAsync = (filePath) => {
-  return new Promise((resolse, reject) => {
-    fs.readFile(filePath, (err, data) => {
-      if (err) {
-        reject(err);
-      }
-      resolve(data);
+    return new Promise((resolve, reject) => {
+        fs.readFile(filePath, (err, data) => {
+            if (err) {
+                reject(err);
+            }
+            resolve(data);
+        });
     });
-  });
 };
 
 const existFileAsync = (filePath) => {
-  new Promise((resolve, reject) =>
-    fs.access(filePath, (err) => {
-      if (err) {
-        reject();
-      }
-      resolve(path);
-    })
-  )
+    return new Promise((resolve, reject) =>
+        fs.access(filePath, (err) => {
+            if (err) {
+                reject();
+            }
+            resolve(filePath);
+        })
+    );
 };
 
 const oneSuccess = (promises) => {
-  return Promise.all(promises.map(p => {
-    return p.then(
-      val => Promise.reject(val),
-      err => Promise.resolve(err)
+    return Promise.all(promises.map((p) => {
+        return p.then(
+            (val) => Promise.reject(val),
+            (err) => Promise.resolve(err)
+        );
+    })).then(
+        (errors) => Promise.reject(errors),
+        (val) => Promise.resolve(val)
     );
-  })).then(
-    errors => Promise.reject(errors),
-    val => Promise.resolve(val)
-  );
-}
+};
 
 /**
  *
@@ -48,21 +48,22 @@ const oneSuccess = (promises) => {
  * @returns {Promise<PostcssUrl~File | Undefined>}
  */
 const getFile = (asset, options, dir, warn) => {
-  const paths = options.basePath ?
-    getPathByBasePath(options.basePath, dir.from, asset.pathname) :
-    [asset.absolutePath];
+    const paths = options.basePath
+        ? getPathByBasePath(options.basePath, dir.from, asset.pathname)
+        : [asset.absolutePath];
 
-  return oneSuccess(paths.map(path => existFileAsync(path)))
-    .then(path => readFileAsync(path))
-    .then(contents => ({
-      path: filePath,
-      contents: contents,
-      mimeType: mime.getType(filePath)
-    }))
-    .catch(() => {
-      warn(`Can't read file '${paths.join()}', ignoring`);
-      return;
-    });
+    return oneSuccess(paths.map((path) => existFileAsync(path)))
+        .then((path) => readFileAsync(path)
+            .then((contents) => ({
+                path,
+                contents,
+                mimeType: mime.getType(path)
+            })))
+        .catch(() => {
+            warn(`Can't read file '${paths.join()}', ignoring`);
+
+            return;
+        });
 };
 
 module.exports = getFile;

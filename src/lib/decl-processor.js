@@ -95,20 +95,21 @@ const replaceUrl = (url, dir, options, result, decl) => {
         return wrappedUrlProcessor(asset, dir, option);
     };
 
-    const resultPromise;
+    let resultPromise;
+
     if (Array.isArray(matchedOptions)) {
         resultPromise = Promise.resolve();
         matchedOptions.forEach((option) => {
-          resultPromise = resultPromise.then(() => {
-            return process(option);
-          });
+            resultPromise = resultPromise.then(() => {
+                return process(option);
+            });
         });
     } else {
-      resultPromise = process(matchedOptions);
+        resultPromise = process(matchedOptions);
     }
 
-    return resultPromise.then((url) => {
-      asset.url = url;
+    return resultPromise.then((newUrl) => {
+        asset.url = newUrl;
     });
 };
 
@@ -130,27 +131,26 @@ const declProcessor = (from, to, options, result, decl) => {
     const promises = [];
 
     decl.value = decl.value
-      .replace(pattern, (matched, before, url, after) => {
-        const newUrlPromise = replaceUrl(url, dir, options, result, decl);;
+        .replace(pattern, (matched, before, url, after) => {
+            const newUrlPromise = replaceUrl(url, dir, options, result, decl);
+            const marker = `::id${id++}`;
 
-        const marker = `::id${id++}`;
+            promises.push(
+                newUrlPromise
+                    .then((newUrl) => {
+                        if (!newUrl) return matched;
 
-        promises.push(
-          newUrlPromise
-            .then((newUrl) => {
-              if (!newUrl) return matched;
+                        if (WITH_QUOTES.test(newUrl) && WITH_QUOTES.test(after)) {
+                            before = before.slice(0, -1);
+                            after = after.slice(1);
+                        }
 
-              if (WITH_QUOTES.test(newUrl) && WITH_QUOTES.test(after)) {
-                before = before.slice(0, -1);
-                after = after.slice(1);
-              }
+                        decl.value = decl.value.replace(marker, `${before}${newUrl}${after}`);
+                    })
+            );
 
-              decl.value = decl.value.replace(marker, `${before}${newUrl}${after}`);
-            })
-        );
-
-        return marker;
-    });
+            return marker;
+        });
 
     return Promise.all(promises);
 };

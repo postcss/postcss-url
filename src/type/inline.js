@@ -1,7 +1,5 @@
 'use strict';
 
-const fs = require('fs');
-
 const processCopy = require('./copy');
 const processRebase = require('./rebase');
 
@@ -27,31 +25,30 @@ const processFallback = (originUrl, dir, options) => {
         default:
             return Promise.resolve();
     }
-}
-
-const inlineProcess = (file, asset, warn, options) => {
-  const isSvg = file.mimeType === 'image/svg+xml';
-  const defaultEncodeType = isSvg ? 'encodeURIComponent' : 'base64';
-  const encodeType = options.encodeType || defaultEncodeType;
-
-  // Warn for svg with hashes/fragments
-  if (isSvg && asset.hash && !options.ignoreFragmentWarning) {
-      // eslint-disable-next-line max-len
-      warn(`Image type is svg and link contains #. Postcss-url cant handle svg fragments. SVG file fully inlined. ${file.path}`);
-  }
-
-  addDependency(file.path);
-
-  const optimizeSvgEncode = isSvg && options.optimizeSvgEncode;
-  const encodedStr = encodeFile(file, encodeType, optimizeSvgEncode);
-  const resultValue = options.includeUriFragment && asset.hash
-      ? encodedStr + asset.hash
-      : encodedStr;
-
-  // wrap url by quotes if percent-encoded svg
-  return isSvg && encodeType !== 'base64' ? `"${resultValue}"` : resultValue;
 };
 
+const inlineProcess = (file, asset, warn, addDependency, options) => {
+    const isSvg = file.mimeType === 'image/svg+xml';
+    const defaultEncodeType = isSvg ? 'encodeURIComponent' : 'base64';
+    const encodeType = options.encodeType || defaultEncodeType;
+
+    // Warn for svg with hashes/fragments
+    if (isSvg && asset.hash && !options.ignoreFragmentWarning) {
+        // eslint-disable-next-line max-len
+        warn(`Image type is svg and link contains #. Postcss-url cant handle svg fragments. SVG file fully inlined. ${file.path}`);
+    }
+
+    addDependency(file.path);
+
+    const optimizeSvgEncode = isSvg && options.optimizeSvgEncode;
+    const encodedStr = encodeFile(file, encodeType, optimizeSvgEncode);
+    const resultValue = options.includeUriFragment && asset.hash
+        ? encodedStr + asset.hash
+        : encodedStr;
+
+    // wrap url by quotes if percent-encoded svg
+    return isSvg && encodeType !== 'base64' ? `"${resultValue}"` : resultValue;
+};
 
 /**
  * Inline image in url()
@@ -70,33 +67,25 @@ const inlineProcess = (file, asset, warn, options) => {
 // eslint-disable-next-line complexity
 module.exports = function(asset, dir, options, decl, warn, addDependency) {
     return getFile(asset, options, dir, warn)
-      .then(file => {
-        if (!file) return;
+        .then((file) => {
+            if (!file) return;
 
-        if (!file.mimeType) {
-            warn(`Unable to find asset mime-type for ${file.path}`);
+            if (!file.mimeType) {
+                warn(`Unable to find asset mime-type for ${file.path}`);
 
-            return;
-        }
+                return;
+            }
 
-        const maxSize = (options.maxSize || 0) * 1024;
+            const maxSize = (options.maxSize || 0) * 1024;
 
-        if (maxSize) {
-          const size = Buffer.byteLength(file.contents);
+            if (maxSize) {
+                const size = Buffer.byteLength(file.contents);
 
-          if (stats.size >= maxSize) {
-              return processFallback.apply(this, arguments);
-          }
-        }
+                if (size >= maxSize) {
+                    return processFallback.apply(this, arguments);
+                }
+            }
 
-        return inlineProcess(file, asset, warn, options);
-      });
-
-
-
-
-
-
-
-
+            return inlineProcess(file, asset, warn, addDependency, options);
+        });
 };

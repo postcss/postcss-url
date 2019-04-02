@@ -19,10 +19,10 @@ module.exports = postcss.plugin('postcss-url', (options) => {
         const to = opts.to ? path.dirname(opts.to) : from;
 
         styles.walkDecls((decl) =>
-          promises.push(declProcessor(from, to, options, result, decl))
+            promises.push(declProcessor(from, to, options, result, decl))
         );
 
-      return Promise.all(promises);
+        return Promise.all(promises);
     };
 });
 
