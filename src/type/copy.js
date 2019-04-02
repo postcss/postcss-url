@@ -13,9 +13,46 @@ const getAssetsPath = paths.getAssetsPath;
 const normalize = paths.normalize;
 
 const getHashName = (file, options) =>
-    (options && options.append ? (`${path.basename(file.path, path.extname(file.path))}_`) : '')
-     + calcHash(file.contents, options)
-     + path.extname(file.path);
+  (options && options.append ? (`${path.basename(file.path, path.extname(file.path))}_`) : '') +
+  calcHash(file.contents, options) +
+  path.extname(file.path);
+
+const createDirAsync = (path) => {
+  return Promise((resolve, reject) => {
+    mkdirp(path, (err) => {
+      if (err) reject(err);
+      resolve();
+    })
+  })
+};
+
+const writeFileAsync = (file, src) => {
+  return new Promise((resolve, reject) => {
+      fs.open(dest, 'wx', (err, fd) => {
+        if (err) {
+          if (err.code === 'EEXIST') {
+            resolve();
+          }
+
+          reject(err);
+        }
+
+        resolve(fd);
+      })
+    })
+    .then(fd => {
+      if (!fd) return;
+
+      return new Promise((resolve, reject) => {
+        fs.writeFile(newAssetPath, file.contents, (err) => {
+          if (err) {
+            reject(err);
+          }
+          resolve();
+        });
+      })
+    });
+};
 
 /**
  * Copy images from readed from url() to an specific assets destination
@@ -33,37 +70,35 @@ const getHashName = (file, options) =>
  * @param {Result} result
  * @param {Function} addDependency
  *
- * @returns {String|Undefined}
+ * @returns {Promise<String|Undefined>}
  */
-module.exports = function processCopy(asset, dir, options, decl, warn, result, addDependency) {
-    if (!options.assetsPath && dir.from === dir.to) {
-        warn('Option `to` of postcss is required, ignoring');
 
-        return;
-    }
+module.exports = function processCopy(asset, dir, options, decl, warn, addDependency) {
+  if (!options.assetsPath && dir.from === dir.to) {
+    warn('Option `to` of postcss is required, ignoring');
 
-    const file = getFile(asset, options, dir, warn);
+    return Promise.resolve();
+  }
 
-    if (!file) return;
+  const newRelativeAssetPath = generateNewPath(file, dir, options);
 
-    const assetRelativePath = options.useHash
-        ? getHashName(file, options.hashOptions)
-        : asset.relativePath;
+  return getFile(asset, options, dir, warn)
+    .then(file => {
+      const assetRelativePath = options.useHash ?
+        getHashName(file, options.hashOptions) :
+        asset.relativePath;
 
-    const targetDir = getTargetDir(dir);
-    const newAssetBaseDir = getAssetsPath(targetDir, options.assetsPath);
-    const newAssetPath = path.join(newAssetBaseDir, assetRelativePath);
-    const newRelativeAssetPath = normalize(
-        path.relative(targetDir, newAssetPath)
-    );
+      const targetDir = getTargetDir(dir);
+      const newAssetBaseDir = getAssetsPath(targetDir, options.assetsPath);
+      const newAssetPath = path.join(newAssetBaseDir, assetRelativePath);
+      const newRelativeAssetPath = normalize(path.relative(targetDir, newAssetPath));
 
-    mkdirp.sync(path.dirname(newAssetPath));
-
-    if (!fs.existsSync(newAssetPath)) {
-        fs.writeFileSync(newAssetPath, file.contents);
-    }
-
-    addDependency(file.path);
-
-    return `${newRelativeAssetPath}${asset.search}${asset.hash}`;
+      return createDirAsync(path.dirname(newAssetPath))
+          .then(() => writeFileAsync(file, newAssetPath))
+          .then(() => {
+            addDependency(file.path);
+            return `${newRelativeAssetPath}${asset.search}${asset.hash}`;
+          });
+        }
+      );
 };

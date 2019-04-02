@@ -13,13 +13,16 @@ module.exports = postcss.plugin('postcss-url', (options) => {
     options = options || {};
 
     return function(styles, result) {
+        const promises = [];
         const opts = result.opts;
         const from = opts.from ? path.dirname(opts.from) : '.';
         const to = opts.to ? path.dirname(opts.to) : from;
 
         styles.walkDecls((decl) =>
-            declProcessor(from, to, options, result, decl)
+          promises.push(declProcessor(from, to, options, result, decl))
         );
+
+      return Promise.all(promises);
     };
 });
 

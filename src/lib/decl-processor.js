@@ -64,7 +64,7 @@ const wrapUrlProcessor = (urlProcessor, result, decl) => {
     });
 
     return (asset, dir, option) =>
-        urlProcessor(asset, dir, option, decl, warn, result, addDependency);
+        urlProcessor(asset, dir, option, decl, warn, addDependency);
 };
 
 /**
@@ -80,14 +80,14 @@ const getPattern = (decl) =>
  * @param {Options} options
  * @param {Result} result
  * @param {Decl} decl
- * @returns {String|undefined}
+ * @returns {Promise<String|undefined>}
  */
 const replaceUrl = (url, dir, options, result, decl) => {
     const asset = prepareAsset(url, dir, decl);
 
     const matchedOptions = matchOptions(asset, options);
 
-    if (!matchedOptions) return;
+    if (!matchedOptions) return Promise.resolve();
 
     const process = (option) => {
         const wrappedUrlProcessor = wrapUrlProcessor(getUrlProcessor(option.url), result, decl);
@@ -95,13 +95,21 @@ const replaceUrl = (url, dir, options, result, decl) => {
         return wrappedUrlProcessor(asset, dir, option);
     };
 
+    const resultPromise;
     if (Array.isArray(matchedOptions)) {
-        matchedOptions.forEach((option) => asset.url = process(option));
+        resultPromise = Promise.resolve();
+        matchedOptions.forEach((option) => {
+          resultPromise = resultPromise.then(() => {
+            return process(option);
+          });
+        });
     } else {
-        asset.url = process(matchedOptions);
+      resultPromise = process(matchedOptions);
     }
 
-    return asset.url;
+    return resultPromise.then((url) => {
+      asset.url = url;
+    });
 };
 
 /**
@@ -110,31 +118,44 @@ const replaceUrl = (url, dir, options, result, decl) => {
  * @param {PostcssUrl~Options} options
  * @param {Result} result
  * @param {Decl} decl
- * @returns {PostcssUrl~DeclProcessor}
+ * @returns {Promise<PostcssUrl~DeclProcessor>}
  */
 const declProcessor = (from, to, options, result, decl) => {
     const dir = { from, to, file: getDirDeclFile(decl) };
     const pattern = getPattern(decl);
 
-    if (!pattern) return;
+    if (!pattern) return Promise.resolve();
+
+    let id = 0;
+    const promises = [];
 
     decl.value = decl.value
-        .replace(pattern, (matched, before, url, after) => {
-            const newUrl = replaceUrl(url, dir, options, result, decl);
+      .replace(pattern, (matched, before, url, after) => {
+        const newUrlPromise = replaceUrl(url, dir, options, result, decl);;
 
-            if (!newUrl) return matched;
+        const marker = `::id${id++}`;
 
-            if (WITH_QUOTES.test(newUrl) && WITH_QUOTES.test(after)) {
+        promises.push(
+          newUrlPromise
+            .then((newUrl) => {
+              if (!newUrl) return matched;
+
+              if (WITH_QUOTES.test(newUrl) && WITH_QUOTES.test(after)) {
                 before = before.slice(0, -1);
                 after = after.slice(1);
-            }
+              }
 
-            return `${before}${newUrl}${after}`;
-        });
+              decl.value = decl.value.replace(marker, `${before}${newUrl}${after}`);
+            })
+        );
+
+        return marker;
+    });
+
+    return Promise.all(promises);
 };
 
 module.exports = {
-    replaceUrl,
     declProcessor
 };
 

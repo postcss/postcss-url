@@ -6,7 +6,7 @@
  * @param {PostcssUrl~Dir} dir
  * @param {PostcssUrl~Option} options
  *
- * @returns {String|Undefined}
+ * @returns {Promise<String|Undefined>}
  */
 module.exports = function getCustomProcessor(asset, dir, options) {
     return options.url.apply(null, arguments);

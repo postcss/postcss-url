@@ -5,31 +5,64 @@ const mime = require('mime');
 
 const getPathByBasePath = require('./paths').getPathByBasePath;
 
+const readFileAsync = (filePath) => {
+  return new Promise((resolse, reject) => {
+    fs.readFile(filePath, (err, data) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(data);
+    });
+  });
+};
+
+const existFileAsync = (filePath) => {
+  new Promise((resolve, reject) =>
+    fs.access(filePath, (err) => {
+      if (err) {
+        reject();
+      }
+      resolve(path);
+    })
+  )
+};
+
+const oneSuccess = (promises) => {
+  return Promise.all(promises.map(p => {
+    return p.then(
+      val => Promise.reject(val),
+      err => Promise.resolve(err)
+    );
+  })).then(
+    errors => Promise.reject(errors),
+    val => Promise.resolve(val)
+  );
+}
+
 /**
  *
  * @param {PostcssUrl~Asset} asset
  * @param {PostcssUrl~Options} options
  * @param {PostcssUrl~Dir} dir
  * @param {Function} warn
- * @returns {PostcssUrl~File}
+ * @returns {Promise<PostcssUrl~File | Undefined>}
  */
 const getFile = (asset, options, dir, warn) => {
-    const paths = options.basePath
-        ? getPathByBasePath(options.basePath, dir.from, asset.pathname)
-        : [asset.absolutePath];
-    const filePath = paths.find(fs.existsSync);
+  const paths = options.basePath ?
+    getPathByBasePath(options.basePath, dir.from, asset.pathname) :
+    [asset.absolutePath];
 
-    if (!filePath) {
-        warn(`Can't read file '${paths.join()}', ignoring`);
-
-        return;
-    }
-
-    return {
-        path: filePath,
-        contents: fs.readFileSync(filePath),
-        mimeType: mime.getType(filePath)
-    };
+  return oneSuccess(paths.map(path => existFileAsync(path)))
+    .then(path => readFileAsync(path))
+    .then(contents => ({
+      path: filePath,
+      contents: contents,
+      mimeType: mime.getType(filePath)
+    }))
+    .catch(() => {
+      warn(`Can't read file '${paths.join()}', ignoring`);
+      return;
+    });
 };
 
 module.exports = getFile;

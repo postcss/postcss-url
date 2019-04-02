@@ -15,7 +15,7 @@ const getFile = require('../lib/get-file');
  *
  * @returns {String|Undefined}
  */
-function processFallback(originUrl, dir, options) {
+const processFallback = (originUrl, dir, options) => {
     if (typeof options.fallback === 'function') {
         return options.fallback.apply(null, arguments);
     }
@@ -25,9 +25,33 @@ function processFallback(originUrl, dir, options) {
         case 'rebase':
             return processRebase.apply(null, arguments);
         default:
-            return;
+            return Promise.resolve();
     }
 }
+
+const inlineProcess = (file, asset, warn, options) => {
+  const isSvg = file.mimeType === 'image/svg+xml';
+  const defaultEncodeType = isSvg ? 'encodeURIComponent' : 'base64';
+  const encodeType = options.encodeType || defaultEncodeType;
+
+  // Warn for svg with hashes/fragments
+  if (isSvg && asset.hash && !options.ignoreFragmentWarning) {
+      // eslint-disable-next-line max-len
+      warn(`Image type is svg and link contains #. Postcss-url cant handle svg fragments. SVG file fully inlined. ${file.path}`);
+  }
+
+  addDependency(file.path);
+
+  const optimizeSvgEncode = isSvg && options.optimizeSvgEncode;
+  const encodedStr = encodeFile(file, encodeType, optimizeSvgEncode);
+  const resultValue = options.includeUriFragment && asset.hash
+      ? encodedStr + asset.hash
+      : encodedStr;
+
+  // wrap url by quotes if percent-encoded svg
+  return isSvg && encodeType !== 'base64' ? `"${resultValue}"` : resultValue;
+};
+
 
 /**
  * Inline image in url()
@@ -41,48 +65,38 @@ function processFallback(originUrl, dir, options) {
  * @param {Result} result
  * @param {Function} addDependency
  *
- * @returns {String|Undefined}
+ * @returns {Promise<String|Undefined>}
  */
 // eslint-disable-next-line complexity
-module.exports = function(asset, dir, options, decl, warn, result, addDependency) {
-    const file = getFile(asset, options, dir, warn);
+module.exports = function(asset, dir, options, decl, warn, addDependency) {
+    return getFile(asset, options, dir, warn)
+      .then(file => {
+        if (!file) return;
 
-    if (!file) return;
+        if (!file.mimeType) {
+            warn(`Unable to find asset mime-type for ${file.path}`);
 
-    if (!file.mimeType) {
-        warn(`Unable to find asset mime-type for ${file.path}`);
-
-        return;
-    }
-
-    const maxSize = (options.maxSize || 0) * 1024;
-
-    if (maxSize) {
-        const stats = fs.statSync(file.path);
-
-        if (stats.size >= maxSize) {
-            return processFallback.apply(this, arguments);
+            return;
         }
-    }
 
-    const isSvg = file.mimeType === 'image/svg+xml';
-    const defaultEncodeType = isSvg ? 'encodeURIComponent' : 'base64';
-    const encodeType = options.encodeType || defaultEncodeType;
+        const maxSize = (options.maxSize || 0) * 1024;
 
-    // Warn for svg with hashes/fragments
-    if (isSvg && asset.hash && !options.ignoreFragmentWarning) {
-        // eslint-disable-next-line max-len
-        warn(`Image type is svg and link contains #. Postcss-url cant handle svg fragments. SVG file fully inlined. ${file.path}`);
-    }
+        if (maxSize) {
+          const size = Buffer.byteLength(file.contents);
 
-    addDependency(file.path);
+          if (stats.size >= maxSize) {
+              return processFallback.apply(this, arguments);
+          }
+        }
 
-    const optimizeSvgEncode = isSvg && options.optimizeSvgEncode;
-    const encodedStr = encodeFile(file, encodeType, optimizeSvgEncode);
-    const resultValue = options.includeUriFragment && asset.hash
-        ? encodedStr + asset.hash
-        : encodedStr;
+        return inlineProcess(file, asset, warn, options);
+      });
 
-    // wrap url by quotes if percent-encoded svg
-    return isSvg && encodeType !== 'base64' ? `"${resultValue}"` : resultValue;
+
+
+
+
+
+
+
 };
