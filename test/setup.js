@@ -42,5 +42,5 @@ function processedCss(fixtures, urlOpts, postcssOpts) {
     return postcss()
         .use(url(urlOpts))
         .process(read(fixtures), postcssOpts)
-        .css;
+        .then((res) => res.css);
 }

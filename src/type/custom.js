@@ -9,5 +9,5 @@
  * @returns {Promise<String|Undefined>}
  */
 module.exports = function getCustomProcessor(asset, dir, options) {
-    return options.url.apply(null, arguments);
+    return Promise.resolve().then(() => options.url.apply(null, arguments));
 };

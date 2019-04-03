@@ -64,7 +64,7 @@ const wrapUrlProcessor = (urlProcessor, result, decl) => {
     });
 
     return (asset, dir, option) =>
-        urlProcessor(asset, dir, option, decl, warn, addDependency);
+        urlProcessor(asset, dir, option, decl, warn, result, addDependency);
 };
 
 /**
@@ -95,21 +95,26 @@ const replaceUrl = (url, dir, options, result, decl) => {
         return wrappedUrlProcessor(asset, dir, option);
     };
 
-    let resultPromise;
+    let resultPromise = Promise.resolve();
 
     if (Array.isArray(matchedOptions)) {
-        resultPromise = Promise.resolve();
-        matchedOptions.forEach((option) => {
-            resultPromise = resultPromise.then(() => {
-                return process(option);
-            });
-        });
+        for (let i = 0; i < matchedOptions.length; i++) {
+            resultPromise = resultPromise
+                .then(() => process(matchedOptions[i]))
+                .then((newUrl) => {
+                    asset.url = newUrl;
+
+                    return newUrl;
+                });
+        }
     } else {
         resultPromise = process(matchedOptions);
     }
 
     return resultPromise.then((newUrl) => {
         asset.url = newUrl;
+
+        return newUrl;
     });
 };
 
@@ -127,13 +132,11 @@ const declProcessor = (from, to, options, result, decl) => {
 
     if (!pattern) return Promise.resolve();
 
-    let id = 0;
     const promises = [];
 
     decl.value = decl.value
         .replace(pattern, (matched, before, url, after) => {
             const newUrlPromise = replaceUrl(url, dir, options, result, decl);
-            const marker = `::id${id++}`;
 
             promises.push(
                 newUrlPromise
@@ -145,11 +148,11 @@ const declProcessor = (from, to, options, result, decl) => {
                             after = after.slice(1);
                         }
 
-                        decl.value = decl.value.replace(marker, `${before}${newUrl}${after}`);
+                        decl.value = decl.value.replace(matched, `${before}${newUrl}${after}`);
                     })
             );
 
-            return marker;
+            return matched;
         });
 
     return Promise.all(promises);

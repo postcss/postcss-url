@@ -13,7 +13,7 @@ describe('misc', () => {
             .then((result) => {
                 const dependencies = result.messages.filter((m) => m.type === 'dependency');
 
-                assert.deepEqual(dependencies, [
+                const expected = [
                     {
                         type: 'dependency',
                         file: path.resolve('test/fixtures/imported/pixel.png'),
@@ -24,7 +24,12 @@ describe('misc', () => {
                         file: path.resolve('test/fixtures/pixel.gif'),
                         parent: path.resolve('test/fixtures/copy.css')
                     }
-                ]);
+                ];
+
+                assert.deepEqual(
+                    dependencies.sort((a, b) => a.file.length - b.file.length),
+                    expected.sort((a, b) => a.file.length - b.file.length)
+                );
             });
     });
 
@@ -40,7 +45,7 @@ describe('misc', () => {
             .then((result) => {
                 const dependencies = result.messages.filter((m) => m.type === 'dependency');
 
-                assert.deepEqual(dependencies, [
+                const expected = [
                     {
                         type: 'dependency',
                         file: path.resolve('test/fixtures/imported/pixel.png'),
@@ -51,7 +56,12 @@ describe('misc', () => {
                         file: path.resolve('test/fixtures/pixel.gif'),
                         parent: path.resolve('test/fixtures/copy.css')
                     }
-                ]);
+                ];
+
+                assert.deepEqual(
+                    dependencies.sort((a, b) => a.file.length - b.file.length),
+                    expected.sort((a, b) => a.file.length - b.file.length)
+                );
             });
     });
 });

@@ -13,7 +13,7 @@ const getFile = require('../lib/get-file');
  *
  * @returns {String|Undefined}
  */
-const processFallback = (originUrl, dir, options) => {
+function processFallback(originUrl, dir, options) {
     if (typeof options.fallback === 'function') {
         return options.fallback.apply(null, arguments);
     }
@@ -25,7 +25,7 @@ const processFallback = (originUrl, dir, options) => {
         default:
             return Promise.resolve();
     }
-};
+}
 
 const inlineProcess = (file, asset, warn, addDependency, options) => {
     const isSvg = file.mimeType === 'image/svg+xml';
@@ -65,7 +65,7 @@ const inlineProcess = (file, asset, warn, addDependency, options) => {
  * @returns {Promise<String|Undefined>}
  */
 // eslint-disable-next-line complexity
-module.exports = function(asset, dir, options, decl, warn, addDependency) {
+module.exports = function(asset, dir, options, decl, warn, result, addDependency) {
     return getFile(asset, options, dir, warn)
         .then((file) => {
             if (!file) return;

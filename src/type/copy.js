@@ -20,7 +20,10 @@ const getHashName = (file, options) =>
 const createDirAsync = (dirPath) => {
     return new Promise((resolve, reject) => {
         mkdirp(dirPath, (err) => {
-            if (err) reject(err);
+            if (err) {
+                reject(err);
+            }
+
             resolve();
         });
     });
@@ -73,7 +76,7 @@ const writeFileAsync = (file, dest) => {
  * @returns {Promise<String|Undefined>}
  */
 
-module.exports = function processCopy(asset, dir, options, decl, warn, addDependency) {
+module.exports = function processCopy(asset, dir, options, decl, warn, result, addDependency) {
     if (!options.assetsPath && dir.from === dir.to) {
         warn('Option `to` of postcss is required, ignoring');
 
@@ -82,6 +85,8 @@ module.exports = function processCopy(asset, dir, options, decl, warn, addDepend
 
     return getFile(asset, options, dir, warn)
         .then((file) => {
+            if (!file) return;
+
             const assetRelativePath = options.useHash
                 ? getHashName(file, options.hashOptions)
                 : asset.relativePath;

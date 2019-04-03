@@ -21,5 +21,5 @@ module.exports = function(asset, dir, options) {
         path.relative(dest, asset.absolutePath)
     );
 
-    return Promise.resolve(`${rebasedUrl}${asset.search}${asset.hash}`);
+    return Promise.resolve().then(() => `${rebasedUrl}${asset.search}${asset.hash}`);
 };
