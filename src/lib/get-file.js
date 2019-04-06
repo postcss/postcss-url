@@ -17,26 +17,32 @@ const readFileAsync = (filePath) => {
 };
 
 const existFileAsync = (filePath) => {
-    return new Promise((resolve, reject) =>
+    return new Promise((resolve) =>
         fs.access(filePath, (err) => {
-            if (err) {
-                reject();
-            }
-            resolve(filePath);
+            resolve(!err);
         })
     );
 };
 
-const oneSuccess = (promises) => {
-    return Promise.all(promises.map((p) => {
-        return p.then(
-            (val) => Promise.reject(val),
-            (err) => Promise.resolve(err)
-        );
-    })).then(
-        (errors) => Promise.reject(errors),
-        (val) => Promise.resolve(val)
-    );
+const findExistsPath = (paths) => {
+    let resolved = false;
+
+    return new Promise((resolve, reject) => {
+        const findPromises = paths.map((path) => {
+            return existFileAsync(path).then((isExists) => {
+                if (!resolved && isExists) {
+                    resolved = true;
+                    resolve(path);
+                }
+            });
+        });
+
+        Promise.all(findPromises).then(() => {
+            if (!resolved) {
+                reject();
+            }
+        });
+    });
 };
 
 /**
@@ -52,13 +58,16 @@ const getFile = (asset, options, dir, warn) => {
         ? getPathByBasePath(options.basePath, dir.from, asset.pathname)
         : [asset.absolutePath];
 
-    return oneSuccess(paths.map((path) => existFileAsync(path)))
+    return findExistsPath(paths)
         .then((path) => readFileAsync(path)
-            .then((contents) => ({
-                path,
-                contents,
-                mimeType: mime.getType(path)
-            })))
+            .then((contents) => {
+                return {
+                    path,
+                    contents,
+                    mimeType: mime.getType(path)
+                };
+            })
+        )
         .catch(() => {
             warn(`Can't read file '${paths.join()}', ignoring`);
 

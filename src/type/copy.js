@@ -31,30 +31,13 @@ const createDirAsync = (dirPath) => {
 
 const writeFileAsync = (file, dest) => {
     return new Promise((resolve, reject) => {
-        fs.open(dest, 'wx', (err, fd) => {
+        fs.writeFile(dest, file.contents, { flag: 'wx' }, (err) => {
             if (err) {
-                if (err.code === 'EEXIST') {
-                    resolve();
-                }
-
-                reject(err);
+                err.code === 'EEXIST' ? resolve() : reject(err);
             }
-
-            resolve(fd);
+            resolve();
         });
-    })
-        .then((fd) => {
-            if (!fd) return;
-
-            return new Promise((resolve, reject) => {
-                fs.writeFile(dest, file.contents, (err) => {
-                    if (err) {
-                        reject(err);
-                    }
-                    resolve();
-                });
-            });
-        });
+    });
 };
 
 /**
