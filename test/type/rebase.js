@@ -5,19 +5,19 @@ describe('rebase', () => {
 
     describe('base unit', () => {
         it('should calc relative path', () => {
-            const res = rebase({
+            return rebase({
                 absolutePath: '/project/blocks/item/1.png',
                 search: '',
                 hash: ''
             }, {
                 to: '/project/build'
+            }).then((res) => {
+                assert.equal(res, '../blocks/item/1.png');
             });
-
-            assert.equal(res, '../blocks/item/1.png');
         });
 
         it('should calc relative path by assetsPath option', () => {
-            const res = rebase({
+            return rebase({
                 absolutePath: '/project/blocks/item/1.png',
                 search: '',
                 hash: ''
@@ -27,18 +27,21 @@ describe('rebase', () => {
                 from: '/project/blocks/item/1.png'
             }, {
                 assetsPath: '/project/build'
-            });
-
-            assert.equal(res, '../blocks/item/1.png');
+            })
+                .then((res) => {
+                    assert.equal(res, '../blocks/item/1.png');
+                });
         });
     });
 
     it('rebase with empty options', () => {
-        processedCss(
+        return processedCss(
             'fixtures/copy-hash',
             undefined,
             { from: 'test/fixtures/here' }
-        ).css;
+        ).then((css) => {
+            assert(css);
+        });
     });
 
     compareFixtures(

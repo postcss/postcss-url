@@ -14,8 +14,31 @@ const normalize = paths.normalize;
 
 const getHashName = (file, options) =>
     (options && options.append ? (`${path.basename(file.path, path.extname(file.path))}_`) : '')
-     + calcHash(file.contents, options)
-     + path.extname(file.path);
+  + calcHash(file.contents, options)
+  + path.extname(file.path);
+
+const createDirAsync = (dirPath) => {
+    return new Promise((resolve, reject) => {
+        mkdirp(dirPath, (err) => {
+            if (err) {
+                reject(err);
+            }
+
+            resolve();
+        });
+    });
+};
+
+const writeFileAsync = (file, dest) => {
+    return new Promise((resolve, reject) => {
+        fs.writeFile(dest, file.contents, { flag: 'wx' }, (err) => {
+            if (err) {
+                err.code === 'EEXIST' ? resolve() : reject(err);
+            }
+            resolve();
+        });
+    });
+};
 
 /**
  * Copy images from readed from url() to an specific assets destination
@@ -33,37 +56,36 @@ const getHashName = (file, options) =>
  * @param {Result} result
  * @param {Function} addDependency
  *
- * @returns {String|Undefined}
+ * @returns {Promise<String|Undefined>}
  */
+
 module.exports = function processCopy(asset, dir, options, decl, warn, result, addDependency) {
     if (!options.assetsPath && dir.from === dir.to) {
         warn('Option `to` of postcss is required, ignoring');
 
-        return;
+        return Promise.resolve();
     }
 
-    const file = getFile(asset, options, dir, warn);
+    return getFile(asset, options, dir, warn)
+        .then((file) => {
+            if (!file) return;
 
-    if (!file) return;
+            const assetRelativePath = options.useHash
+                ? getHashName(file, options.hashOptions)
+                : asset.relativePath;
 
-    const assetRelativePath = options.useHash
-        ? getHashName(file, options.hashOptions)
-        : asset.relativePath;
+            const targetDir = getTargetDir(dir);
+            const newAssetBaseDir = getAssetsPath(targetDir, options.assetsPath);
+            const newAssetPath = path.join(newAssetBaseDir, assetRelativePath);
+            const newRelativeAssetPath = normalize(path.relative(targetDir, newAssetPath));
 
-    const targetDir = getTargetDir(dir);
-    const newAssetBaseDir = getAssetsPath(targetDir, options.assetsPath);
-    const newAssetPath = path.join(newAssetBaseDir, assetRelativePath);
-    const newRelativeAssetPath = normalize(
-        path.relative(targetDir, newAssetPath)
-    );
+            return createDirAsync(path.dirname(newAssetPath))
+                .then(() => writeFileAsync(file, newAssetPath))
+                .then(() => {
+                    addDependency(file.path);
 
-    mkdirp.sync(path.dirname(newAssetPath));
-
-    if (!fs.existsSync(newAssetPath)) {
-        fs.writeFileSync(newAssetPath, file.contents);
-    }
-
-    addDependency(file.path);
-
-    return `${newRelativeAssetPath}${asset.search}${asset.hash}`;
+                    return `${newRelativeAssetPath}${asset.search}${asset.hash}`;
+                });
+        }
+        );
 };

@@ -96,49 +96,54 @@ function testCopy(opts, postcssOpts) {
 
     describe('should copy asset from the source (`from`) to the assets destination (`to` + `assetsPath`)', () => {
         it('rebase the url', () => {
-            const css = processedCss('fixtures/copy', opts, postcssOpts);
-
-            matchAll(css, ['copyPixelPng', 'copyPixelGif']);
+            return processedCss('fixtures/copy', opts, postcssOpts)
+                .then((css) => {
+                    matchAll(css, ['copyPixelPng', 'copyPixelGif']);
+                });
         });
 
         it('rebase the url keeping parameters', () => {
-            const css = processedCss('fixtures/copy-parameters', opts, postcssOpts);
-
-            matchAll(css, [
-                'copyParamsPixelPngHash',
-                'copyParamsPixelPngParam',
-                'copyParamsPixelGif'
-            ]);
+            return processedCss('fixtures/copy-parameters', opts, postcssOpts)
+                .then((css) => {
+                    matchAll(css, [
+                        'copyParamsPixelPngHash',
+                        'copyParamsPixelPngParam',
+                        'copyParamsPixelGif'
+                    ]);
+                });
         });
 
         it('rebase the url using a hash name', () => {
-            const css = processedCss(
+            return processedCss(
                 'fixtures/copy-hash',
                 optsWithHash,
                 postcssOpts
-            );
-
-            matchAll(css, ['copyXXHashPixel8']);
+            )
+                .then((css) => {
+                    matchAll(css, ['copyXXHashPixel8']);
+                });
         });
 
         it('rebase the url using a hash name keeping parameters', () => {
-            const css = processedCss(
+            return processedCss(
                 'fixtures/copy-hash-parameters',
                 optsWithHash,
                 postcssOpts
-            );
-
-            matchAll(css, ['copyXXHashParamsPixel8']);
+            )
+                .then((css) => {
+                    matchAll(css, ['copyXXHashParamsPixel8']);
+                });
         });
 
         it('rebase the url using a hash and prepending the original filename', () => {
-            const css = processedCss(
+            return processedCss(
                 'fixtures/copy-hash',
                 optsWithAppendHash,
                 postcssOpts
-            );
-
-            matchAll(css, ['copyXXHashPrependPixel8']);
+            )
+                .then((css) => {
+                    matchAll(css, ['copyXXHashPrependPixel8']);
+                });
         });
     });
 }

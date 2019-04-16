@@ -13,7 +13,7 @@ const getAssetsPath = paths.getAssetsPath;
  * @param {PostcssUrl~Dir} dir
  * @param {PostcssUrl~Option} options
  *
- * @returns {String|Undefined}
+ * @returns {Promise<String>}
  */
 module.exports = function(asset, dir, options) {
     const dest = getAssetsPath(dir.to, options && options.assetsPath || '');
@@ -21,5 +21,5 @@ module.exports = function(asset, dir, options) {
         path.relative(dest, asset.absolutePath)
     );
 
-    return `${rebasedUrl}${asset.search}${asset.hash}`;
+    return Promise.resolve().then(() => `${rebasedUrl}${asset.search}${asset.hash}`);
 };

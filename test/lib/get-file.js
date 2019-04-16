@@ -14,13 +14,15 @@ describe('get-file', () => {
             pathname: '../pixel.gif',
             absolutePath: 'test/fixtures/pixel.gif'
         };
-        const file = getFile(asset, {}, dir, warn);
 
-        assert.deepEqual(file, {
-            path: 'test/fixtures/pixel.gif',
-            contents: fileContent,
-            mimeType: 'image/gif'
-        });
+        return getFile(asset, {}, dir, warn)
+            .then((file) => {
+                assert.deepEqual(file, {
+                    path: 'test/fixtures/pixel.gif',
+                    contents: fileContent,
+                    mimeType: 'image/gif'
+                });
+            });
     });
 
     it('should show warn message when can\'t read file', () => {
@@ -30,12 +32,13 @@ describe('get-file', () => {
         };
         let warnMessage = false;
 
-        getFile(asset, {}, dir, (message) => warnMessage = message);
-
-        assert.equal(
-            warnMessage,
-            'Can\'t read file \'test/fixtures/pixel-no-exists.gif\', ignoring'
-        );
+        return getFile(asset, {}, dir, (message) => warnMessage = message)
+            .then(() => {
+                assert.equal(
+                    warnMessage,
+                    'Can\'t read file \'test/fixtures/pixel-no-exists.gif\', ignoring'
+                );
+            });
     });
 
     it('should read file with basePath option', () => {
@@ -44,13 +47,15 @@ describe('get-file', () => {
             pathname: '../pixel.gif',
             absolutePath: 'test/fixtures/pixel-not-exists.gif'
         };
-        const file = getFile(asset, options, dir, warn);
 
-        assert.deepEqual(file, {
-            path: path.resolve('test/fixtures/pixel.gif'),
-            contents: fileContent,
-            mimeType: 'image/gif'
-        });
+        return getFile(asset, options, dir, warn)
+            .then((file) => {
+                assert.deepEqual(file, {
+                    path: path.resolve('test/fixtures/pixel.gif'),
+                    contents: fileContent,
+                    mimeType: 'image/gif'
+                });
+            });
     });
 
     it('should read file with multiple basePath option', () => {
@@ -62,12 +67,14 @@ describe('get-file', () => {
             pathname: '../pixel.gif',
             absolutePath: 'test/fixtures/pixel-not-exists.gif'
         };
-        const file = getFile(asset, options, dir, warn);
 
-        assert.deepEqual(file, {
-            path: path.resolve('test/fixtures/pixel.gif'),
-            contents: fileContent,
-            mimeType: 'image/gif'
-        });
+        return getFile(asset, options, dir, warn)
+            .then((file) => {
+                assert.deepEqual(file, {
+                    path: path.resolve('test/fixtures/pixel.gif'),
+                    contents: fileContent,
+                    mimeType: 'image/gif'
+                });
+            });
     });
 });

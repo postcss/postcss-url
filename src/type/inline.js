@@ -1,7 +1,5 @@
 'use strict';
 
-const fs = require('fs');
-
 const processCopy = require('./copy');
 const processRebase = require('./rebase');
 
@@ -25,46 +23,11 @@ function processFallback(originUrl, dir, options) {
         case 'rebase':
             return processRebase.apply(null, arguments);
         default:
-            return;
+            return Promise.resolve();
     }
 }
 
-/**
- * Inline image in url()
- *
- * @type {PostcssUrl~UrlProcessor}
- * @param {PostcssUrl~Asset} asset
- * @param {PostcssUrl~Dir} dir
- * @param {PostcssUrl~Options} options
- * @param {PostcssUrl~Decl} decl
- * @param {Function} warn
- * @param {Result} result
- * @param {Function} addDependency
- *
- * @returns {String|Undefined}
- */
-// eslint-disable-next-line complexity
-module.exports = function(asset, dir, options, decl, warn, result, addDependency) {
-    const file = getFile(asset, options, dir, warn);
-
-    if (!file) return;
-
-    if (!file.mimeType) {
-        warn(`Unable to find asset mime-type for ${file.path}`);
-
-        return;
-    }
-
-    const maxSize = (options.maxSize || 0) * 1024;
-
-    if (maxSize) {
-        const stats = fs.statSync(file.path);
-
-        if (stats.size >= maxSize) {
-            return processFallback.apply(this, arguments);
-        }
-    }
-
+const inlineProcess = (file, asset, warn, addDependency, options) => {
     const isSvg = file.mimeType === 'image/svg+xml';
     const defaultEncodeType = isSvg ? 'encodeURIComponent' : 'base64';
     const encodeType = options.encodeType || defaultEncodeType;
@@ -85,4 +48,44 @@ module.exports = function(asset, dir, options, decl, warn, result, addDependency
 
     // wrap url by quotes if percent-encoded svg
     return isSvg && encodeType !== 'base64' ? `"${resultValue}"` : resultValue;
+};
+
+/**
+ * Inline image in url()
+ *
+ * @type {PostcssUrl~UrlProcessor}
+ * @param {PostcssUrl~Asset} asset
+ * @param {PostcssUrl~Dir} dir
+ * @param {PostcssUrl~Options} options
+ * @param {PostcssUrl~Decl} decl
+ * @param {Function} warn
+ * @param {Result} result
+ * @param {Function} addDependency
+ *
+ * @returns {Promise<String|Undefined>}
+ */
+// eslint-disable-next-line complexity
+module.exports = function(asset, dir, options, decl, warn, result, addDependency) {
+    return getFile(asset, options, dir, warn)
+        .then((file) => {
+            if (!file) return;
+
+            if (!file.mimeType) {
+                warn(`Unable to find asset mime-type for ${file.path}`);
+
+                return;
+            }
+
+            const maxSize = (options.maxSize || 0) * 1024;
+
+            if (maxSize) {
+                const size = Buffer.byteLength(file.contents);
+
+                if (size >= maxSize) {
+                    return processFallback.apply(this, arguments);
+                }
+            }
+
+            return inlineProcess(file, asset, warn, addDependency, options);
+        });
 };
