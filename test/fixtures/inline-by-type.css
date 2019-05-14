@@ -3,5 +3,5 @@ body {
 }
 
 body:before {
-  background: url("pixel.gif")
+  background: url(pixel.gif)
 }
