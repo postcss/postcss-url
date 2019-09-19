@@ -57,7 +57,7 @@ const getAssetsPath = (baseDir, assetsPath, relative) =>
  * @returns {String}
  */
 const getTargetDir = (dir) =>
-    dir.from !== dir.to ? dir.to : process.cwd();
+    dir.to != null ? dir.to : process.cwd();
 
 /**
  * Stylesheet file path from decl

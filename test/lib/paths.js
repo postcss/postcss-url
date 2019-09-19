@@ -74,6 +74,10 @@ describe('paths', () => {
         );
         assert.equal(
             paths.getTargetDir({ from: '/project', to: '/project' }),
+            '/project'
+        );
+        assert.equal(
+            paths.getTargetDir({ from: '/project' }),
             process.cwd()
         );
     });
