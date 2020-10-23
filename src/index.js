@@ -1,30 +1,32 @@
 'use strict';
 
 const path = require('path');
-const postcss = require('postcss');
 
 const declProcessor = require('./lib/decl-processor').declProcessor;
 
-/**
- *
- * @type {Plugin}
- */
-module.exports = postcss.plugin('postcss-url', (options) => {
+const plugin = (options) => {
     options = options || {};
 
-    return function(styles, result) {
-        const promises = [];
-        const opts = result.opts;
-        const from = opts.from ? path.dirname(opts.from) : '.';
-        const to = opts.to ? path.dirname(opts.to) : from;
+    return {
+        postcssPlugin: 'postcss-url',
+        Once(styles, { result }) {
+            const promises = [];
+            const opts = result.opts;
+            const from = opts.from ? path.dirname(opts.from) : '.';
+            const to = opts.to ? path.dirname(opts.to) : from;
 
-        styles.walkDecls((decl) =>
-            promises.push(declProcessor(from, to, options, result, decl))
-        );
+            styles.walkDecls((decl) =>
+                promises.push(declProcessor(from, to, options, result, decl))
+            );
 
-        return Promise.all(promises);
+            return Promise.all(promises);
+        }
     };
-});
+};
+
+plugin.postcss = true;
+
+module.exports = plugin;
 
 /**
  * @callback PostcssUrl~UrlProcessor

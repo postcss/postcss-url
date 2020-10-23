@@ -10,7 +10,7 @@
 ## Installation
 
 ```console
-$ npm install postcss-url
+$ npm install postcss postcss-url
 ```
 
 ## Basic example - rebase
