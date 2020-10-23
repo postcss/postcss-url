@@ -13,15 +13,15 @@ global.postcssUrl = url;
 function compareFixtures(name, msg, opts, postcssOpts, plugin) {
     it(msg, () => {
         opts = opts || {};
-        const pcss = postcss();
+        const plugins = [];
 
         if (plugin) {
-            pcss.use(plugin());
+            plugins.push(plugin());
         }
 
-        pcss.use(url(opts));
+        plugins.push(url(opts));
 
-        return pcss.process(read(`fixtures/${name}`), postcssOpts)
+        return postcss(plugins).process(read(`fixtures/${name}`), postcssOpts)
             .then((result) => {
                 const actual = result.css;
                 const expected = read(`fixtures/${name}.expected`);
