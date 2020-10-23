@@ -1,9 +1,8 @@
 language: node_js
 
 node_js:
-  - 6
-  - 8
   - 10
+  - stable
 
 matrix:
   fast_finish: true
