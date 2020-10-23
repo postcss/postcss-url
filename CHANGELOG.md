@@ -1,3 +1,13 @@
+# 10.0.0 - 2020-10-23
+
+Added: support for PostCSS 8 ([PR#148](https://github.com/postcss/postcss-url/pull/148))
+Fixed: path resolution when to/from paths match ([PR#136](https://github.com/postcss/postcss-url/pull/136))
+
+# 9.0.0 - 2019-04-17
+
+Fixed: Async API
+Added: support for PostCSS 8
+
 # 8.0.0 - 2018-08-09
 
 Changed: updated postcss 6.0.1 > 7.0.2, postcss-import 10.0.0 > 12.0.0, and required nodejs version ([PR#126](https://github.com/postcss/postcss-url/pull/126))
