@@ -20,7 +20,7 @@
     "src"
   ],
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=10"
   },
   "dependencies": {
     "mime": "2.3.1",
