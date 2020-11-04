@@ -115,7 +115,7 @@ after:
 }
 ```
 
-### Muiltiple options
+### Multiple options
 
 process first matched option by default.
 ```multi: true``` in `custom` will processing with other options
