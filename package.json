@@ -33,11 +33,11 @@
     "eslint": "5.16.0",
     "mocha": "5.2.0",
     "npmpub": "4.1.0",
-    "postcss": "8.1.2",
+    "postcss": "^8.1.2",
     "postcss-import": "12.0.0"
   },
   "peerDependencies": {
-    "postcss": "8.1.2"
+    "postcss": "^8.1.2"
   },
   "scripts": {
     "lint": "eslint --fix .",
