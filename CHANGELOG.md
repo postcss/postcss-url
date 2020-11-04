@@ -1,3 +1,8 @@
+# 10.1.0 - 2020-11-04
+
+Fixed: Replaced mkdirp with make-dir ([PR#152](https://github.com/postcss/postcss-url/pull/152))
+Fixed: updated dev dependencies, resolved `npm audit` issues
+
 # 10.0.0 - 2020-10-23
 
 Added: support for PostCSS 8 ([PR#148](https://github.com/postcss/postcss-url/pull/148))
