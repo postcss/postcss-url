@@ -2,7 +2,7 @@
 
 const path = require('path');
 const fs = require('fs');
-const mkdirp = require('mkdirp');
+const makeDir = require('make-dir');
 
 const calcHash = require('../lib/hash');
 const paths = require('../lib/paths');
@@ -16,18 +16,6 @@ const getHashName = (file, options) =>
     (options && options.append ? (`${path.basename(file.path, path.extname(file.path))}_`) : '')
   + calcHash(file.contents, options)
   + path.extname(file.path);
-
-const createDirAsync = (dirPath) => {
-    return new Promise((resolve, reject) => {
-        mkdirp(dirPath, (err) => {
-            if (err) {
-                reject(err);
-            }
-
-            resolve();
-        });
-    });
-};
 
 const writeFileAsync = (file, dest) => {
     return new Promise((resolve, reject) => {
@@ -79,7 +67,7 @@ module.exports = function processCopy(asset, dir, options, decl, warn, result, a
             const newAssetPath = path.join(newAssetBaseDir, assetRelativePath);
             const newRelativeAssetPath = normalize(path.relative(targetDir, newAssetPath));
 
-            return createDirAsync(path.dirname(newAssetPath))
+            return makeDir(path.dirname(newAssetPath))
                 .then(() => writeFileAsync(file, newAssetPath))
                 .then(() => {
                     addDependency(file.path);
