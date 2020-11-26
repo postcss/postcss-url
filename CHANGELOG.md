@@ -1,3 +1,8 @@
+# 10.1.1 - 2020-11-26
+
+Fixed: updated mime and xxhashjs versions
+Fixed: postcss peerDependency version `8.1.2 -> 8.0.0`
+
 # 10.1.0 - 2020-11-04
 
 Fixed: Replaced mkdirp with make-dir ([PR#152](https://github.com/postcss/postcss-url/pull/152))
