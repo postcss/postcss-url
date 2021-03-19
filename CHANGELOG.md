@@ -1,3 +1,7 @@
+# 10.1.2 - 2021-03-19
+
+Fixed: tilde operator for dependencies to allow for newer patch version
+
 # 10.1.1 - 2020-11-26
 
 Fixed: updated mime and xxhashjs versions
