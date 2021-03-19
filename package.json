@@ -23,10 +23,10 @@
     "node": ">=10"
   },
   "dependencies": {
-    "make-dir": "3.1.0",
-    "mime": "~2.5.2",
-    "minimatch": "3.0.4",
-    "xxhashjs": "0.2.2"
+    "make-dir": "~3.1.0",
+    "mime": "~2.4.6",
+    "minimatch": "~3.0.4",
+    "xxhashjs": "~0.2.2"
   },
   "devDependencies": {
     "chai": "4.1.2",
