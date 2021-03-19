@@ -1,3 +1,7 @@
+# 10.1.3 - 2021-03-19
+
+Fixed: update mime version
+
 # 10.1.2 - 2021-03-19
 
 Fixed: tilde operator for dependencies to allow for newer patch version
