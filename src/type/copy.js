@@ -60,7 +60,7 @@ module.exports = function processCopy(asset, dir, options, decl, warn, result, a
 
             const assetRelativePath = options.useHash
                 ? getHashName(file, options.hashOptions)
-                : asset.relativePath;
+                : path.basename(file.path);
 
             const targetDir = getTargetDir(dir);
             const newAssetBaseDir = getAssetsPath(targetDir, options.assetsPath);
