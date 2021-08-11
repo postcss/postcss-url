@@ -49,7 +49,8 @@ module.exports = (file, encodeType, shouldOptimizeSvgEncode) => {
 
     encodedStr = encodedStr
         .replace(/%20/g, ' ')
-        .replace(/#/g, '%23');
+        .replace(/#/g, '%23')
+        .replace(/%0d/gi,'');
 
     return `${dataMime},${encodedStr}`;
 };
