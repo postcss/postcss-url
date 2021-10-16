@@ -19,8 +19,7 @@ const prepareAsset = paths.prepareAsset;
  * @type {UrlRegExp[]}
  */
 const URL_PATTERNS = [
-    /(url\(\s*['"]?)([^"')]+)(["']?\s*\))/g,
-    /(AlphaImageLoader\(\s*src=['"]?)([^"')]+)(["'])/g
+    /(url\(\s*['"]?)([^"')]+)(["']?\s*\))/g
 ];
 
 const WITH_QUOTES = /^['"]/;
