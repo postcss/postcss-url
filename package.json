@@ -20,13 +20,13 @@
     "src"
   ],
   "engines": {
-    "node": ">=10"
+    "node": ">=10.20"
   },
   "dependencies": {
+    "@node-rs/xxhash": "~1.0.0",
     "make-dir": "~3.1.0",
     "mime": "~2.5.2",
-    "minimatch": "~3.0.4",
-    "xxhashjs": "~0.2.2"
+    "minimatch": "~3.0.4"
   },
   "devDependencies": {
     "chai": "4.1.2",

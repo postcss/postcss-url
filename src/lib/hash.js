@@ -1,7 +1,7 @@
 'use strict';
 
 const crypto = require('crypto');
-const xxh = require('xxhashjs');
+const { xxh32, xxh64 } = require('@node-rs/xxhash');
 const HEXBASE = 16;
 
 const defaultHashOptions = {
@@ -11,13 +11,9 @@ const defaultHashOptions = {
 };
 
 const getxxhash = (content, options) => {
-    const hashFunc = options.method === 'xxhash32' ? xxh.h32 : xxh.h64;
-    const seed = 0;
+    const hashFunc = options.method === 'xxhash32' ? xxh32 : xxh64;
 
-    return hashFunc(seed)
-        .update(content)
-        .digest()
-        .toString(HEXBASE);
+    return hashFunc(content).toString(HEXBASE);
 };
 
 const getHash = (content, options) => {
