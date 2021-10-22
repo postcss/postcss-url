@@ -23,9 +23,9 @@
     "node": ">=22"
   },
   "dependencies": {
+    "@node-rs/xxhash": "^1.7.6",
     "mime": "^3.0.0",
-    "minimatch": "^10.0.0",
-    "xxhashjs": "^0.2.2"
+    "minimatch": "^10.0.0"
   },
   "devDependencies": {
     "oxlint": "^1.0.0",
