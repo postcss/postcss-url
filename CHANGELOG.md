@@ -1,3 +1,7 @@
+# 10.1.4 - 2026-05-21
+
+Fixed: update minimatch dependency to address CVEs https://nvd.nist.gov/vuln/detail/CVE-2026-27903 https://nvd.nist.gov/vuln/detail/CVE-2026-27904 https://nvd.nist.gov/vuln/detail/CVE-2026-26996 by [@diegocr](https://github.com/diegocr)
+
 # 10.1.3 - 2021-03-19
 
 Fixed: update mime version
