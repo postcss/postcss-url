@@ -1,9 +1,8 @@
 # postcss-url
 
-[![Travis Build Status](https://img.shields.io/travis/postcss/postcss-url/master.svg?label=unix%20build)](https://travis-ci.org/postcss/postcss-url)
-[![AppVeyor Build Status](https://img.shields.io/appveyor/ci/MoOx/postcss-url/master.svg?label=windows%20build)](https://ci.appveyor.com/project/MoOx/postcss-url)
-[![dependencies Status](https://david-dm.org/postcss/postcss-url/status.svg)](https://david-dm.org/postcss/postcss-url)
-[![devDependencies Status](https://david-dm.org/postcss/postcss-url/dev-status.svg)](https://david-dm.org/postcss/postcss-url?type=dev)
+[![GitHub package.json version](https://img.shields.io/github/package-json/v/postcss/postcss-url) ![npm downloads](https://img.shields.io/npm/dm/postcss-url)](https://www.npmjs.com/package/postcss-url)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/postcss/postcss-url/test.yml?branch=main)](https://github.com/postcss/postcss-url/actions)
+[![License](https://img.shields.io/github/license/postcss/postcss-url)](https://github.com/postcss/postcss-url)
 
 > [PostCSS](https://github.com/postcss/postcss) plugin to rebase, inline or copy on url().
 
