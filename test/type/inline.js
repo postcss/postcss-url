@@ -87,7 +87,7 @@ describe('inline', () => {
             { url: 'inline', filter: '**/*.svg' },
             postcssOpts
         ).then((css) => {
-            assert.ok(css.match(/data\:image\/svg\+xml/));
+            assert.ok(css.match(/data:image\/svg\+xml/));
             assert.notOk(
                 css.match(/data:image\/gif/),
                 'shouldn\'t inline files not matching the minimatch pattern'
@@ -101,7 +101,7 @@ describe('inline', () => {
             { url: 'inline', filter: /\.svg$/ },
             postcssOpts
         ).then((css) => {
-            assert.ok(css.match(/data\:image\/svg\+xml/));
+            assert.ok(css.match(/data:image\/svg\+xml/));
             assert.notOk(
                 css.match(/data:image\/gif/),
                 'shouldn\'t inline files not matching the regular expression'
@@ -111,7 +111,7 @@ describe('inline', () => {
 
     it('should inline files matching by custom function', () => {
         const customFilterFunction = (asset) => {
-            return /\.svg$/.test(asset.absolutePath);
+            return asset.absolutePath.endsWith('.svg');
         };
 
         return processedCss(
@@ -119,7 +119,7 @@ describe('inline', () => {
             { url: 'inline', filter: customFilterFunction },
             postcssOpts
         ).then((css) => {
-            assert.ok(css.match(/data\:image\/svg\+xml/));
+            assert.ok(css.match(/data:image\/svg\+xml/));
             assert.notOk(
                 css.match(/data:image\/gif/),
                 'shouldn\'t inline files not matching the regular expression'

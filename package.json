@@ -29,20 +29,17 @@
     "xxhashjs": "~0.2.2"
   },
   "devDependencies": {
-    "chai": "^4.1.2",
-    "eslint": "^7.12.1",
-    "mocha": "^8.2.1",
-    "npmpub": "^5.1.1",
+    "oxlint": "^1.0.0",
     "postcss": "^8.0.0",
-    "postcss-import": "^12.0.0"
+    "postcss-import": "^16.0.0"
   },
   "peerDependencies": {
     "postcss": "^8.0.0"
   },
   "scripts": {
-    "lint": "eslint --fix .",
-    "tests": "mocha --recursive --require ./test/setup",
+    "lint": "oxlint --fix",
+    "tests": "node --test --require ./test/setup.js \"test/lib/*.js\" \"test/type/*.js\" \"test/misc/*.js\"",
     "test": "npm run lint && npm run tests",
-    "release": "npmpub"
+    "release": "npx npmpub"
   }
 }
