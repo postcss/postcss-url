@@ -20,13 +20,12 @@
     "src"
   ],
   "engines": {
-    "node": ">=10"
+    "node": ">=22"
   },
   "dependencies": {
-    "make-dir": "~3.1.0",
-    "mime": "~2.5.2",
-    "minimatch": "^3.1.5",
-    "xxhashjs": "~0.2.2"
+    "mime": "^3.0.0",
+    "minimatch": "^10.0.0",
+    "xxhashjs": "^0.2.2"
   },
   "devDependencies": {
     "oxlint": "^1.0.0",
