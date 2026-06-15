@@ -12,7 +12,7 @@ const url = require('url');
 const normalize = (assetUrl) => {
     assetUrl = path.normalize(assetUrl);
 
-    return path.sep === '\\' ? assetUrl.replace(/\\/g, '\/') : assetUrl;
+    return path.sep === '\\' ? assetUrl.replace(/\\/g, '/') : assetUrl;
 };
 
 /**
@@ -24,7 +24,7 @@ const isUrlWithoutPathname = (assetUrl) => {
         || assetUrl.indexOf('%23') === 0
         || assetUrl.indexOf('data:') === 0
         || /^[a-z]+:\/\//.test(assetUrl)
-        || /^\/\//.test(assetUrl);
+        || assetUrl.startsWith('//');
 };
 
 /**

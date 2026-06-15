@@ -1,9 +1,27 @@
-const chai = require('chai');
+const { describe, it, before, after } = require('node:test');
+const assert = require('node:assert');
 const postcss = require('postcss');
 const url = require('../src');
 const fs = require('fs');
 
-global.assert = chai.assert;
+// expose node:test runner functions as globals (mocha-like API)
+global.describe = describe;
+global.it = it;
+global.before = before;
+global.after = after;
+
+// expose a chai-like assert: callable like `assert(value)` (node:assert is a
+// function aliasing `assert.ok`), with all node:assert methods + a `notOk` helper
+function assertFn(...args) {
+    return assert(...args);
+}
+Object.assign(assertFn, assert, {
+    notOk(value, message) {
+        assert.ok(!value, message);
+    }
+});
+global.assert = assertFn;
+
 global.compareFixtures = compareFixtures;
 global.read = read;
 global.processedCss = processedCss;

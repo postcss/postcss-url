@@ -80,12 +80,12 @@ describe('copy when inline fallback', () => {
 function testCopy(opts, postcssOpts) {
     const optsWithHash = Object.assign({}, opts, { useHash: true });
     const optsWithAppendHash = Object.assign({}, opts, { useHash: true, hashOptions: { append: true } });
-    const assetsPath = opts.assetsPath ? `${opts.assetsPath}\/` : '';
+    const assetsPath = opts.assetsPath ? `${opts.assetsPath}/` : '';
     const patterns = {
-        copyPixelPng: new RegExp(`"${assetsPath}imported\/pixel\.png"`),
+        copyPixelPng: new RegExp(`"${assetsPath}imported/pixel.png"`),
         copyPixelGif: new RegExp(`"${assetsPath}pixel\\.gif"`),
-        copyParamsPixelPngHash: new RegExp(`"${assetsPath}imported\/pixel\\.png\\?\#iefix"`),
-        copyParamsPixelPngParam: new RegExp(`"${assetsPath}imported\/pixel\\.png\\?foo=bar"`),
+        copyParamsPixelPngHash: new RegExp(`"${assetsPath}imported/pixel\\.png\\?#iefix"`),
+        copyParamsPixelPngParam: new RegExp(`"${assetsPath}imported/pixel\\.png\\?foo=bar"`),
         copyParamsPixelGif: new RegExp(`"${assetsPath}pixel\\.gif\\#el"`),
         copyXXHashPixel8: new RegExp(`"${assetsPath}[a-z0-9]{8}\\.png"`),
         copyXXHashParamsPixel8: new RegExp(`"${assetsPath}[a-z0-9]{8}\\.png\\?v=1\\.1\\#iefix"`),
