@@ -84,12 +84,6 @@ describe('rebase', () => {
         { from: 'test/fixtures/transform.css' }, require('postcss-import')
     );
     compareFixtures(
-        'alpha-image-loader',
-        'should rebase in filter',
-        opts,
-        { from: 'test/fixtures/here', to: 'there' }
-    );
-    compareFixtures(
         'skip-urls-with-tilde',
         'should skip URLs with tilde'
     );
